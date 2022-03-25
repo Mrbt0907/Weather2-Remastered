@@ -1,0 +1,26 @@
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
+
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run
+/libs/
+/rebuild.bat
+/setup.bat
+/weather2-1.12.x.zip
