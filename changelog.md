@@ -1,5 +1,5 @@
 # Weather2 - Remastered
-## Version 2.7.5-alpha, Optimization Test Update
+## Version 2.7.6-alpha, Optimization Test Update
 ## Special Thanks To Corosus and Fartsy
 ------------------------------
 ### Additions
@@ -52,3 +52,4 @@
   - Optimized weather system objects
   - Fixed sandstorms spawning in cold biomes
 ------------------------------
+Not everything was included in the changelog as I forgot most of those changes. I'll do better next time :)
