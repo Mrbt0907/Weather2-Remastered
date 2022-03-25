@@ -7,6 +7,9 @@ Please visit https://github.com/Corosauce/weather2 as he is the original creator
 ## Questions? Suggestions? Bugs?
 You can report any of these in the Issues tab, and/or place your questions and suggestions in the Discussions tab.
 
+## How To Get The Mod
+Head to the releases tab on the right and grab the version of the mod you want. Don't download the sources.jar file unless you want to add support to your mod.
+
 ##  How To Build (Eclipse)
 - Requires MrCrayfish's Vehicle Mod
 - Requires Obfuscate
