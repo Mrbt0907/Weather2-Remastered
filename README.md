@@ -17,4 +17,8 @@ Head to the releases tab on the right and grab the version of the mod you want. 
 - Place these mods in the lib folder (Create the folder in your project folder if it doesn't exist)
 - run "gradlew setupDecompWorkspace eclipse"
 
+## Supported Mods
+These mods are supported by Weather2 Remaster by default
+- MrCrayfish's Vehicle Mod - Vehicles get picked up
+
 *Please note that this is a fan update and I take no credit for anything Corosus has created.*
