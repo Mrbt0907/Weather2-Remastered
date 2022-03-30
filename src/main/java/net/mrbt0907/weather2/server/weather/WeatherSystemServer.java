@@ -175,15 +175,17 @@ public class WeatherSystemServer extends WeatherSystem {
 		WorldInfo worldInfo = world.getWorldInfo();
 		boolean isRaining = worldInfo.isRaining();
 		boolean isThundering = worldInfo.isThundering();
-		if (!ConfigMisc.overcast_mode && ConfigMisc.server_weather_mode != -1)
+		if (WeatherUtilConfig.isWeatherEnabled(dim))
 		{
-			worldInfo.setRaining(ConfigMisc.server_weather_mode == 1);
-			worldInfo.setThundering(ConfigMisc.server_weather_mode == 1);
+			if (!ConfigMisc.overcast_mode && ConfigMisc.server_weather_mode != -1)
+			{
+				worldInfo.setRaining(ConfigMisc.server_weather_mode == 1);
+				worldInfo.setThundering(ConfigMisc.server_weather_mode == 1);
+			}
+				
+			if (isThundering && ConfigStorm.prevent_vanilla_thunderstorms)
+				worldInfo.setThundering(false);
 		}
-			
-		if (isThundering && ConfigStorm.prevent_vanilla_thunderstorms)
-			worldInfo.setThundering(false);
-
 			
 		if (ticks % 40 == 0)
 			PacketVanillaWeather.send(dim, isRaining ? isThundering ? 2 : 1 : 0, getWorld().getWorldInfo().getRainTime());

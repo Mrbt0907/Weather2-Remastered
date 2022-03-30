@@ -124,9 +124,9 @@ public class ClientTickHandler
 
 			//TODO: split logic up a bit better for this, if this is set to false mid sandstorm, fog is stuck on,
 			// with sandstorms and other things it might not represent the EZ config option
-			if (WeatherUtilConfig.isEffectsEnabled(world.provider.getDimension())) {
-				//weatherManager.tick();
-
+			SceneEnhancer.tickRainRates();
+			if (WeatherUtilConfig.isEffectsEnabled(world.provider.getDimension()))
+			{
 				sceneEnhancer.tickClient();
 			}
 

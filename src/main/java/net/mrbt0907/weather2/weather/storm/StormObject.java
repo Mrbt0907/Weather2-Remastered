@@ -505,7 +505,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 				if (manager.getWorld().isRemote)
 					tornadoHelper.soundUpdates(true, isDeadly());
 			manager.getWorld().profiler.startSection("tickMovement");
-			tickMovement();
+			if (!isMachineControlled)
+				tickMovement();
 			manager.getWorld().profiler.endSection();
 			
 			if (layer == 0)

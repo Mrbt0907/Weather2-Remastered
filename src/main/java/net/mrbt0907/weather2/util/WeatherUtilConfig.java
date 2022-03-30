@@ -177,7 +177,7 @@ public class WeatherUtilConfig
 					
 					if (cache.getCompoundTag("dimData").getInteger(key) == 1)
 						weatherList.add(keyN);
-					else
+					else if (weatherList.contains(keyN))
 						weatherList.remove(weatherList.indexOf(keyN));
 				}
 				else if (key.contains("dimc_"))
@@ -186,7 +186,7 @@ public class WeatherUtilConfig
 					
 					if (cache.getCompoundTag("dimData").getInteger(key) == 1)
 						effectList.add(keyN);
-					else
+					else if (effectList.contains(keyN))
 						effectList.remove(effectList.indexOf(keyN));
 				}
 			}

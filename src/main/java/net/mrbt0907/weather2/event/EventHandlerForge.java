@@ -71,9 +71,6 @@ public class EventHandlerForge
 		event.windResistanceList.add("minecraft:chorus_flower", WeatherAPI.getEFWindSpeed(0));
 		event.windResistanceList.add("minecraft:hay_block", WeatherAPI.getEFWindSpeed(0));
 		event.windResistanceList.add("minecraft:crop", WeatherAPI.getEFWindSpeed(0));
-		event.windResistanceList.add("minecraft:wooden_pressure_plate", WeatherAPI.getEFWindSpeed(0));
-		event.windResistanceList.add("minecraft:wooden_button", WeatherAPI.getEFWindSpeed(0));
-		event.windResistanceList.add("minecraft:tripwire_hook", WeatherAPI.getEFWindSpeed(0));
 		event.windResistanceList.add("minecraft:string", WeatherAPI.getEFWindSpeed(0));
 		event.windResistanceList.add("minecraft:redstone", WeatherAPI.getEFWindSpeed(0));
 		event.windResistanceList.add("minecraft:repeater", WeatherAPI.getEFWindSpeed(0));
@@ -102,13 +99,11 @@ public class EventHandlerForge
 		event.windResistanceList.add("minecraft:acacia_stairs", WeatherAPI.getEFWindSpeed(1));
 		event.windResistanceList.add("minecraft:crafting_table", WeatherAPI.getEFWindSpeed(1));
 		event.windResistanceList.add("minecraft:bookshelf", WeatherAPI.getEFWindSpeed(1));
-		event.windResistanceList.add("minecraft:stone_pressure_plate", WeatherAPI.getEFWindSpeed(2));
 		event.windResistanceList.add("minecraft:dirt", WeatherAPI.getEFWindSpeed(2));
 		event.windResistanceList.add("minecraft:piston", WeatherAPI.getEFWindSpeed(2));
 		event.windResistanceList.add("minecraft:sticky_piston", WeatherAPI.getEFWindSpeed(2));
 		event.windResistanceList.add("minecraft:glowstone", WeatherAPI.getEFWindSpeed(2));
 		event.windResistanceList.add("minecraft:redstone_lamp", WeatherAPI.getEFWindSpeed(2));
-		event.windResistanceList.add("minecraft:stone_button", WeatherAPI.getEFWindSpeed(2));
 		event.windResistanceList.add("minecraft:observer", WeatherAPI.getEFWindSpeed(2));
 		event.windResistanceList.add("minecraft:daylight_sensor", WeatherAPI.getEFWindSpeed(2));
 		event.windResistanceList.add("minecraft:redstone_block", WeatherAPI.getEFWindSpeed(2));
@@ -180,13 +175,8 @@ public class EventHandlerForge
 		event.grabList.add("minecraft:leaves");
 		event.grabList.add("minecraft:leaves2");
 		event.grabList.add("minecraft:web");
-		event.grabList.add("minecraft:skull");
 		event.grabList.add("minecraft:flower_pot");
-		event.grabList.add("minecraft:torch");
 		event.grabList.add("minecraft:hay_block");
-		event.grabList.add("minecraft:wooden_pressure_plate");
-		event.grabList.add("minecraft:wooden_button");
-		event.grabList.add("minecraft:tripwire_hook");
 		event.grabList.add("minecraft:string");
 		event.grabList.add("minecraft:redstone");
 		event.grabList.add("minecraft:repeater");
@@ -210,12 +200,8 @@ public class EventHandlerForge
 		event.grabList.add("minecraft:acacia_stairs");
 		event.grabList.add("minecraft:crafting_table");
 		event.grabList.add("minecraft:bookshelf");
-		event.grabList.add("minecraft:stone_pressure_plate");
 		event.grabList.add("minecraft:piston");
 		event.grabList.add("minecraft:sticky_piston");
-		event.grabList.add("minecraft:glowstone");
-		event.grabList.add("minecraft:redstone_lamp");
-		event.grabList.add("minecraft:stone_button");
 		event.grabList.add("minecraft:observer");
 		event.grabList.add("minecraft:daylight_sensor");
 		event.grabList.add("minecraft:redstone_block");
@@ -277,6 +263,10 @@ public class EventHandlerForge
 		event.grabList.add("minecraft:gold_block");
 		
 		event.replaceList.add("minecraft:farmland", "minecraft:dirt");
+		event.replaceList.add("minecraft:torch", "minecraft:air");
+		event.replaceList.add("minecraft:redstone_torch", "minecraft:air");
+		event.replaceList.add("minecraft:glowstone", "minecraft:air");
+		event.replaceList.add("minecraft:redstone_lamp", "minecraft:air");
 	}
 	
 	@SubscribeEvent

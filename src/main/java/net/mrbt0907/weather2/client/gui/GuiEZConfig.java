@@ -343,7 +343,7 @@ public class GuiEZConfig extends GuiScreen
 		BC_List.put(BC_STORM_PER_PLAYER, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BC_STORM_PER_PLAYER));
 		
 		int size = 0;
-		int offset = 0;
+		int offsetA = 0;
 		
 		try
 		{
@@ -352,39 +352,40 @@ public class GuiEZConfig extends GuiScreen
 				case 0:
 					size = BA_List.size();
 					maxSubPages = (size / maxEntries);
-					offset = (maxEntries * subPage) + BA_CLOUD; 
+					offsetA = (maxEntries * subPage) + BA_CLOUD; 
 					
 					for(int i = 0; i < size - (maxEntries * subPage) && i < maxEntries; i++)
-						addButton(new GuiButtonCycle(i + offset, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BA_List.getA(i + offset), BA_List.getB(i + offset)), TA_List.get(i + offset));
+						addButton(new GuiButtonCycle(i + offsetA, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BA_List.getA(i + offsetA), BA_List.getB(i + offsetA)), TA_List.get(i + offsetA));
 					break;
 				case 1:
 					size = BB_List.size();
 					maxSubPages = (size / maxEntries);
-					offset = (maxEntries * subPage) + BB_GLOBAL; 
+					offsetA = (maxEntries * subPage) + BB_GLOBAL; 
 					
 					for(int i = 0; i < size - (maxEntries * subPage) && i < maxEntries; i++)
-						addButton(new GuiButtonCycle(i + offset, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BB_List.getA(i + offset), BB_List.getB(i + offset)), TB_List.get(i + offset));
+						addButton(new GuiButtonCycle(i + offsetA, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BB_List.getA(i + offsetA), BB_List.getB(i + offsetA)), TB_List.get(i + offsetA));
 					break;
 				case 2:
 					size = BC_List.size();
 					maxSubPages = (size / maxEntries);
-					offset = (maxEntries * subPage) + BC_ENABLE_TORNADO; 
+					offsetA = (maxEntries * subPage) + BC_ENABLE_TORNADO; 
 					
 					for(int i = 0; i < size - (maxEntries * subPage) && i < maxEntries; i++)
-						addButton(new GuiButtonCycle(i + offset, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BC_List.getA(i + offset), BC_List.getB(i + offset)), TC_List.get(i + offset));
+						addButton(new GuiButtonCycle(i + offsetA, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BC_List.getA(i + offsetA), BC_List.getB(i + offsetA)), TC_List.get(i + offsetA));
 					break;
 				case 3:
 					size = WeatherUtilConfig.dimNames.size();
-					maxSubPages = size / maxEntries;
-					offset = (maxEntries * subPage) + BD_MIN;
+					int maxEntries = this.maxEntries * 2;
+					int offsetB = (this.maxEntries * subPage);
+					maxSubPages = size / (this.maxEntries);
+					offsetA = (maxEntries * subPage) + BD_MIN;
 					Object[] keys = WeatherUtilConfig.dimNames.keySet().toArray();
 					Object[] values = WeatherUtilConfig.dimNames.values().toArray();
 					int ii = 0;
-					
-					for(int i = 0; i < size - (maxEntries * subPage) && i < maxEntries; i++)
+					for(int i = 0; i < size - offsetB && i < this.maxEntries; i++)
 					{
-						addButton(new GuiButtonCycle(i + offset + ii, xStart + buttonRowBX - (buttonWidth + 5), yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BL_WTOGGLE, WeatherUtilConfig.isWeatherEnabled((int) keys[i]) ? 1 : 0), (String) values[i]);
-						addButton(new GuiButtonCycle(i + offset + 1 + ii, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BL_ETOGGLE, WeatherUtilConfig.isEffectsEnabled((int) keys[i]) ? 1 : 0));
+						addButton(new GuiButtonCycle(i + offsetA + ii, xStart + buttonRowBX - (buttonWidth + 5), yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BL_WTOGGLE, WeatherUtilConfig.isWeatherEnabled((int) keys[i + offsetB]) ? 1 : 0), (String) values[i + offsetB]);
+						addButton(new GuiButtonCycle(i + offsetA + 1 + ii, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BL_ETOGGLE, WeatherUtilConfig.isEffectsEnabled((int) keys[i + offsetB]) ? 1 : 0));
 						ii++;
 					}
 					break;

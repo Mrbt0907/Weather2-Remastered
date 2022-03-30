@@ -8,6 +8,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.config.ConfigMisc;
+import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.weather.storm.StormObject;
 import net.mrbt0907.weather2.weather.storm.WeatherEnum;
 import net.mrbt0907.weather2.weather.storm.WeatherObject;
@@ -39,19 +40,19 @@ public class TileRadar extends TileEntity implements ITickable
     	if (world.isRemote) {
     		if (world.getTotalWorldTime() % 200 == 0 || storms.size() == 0) {
     			
-    			lastTickStormObject = ClientTickHandler.weatherManager.getClosestStorm(new Vec3(getPos().getX(), StormObject.layers.get(0), getPos().getZ()), 1024, WeatherEnum.Type.THUNDER);
+    			lastTickStormObject = ClientTickHandler.weatherManager.getClosestStorm(new Vec3(getPos().getX(), StormObject.layers.get(0), getPos().getZ()), ConfigMisc.radar_range, WeatherEnum.Type.THUNDER);
    
-    			if (ConfigMisc.debug_mode_radar) {
-    				//storms.clear();
+    			if (ConfigMisc.debug_mode_radar)
+    			{
 					List<WeatherObject> listAdd = new ArrayList<>();
-    				for (WeatherObject wo : ClientTickHandler.weatherManager.getWeatherObjects()) {
-    					//if (wo instanceof StormObject && !((StormObject) wo).isCloudlessStorm()) {
+    				for (WeatherObject wo : ClientTickHandler.weatherManager.getWeatherObjects())
+    					if (Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), wo.pos.xCoord, getPos().getY(), wo.pos.zCoord) <= ConfigMisc.radar_range)
 							listAdd.add(wo);
-						//}
-					}
 					storms = listAdd;
-				} else {
-					storms = ClientTickHandler.weatherManager.getClosestStorms(new Vec3(getPos().getX(), StormObject.layers.get(0), getPos().getZ()), 1024);
+				}
+    			else
+    			{
+					storms = ClientTickHandler.weatherManager.getClosestStorms(new Vec3(getPos().getX(), StormObject.layers.get(0), getPos().getZ()), ConfigMisc.radar_range);
 				}
     		}
     	}

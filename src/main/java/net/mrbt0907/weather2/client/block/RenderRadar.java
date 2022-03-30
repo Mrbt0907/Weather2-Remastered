@@ -42,7 +42,7 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 		WeatherObject lastWO = radar.lastTickStormObject;
 		
 		double sizeSimBoxDiameter = ConfigMisc.radar_range;
-		float sizeRenderBoxDiameter = 3;
+		float sizeRenderBoxDiameter = 2;
 		
 		GlStateManager.pushMatrix();
 		GlStateManager.translate((float)x + 0.5F, (float)y+1.1F, (float)z + 0.5F);
@@ -164,10 +164,9 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 			posRenderOffset.xCoord /= sizeSimBoxDiameter;
 			posRenderOffset.zCoord /= sizeSimBoxDiameter;
 			
-			posRenderOffset.xCoord *= sizeRenderBoxDiameter;
-			posRenderOffset.zCoord *= sizeRenderBoxDiameter;
+			posRenderOffset.xCoord *= sizeRenderBoxDiameter - 0.5D;
+			posRenderOffset.zCoord *= sizeRenderBoxDiameter - 0.5D;
 			
-			//Icon particleIcon = CommonProxy.blockWeatherDeflector.getBlockTextureFromSide(0);
 
 			GlStateManager.translate(posRenderOffset.xCoord, 0, posRenderOffset.zCoord);
 

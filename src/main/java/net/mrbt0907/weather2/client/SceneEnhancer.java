@@ -1317,98 +1317,109 @@ public class SceneEnhancer implements Runnable {
 	 * @param forOvercast
 	 * @return
 	 */
-	public static float getRainStrengthAndControlVisuals(EntityPlayer entP, boolean forOvercast) {
+	public static float getRainStrengthAndControlVisuals(EntityPlayer entP, boolean forOvercast)
+	{
 		
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		
 		double maxStormDist = ConfigStorm.max_storm_size + 50;
+		boolean closeEnough = false;
+	    double stormDist = 9999;
+	    float tempAdj = 1F;
+    	float sizeToUse = 0;
+	    float overcastModeMinPrecip = (float)ConfigStorm.min_overcast_rain;
 		Vec3 plPos = new Vec3(entP.posX, StormObject.weather_layer_0, entP.posZ);
 		StormObject storm = null;
 		
 		ClientTickHandler.checkClientWeather();
 		
-		storm = (StormObject) ClientTickHandler.weatherManager.getClosestStorm(plPos, maxStormDist, WeatherEnum.Type.RAIN.getStage(), 10, WeatherEnum.Type.SANDSTORM);
-	    
-	    boolean closeEnough = false;
-	    double stormDist = 9999;
-	    float tempAdj = 1F;
-
-    	float sizeToUse = 0;
-	    
-	    float overcastModeMinPrecip = 0.23F;
-		//overcastModeMinPrecip = 0.16F;
-		overcastModeMinPrecip = (float)ConfigStorm.min_overcast_rain;
-	    
-	    //evaluate if storms size is big enough to be over player
-	    if (storm != null)
-	    {
-	    	sizeToUse = storm.size + 100;
-	    	//extend overcast effect, using x2 for now since we cant cancel sound and ground particles, originally was 4x, then 3x, change to that for 1.7 if lex made change
-	    	if (forOvercast)
-	    		sizeToUse *= 1F;
-	    	
-	    	stormDist = storm.pos.distanceTo(plPos);
-	    	//System.out.println("storm dist: " + stormDist);
-	    	if (sizeToUse > stormDist)
-	    		closeEnough = true;
-	    }
-	    
-	    if (closeEnough)
-	    {
-		    double stormIntensity = (sizeToUse - stormDist) / sizeToUse;
-		    tempAdj = storm.stormTemperature > 0 ? 1F : -1F;
+		if (WeatherUtilConfig.isWeatherEnabled(ClientTickHandler.weatherManager.getDimension()))
+		{
+			storm = (StormObject) ClientTickHandler.weatherManager.getClosestStorm(plPos, maxStormDist, WeatherEnum.Type.RAIN.getStage(), 10, WeatherEnum.Type.SANDSTORM);
 		    
-		    //limit plain rain clouds to light intensity
-		    if (storm.stormStage == StormObject.Stage.NORMAL.getInt())
-		    	if (stormIntensity > 0.3) stormIntensity = 0.3;
-		    
-		    if (ConfigParticle.enable_rain)
-		    	stormIntensity = 0;
-
-		    if (stormIntensity < overcastModeMinPrecip)
-		    	stormIntensity = overcastModeMinPrecip;
-		    
-		    //System.out.println("intensity: " + stormIntensity);
-	    	mc.world.getWorldInfo().setRaining(true);
-	    	mc.world.getWorldInfo().setThundering(true);
-	    	//if (forOvercast)
-	    		curOvercastStrTarget = (float) Math.min(stormIntensity + 0.5D, 1.0D);
-	    	//else
-	    		curPrecipStrTarget = (float) stormIntensity;
-	    	//mc.world.thunderingStrength = (float) stormIntensity;
-	    }
-	    else
-	    {
-	    	if (!ClientTickHandler.clientConfigData.overcastMode)
-	    	{
-		    	mc.world.getWorldInfo().setRaining(false);
-		    	mc.world.getWorldInfo().setThundering(false);
-		    	
+		    //evaluate if storms size is big enough to be over player
+		    if (storm != null)
+		    {
+		    	sizeToUse = storm.size + 100;
+		    	//extend overcast effect, using x2 for now since we cant cancel sound and ground particles, originally was 4x, then 3x, change to that for 1.7 if lex made change
 		    	if (forOvercast)
-		    		curOvercastStrTarget = 0;
-		    	else
-		    		curPrecipStrTarget = 0;
-	    	}
-	    	else
-	    	{
-	    		if (ClientTickHandler.weatherManager.weatherID >= 1)
-	    		{
-	    			mc.world.getWorldInfo().setRaining(true);
-			    	mc.world.getWorldInfo().setThundering(true);
+		    		sizeToUse *= 1F;
+		    	
+		    	stormDist = storm.pos.distanceTo(plPos);
+		    	//System.out.println("storm dist: " + stormDist);
+		    	if (sizeToUse > stormDist)
+		    		closeEnough = true;
+		    }
+		    
+		    if (closeEnough)
+		    {
+			    double stormIntensity = (sizeToUse - stormDist) / sizeToUse;
+			    tempAdj = storm.stormTemperature > 0 ? 1F : -1F;
+			    
+			    //limit plain rain clouds to light intensity
+			    if (storm.stormStage == StormObject.Stage.NORMAL.getInt())
+			    	if (stormIntensity > 0.3) stormIntensity = 0.3;
+			    
+			    if (ConfigParticle.enable_rain)
+			    	stormIntensity = 0;
+	
+			    if (stormIntensity < overcastModeMinPrecip)
+			    	stormIntensity = overcastModeMinPrecip;
+			    
+		    	mc.world.getWorldInfo().setRaining(true);
+		    	mc.world.getWorldInfo().setThundering(true);
+		    	curOvercastStrTarget = (float) Math.min(stormIntensity + 0.5D, 1.0D);
+		    	curPrecipStrTarget = (float) stormIntensity;
+		    }
+		    else
+		    {
+		    	if (!ClientTickHandler.clientConfigData.overcastMode)
+		    	{
+			    	mc.world.getWorldInfo().setRaining(false);
+			    	mc.world.getWorldInfo().setThundering(false);
 			    	
 			    	if (forOvercast)
-			    		curOvercastStrTarget = overcastModeMinPrecip;
-			    	else
-			    		curPrecipStrTarget = overcastModeMinPrecip;
-	    		}
-	    		else
-	    			if (forOvercast)
 			    		curOvercastStrTarget = 0;
 			    	else
 			    		curPrecipStrTarget = 0;
-	    	}
-	    }
-
+		    	}
+		    	else
+		    	{
+		    		if (ClientTickHandler.weatherManager.weatherID >= 1)
+		    		{
+		    			mc.world.getWorldInfo().setRaining(true);
+				    	mc.world.getWorldInfo().setThundering(true);
+				    	
+				    	if (forOvercast)
+				    		curOvercastStrTarget = overcastModeMinPrecip;
+				    	else
+				    		curPrecipStrTarget = overcastModeMinPrecip;
+		    		}
+		    		else
+		    			if (forOvercast)
+				    		curOvercastStrTarget = 0;
+				    	else
+				    		curPrecipStrTarget = 0;
+		    	}
+		    }
+		}
+		else
+		{
+			switch(ClientTickHandler.weatherManager.weatherID)
+			{
+				case 1:
+					curOvercastStrTarget = 0.8F;
+					curPrecipStrTarget = 0.30F;
+					break;
+				case 2:
+					curOvercastStrTarget = 1.0F;
+					curPrecipStrTarget = 1.0F;
+					break;
+				default:
+					curOvercastStrTarget = 0;
+					curPrecipStrTarget = 0;
+			}
+		}
+		
 	    if (forOvercast)
 	    {
 			if (curOvercastStr < 0.001 && curOvercastStr > -0.001F)

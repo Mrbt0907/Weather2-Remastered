@@ -31,7 +31,7 @@ public class Weather2
 {
 	public static final String MOD = "Weather 2 - Remastered";
 	public static final String MODID = "weather2";
-	public static final String VERSION = "2.7.6-alpha";
+	public static final String VERSION = "2.7.7-alpha";
 	public static final FMLEventChannel event_channel = NetworkRegistry.INSTANCE.newEventDrivenChannel(MODID);
 	public static final CreativeTabs TAB = new CreativeTabs(MODID) {@Override public ItemStack getTabIconItem() {return new ItemStack(BlockRegistry.tornado_sensor);}};
 	@Mod.Instance( value = Weather2.MODID )
@@ -90,6 +90,14 @@ public class Weather2
 	public void serverStarting(FMLServerStartingEvent event)
 	{
 		event.registerServerCommand(new CommandWeather2());
+		WeatherUtilConfig.dimNames.put(-2, -2 + ":>  " + "Test place A");
+		WeatherUtilConfig.dimNames.put(2, 2 + ":>  " + "Test place B");
+		WeatherUtilConfig.dimNames.put(3, 3 + ":>  " + "Test place C");
+		WeatherUtilConfig.dimNames.put(4, 4 + ":>  " + "Test place D");
+		WeatherUtilConfig.dimNames.put(256, 256 + ":>  " + "Test place E");
+		WeatherUtilConfig.dimNames.put(512, 512 + ":>  " + "Test place F");
+		WeatherUtilConfig.dimNames.put(420, 420 + ":>  " + "Test place G");
+		WeatherUtilConfig.dimNames.put(-90, -90 + ":>  " + "Test place H");
 		WeatherAPI.refreshDimensionRules();
 	}
 	

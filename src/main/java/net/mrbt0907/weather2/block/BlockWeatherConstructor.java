@@ -34,28 +34,41 @@ public class BlockWeatherConstructor extends BlockContainer
     }
     
     @Override
-    public boolean onBlockActivated(World par1World, BlockPos pos, IBlockState state, EntityPlayer par5EntityPlayer, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+    public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
     	
-    	if (!par1World.isRemote && hand == EnumHand.MAIN_HAND) {
-	    	TileEntity tEnt = par1World.getTileEntity(pos);
+    	if (!world.isRemote && hand == EnumHand.MAIN_HAND)
+    	{
+	    	TileEntity tile = world.getTileEntity(pos);
 	    	
-	    	if (tEnt instanceof TileWeatherConstructor) {
-	    		((TileWeatherConstructor) tEnt).cycleWeatherType(par5EntityPlayer.isSneaking());
+	    	if (tile instanceof TileWeatherConstructor)
+	    	{
+	    		TileWeatherConstructor constructor = (TileWeatherConstructor) tile;
+	    		constructor.cycleWeatherType(player.isSneaking());
 	    		String msg = "Off";
-                if (((TileWeatherConstructor) tEnt).weatherType == 1) {
-                    msg = "Rain";
-                } else if (((TileWeatherConstructor) tEnt).weatherType == 2) {
-	    			msg = "Lightning";
-	    		} else if (((TileWeatherConstructor) tEnt).weatherType == 3) {
-	    			msg = "High wind";
-	    		} else if (((TileWeatherConstructor) tEnt).weatherType == 4) {
-	    			msg = "Hail";
-	    		} else if (((TileWeatherConstructor) tEnt).weatherType == 5) {
-	    			msg = "F1 tornado";
-	    		} else if (((TileWeatherConstructor) tEnt).weatherType == 6) {
-	    			msg = "Stage 1 Tropical Cyclone";
+	    		
+	    		switch (constructor.weatherType)
+	    		{
+	    			case 1:
+	    				msg = "Rainstorm";
+	    				break;
+	    			case 2:
+	    				msg = "Thunderstorm";
+	    				break;
+	    			case 3:
+	    				msg = "Supercell";
+	    				break;
+	    			case 4:
+	    				msg = "Hailing Supercell";
+	    				break;
+	    			case 5:
+	    				msg = "EF1 Tornado";
+	    				break;
+	    			case 6:
+	    				msg = "Category 1 Hurricane";
+	    				break;
 	    		}
-	    		CoroUtilMisc.sendCommandSenderMsg(par5EntityPlayer, "Weather Machine set to " + msg);
+	    		
+	    		CoroUtilMisc.sendCommandSenderMsg(player, "Weather Machine is now spawning a " + msg);
 	    		return true;
 	    	}
     	}
@@ -64,8 +77,8 @@ public class BlockWeatherConstructor extends BlockContainer
     }
 
     @Override
-    public void onBlockClicked(World worldIn, BlockPos pos, EntityPlayer playerIn) {
-        System.out.println("clicked");
+    public void onBlockClicked(World worldIn, BlockPos pos, EntityPlayer playerIn)
+    {
         super.onBlockClicked(worldIn, pos, playerIn);
     }
 

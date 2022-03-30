@@ -179,4 +179,10 @@ public class Maths
 		else
 			return (random.nextDouble() * (doubleB - doubleA)) + doubleA;
 	}
+	
+	/**Calculates the distance between one set of positions and another set of positions*/
+	public static double distance(double posXA, double posYA, double posZA, double posXB, double posYB, double posZB)
+	{
+		return Math.sqrt((posXA - posXB) * (posXA - posXB) + (posYA - posYB) * (posYA - posYB) + (posZA - posZB) * (posZA - posZB));
+	}
 }
