@@ -1,4 +1,22 @@
 # Weather2 - Remastered
+## Version 2.7.7-alpha, Bug Fix Update
+## Special Thanks To Corosus and Fartsy
+------------------------------
+### Changes
+  - Vanilla weather will now work in dimensions with Weather disabled in the dimension settings
+------------------------------
+### Fixes
+  - Fixed vanilla rain not working in disabled dimensions (Effects must be enabled)
+  - Fixed the weather machine not causing a storm to rain
+  - Fixed the weather machine not properly executing a tornado or cyclone properly
+  - Fixed the EZ Gui Dimension page buttons
+  - Fixed the Weather Radar displaying storms past the 3x3 boundary
+  - Temporarily fixed pressure plates and buttons crashing the game when being grabbed by the grab list. They will still crash if added back to the grab list
+  - Fixed the Weather Machine throwing UUID errors
+  - Somewhat fixed future crashes with future configuration changes. Might still crash if dimensions are added or removed
+------------------------------
+Glad I was able to fix a few bugs that came up. This update should be way more stable now. Enjoy!
+
 ## Version 2.7.6-alpha, Optimization Test Update
 ## Special Thanks To Corosus and Fartsy
 ------------------------------
