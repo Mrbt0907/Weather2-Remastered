@@ -17,7 +17,7 @@ Head to the releases tab on the right and grab the version of the mod you want. 
 - Requires MrCrayfish's Vehicle Mod
 - Requires Obfuscate
 - Requires Coroutil
-- Place these mods in the lib folder (Create the folder in your project folder if it doesn't exist)
+- Place these mods in the libs folder (Create the folder in your project folder if it doesn't exist)
 - run "gradlew setupDecompWorkspace eclipse"
 
 ## Supported Mods
