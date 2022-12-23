@@ -3,15 +3,16 @@ package net.mrbt0907.weather2.weather.storm;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeatherTypes {
-
+public class WeatherTypes
+{
 	public static List<WeatherEntityConfig> weatherEntTypes;
 	
 	static {
 		initWeatherTypes();
 	}
 	
-	public static void initWeatherTypes() {
+	public static void initWeatherTypes()
+	{
 		weatherEntTypes = new ArrayList<WeatherEntityConfig>();
 		WeatherEntityConfig sConf = new WeatherEntityConfig();
 		//0 = spout
@@ -77,9 +78,9 @@ public class WeatherTypes {
 		
 		//F6
 		sConf = new WeatherEntityConfig();
-		sConf.tornadoPullRate = 0.15F;
+		sConf.tornadoPullRate = 0.06F;
 		sConf.tornadoLiftRate = 0.10F;
-		sConf.relTornadoSize = -95;
+		sConf.relTornadoSize = -75;
 		sConf.tornadoWidthScale = 3.5F;
 		weatherEntTypes.add(sConf);
 	}

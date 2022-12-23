@@ -22,7 +22,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.util.WeatherUtil;
 import net.mrbt0907.weather2.util.WeatherUtilBlock;
-import net.mrbt0907.weather2.weather.WeatherSystem;
+import net.mrbt0907.weather2.weather.WeatherManager;
 import CoroUtil.util.CoroUtilBlock;
 import CoroUtil.util.Vec3;
 import extendedrenderer.ExtendedRenderer;
@@ -36,7 +36,7 @@ public class VolcanoObject
 	
 	//management stuff
 	public UUID ID;
-	public WeatherSystem manager;
+	public WeatherManager manager;
 	
 	@SideOnly(Side.CLIENT)
 	public List<EntityRotFX> listParticlesSmoke = new ArrayList<EntityRotFX>();
@@ -91,7 +91,7 @@ public class VolcanoObject
 	
 	public int growthStage = 0;
 	
-	public VolcanoObject(WeatherSystem parManager)
+	public VolcanoObject(WeatherManager parManager)
 	{
 		manager = parManager;
 		init();

@@ -25,47 +25,33 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import net.mrbt0907.weather2.config.ConfigGrab;
+import net.mrbt0907.weather2.util.ChunkUtils;
 import net.mrbt0907.weather2.weather.storm.StormObject;
-import CoroUtil.util.CoroUtilBlock;
 
 public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnData
-{
-	
-	public Block tile;
-	public static final int falling = 0;
-	public static final int grabbed = 1;
-	//mode 0 = use gravity
-	public int mode;
-	public static final float slowdown = 0.98F;
-	public static final float curvature = 0.05F;
-	public int metadata;
+{	
+	public Block block;
+	public IBlockState state;
 	public TileEntity tileentity;
 	public Material material;
+	public int metadata;
+	//mode 0 = use gravity
+	public int mode;
 	public int age;
-	//i think type was used to change behavior between tornado based ones and hostile worlds ones?
-	//currently nothing in weather2 sets it to 1, always 0
-	public int type;
 	public boolean noCollision;
 	public boolean collideFalling = false;
 	public double vecX;
 	public double vecY;
 	public double vecZ;
-	public double lastPosX;
-	public double lastPosZ;
-	//public Entity controller;
-	public StormObject owner;
 	public int gravityDelay;
-
-	public boolean killNextTick = false;
-
-	public IBlockState stateCached = null;
-
+	
 	public EntityMovingBlock(World var1)
 	{
 		super(var1);
 		mode = 1;
 		age = 0;
-		tile = Blocks.STONE;
+		state = Blocks.STONE.getDefaultState();
+		block = state.getBlock();
 		noCollision = true;
 		gravityDelay = 60;
 	}
@@ -75,7 +61,6 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 		super(world);
 		mode = 1;
 		age = 0;
-		type = 0;
 		noCollision = false;
 		gravityDelay = 60;
 		setSize(0.9F, 0.9F);
@@ -86,11 +71,10 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 		prevPosX = (x + 0.5F);
 		prevPosY = (y + 0.5F);
 		prevPosZ = (double)(z + 0.5F);
-		tile = state.getBlock();
 		metadata = state.getBlock().getMetaFromState(state);
-		material = tile.getDefaultState().getMaterial();
-		stateCached = state;
-		owner = storm;
+		material = state.getMaterial();
+		this.state = state;
+		block = state.getBlock();
 	}
 
 	@Override
@@ -120,30 +104,27 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 		super.onUpdate();
 		//new kill off when distant method
 		if (!world.isRemote)
-			if (killNextTick || world.getClosestPlayer(this.posX, 50, this.posZ, 512, false) == null)
+			if (world.getClosestPlayer(this.posX, 50, this.posZ, 512, false) == null)
 				setDead();
 		
-		if (CoroUtilBlock.isAir(tile))
+		if (block.equals(Blocks.AIR))
 			setDead();
 		else
 		{
 			++age;
 
-			if (age > gravityDelay && type == 0)
+			if (age > gravityDelay)
 			{
 				mode = 0;
 
-				if (tileentity == null && ConfigGrab.Storm_Tornado_rarityOfDisintegrate != -1 && rand.nextInt((ConfigGrab.Storm_Tornado_rarityOfDisintegrate + 1 + (owner != null && owner.isFirenado ? 100 : 0)) * 20) == 0)
+				if (tileentity == null && ConfigGrab.Storm_Tornado_rarityOfDisintegrate != -1 && rand.nextInt((ConfigGrab.Storm_Tornado_rarityOfDisintegrate + 1) * 20) == 0)
 					setDead();
 			}
 
-			if (type == 0)
-			{
-				vecX++;
-				vecY++;
-				vecZ++;
-			}
-
+			vecX++;
+			vecY++;
+			vecZ++;
+			
 			if (mode == 1)
 			{
 				fallDistance = 0.0F;
@@ -201,7 +182,7 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 							var10.setFire(15);
 						}
 
-						if (this.tile == Blocks.CACTUS)
+						if (block == Blocks.CACTUS)
 						{
 							var10.attackEntityFrom(DamageSource.causeThrownDamage(this, this), 1);
 						}
@@ -216,7 +197,7 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 							int var12 = MathHelper.floor(this.posZ);
 							BlockPos pos = new BlockPos(var9, var11, var12);
 							IBlockState state = world.getBlockState(pos);
-							tile.onEntityCollidedWithBlock(this.world, pos, state, var10);
+							block.onEntityCollidedWithBlock(this.world, pos, state, var10);
 						}
 					}
 
@@ -284,8 +265,6 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 					++var8;
 				}
 
-				if (this.type == 0)
-				{
 					if (var3.sideHit != EnumFacing.DOWN && !this.collideFalling)
 					{
 						if (!this.collideFalling)
@@ -304,32 +283,13 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 						this.blockify(var8, var17, var9, var3.sideHit);
 					}
 
-					this.lastPosX = this.posX;
-					this.lastPosZ = this.posZ;
-				}
-				else
-				{
-					this.blockify(var8, var17, var9, var3.sideHit);
-				}
 
 				return;
 			}
 
 			float var18 = 0.98F;
 
-			if (this.type == 1)
-			{
-				var18 = (float)((double)var18 * 0.92D);
-
-				if (this.mode == 0)
-				{
-					this.motionY -= 0.05000000074505806D;
-				}
-			}
-			else
-			{
 				this.motionY -= 0.05000000074505806D;
-			}
 
 			this.motionX *= (double)var18;
 			this.motionY *= (double)var18;
@@ -339,28 +299,14 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 			int var21 = (int)(this.posZ + this.motionZ * 5.0D);
 
 			if (!this.world.isBlockLoaded(new BlockPos(var11, var20, var21)))
-			{
 				this.setDead();
-				//return;
-			}
-
 			this.prevPosX = this.posX;
 			this.prevPosY = this.posY;
 			this.prevPosZ = this.posZ;
 
-			if (this.mode == 1)
-			{
-				//this.moveEntity(this.motionX, this.motionY, this.motionZ);
-				this.posX += this.motionX;
-				this.posY += this.motionY;
-				this.posZ += this.motionZ;
-			}
-			else if (this.mode == 0)
-			{
-				this.posX += this.motionX;
-				this.posY += this.motionY;
-				this.posZ += this.motionZ;
-			}
+			this.posX += this.motionX;
+			this.posY += this.motionY;
+			this.posZ += this.motionZ;
 
 			this.setPosition(this.posX, this.posY, this.posZ);
 		}
@@ -371,20 +317,20 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 		return this.world.rayTraceBlocks(new Vec3d(this.posX, this.posY + (double)this.getEyeHeight(), this.posZ), new Vec3d(par1Entity.posX, par1Entity.posY + (double)par1Entity.getEyeHeight(), par1Entity.posZ)) == null;
 	}
 
-	@SuppressWarnings("deprecation")
 	private void blockify(int x, int y, int z, EnumFacing var4)
 	{
 		//TODO: this was the only thing killing off moving blocks on client side, syncing is broken server to client?
-
 		if (world.isRemote) return;
 			setDead();
 
-		try {		
-			Block block = world.getBlockState(new BlockPos(x, y, z)).getBlock();
+		try
+		{		
+			BlockPos pos = new BlockPos(x, y, z);
+			IBlockState state = ChunkUtils.getBlockState(world, pos);
 	
-			if (tileentity != null || type != 0 || ConfigGrab.Storm_Tornado_rarityOfBreakOnFall > 0 && rand.nextInt(ConfigGrab.Storm_Tornado_rarityOfBreakOnFall + 1) != 0)
-				if (!block.getStateFromMeta(metadata).getMaterial().isLiquid() && y < 255)
-					world.setBlockState(new BlockPos(x, y, z), tile.getStateFromMeta(metadata), 3);
+			if (tileentity != null || ConfigGrab.Storm_Tornado_rarityOfBreakOnFall > 0 && rand.nextInt(ConfigGrab.Storm_Tornado_rarityOfBreakOnFall + 1) != 0)
+				if (!state.getMaterial().isLiquid() && ChunkUtils.isValidPos(world, y))
+					ChunkUtils.setBlockState(world, x, y, z, this.state);
 		}
 		catch (Exception e)
 		{
@@ -398,61 +344,41 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 	}
 
 	@Override
-	protected void writeEntityToNBT(NBTTagCompound var1)
+	protected void writeEntityToNBT(NBTTagCompound nbt)
 	{
-		var1.setString("Tile", Block.REGISTRY.getNameForObject(tile).toString());
-		var1.setByte("Metadata", (byte)this.metadata);
-		var1.setInteger("blocktype", type);
+		nbt.setString("Tile", Block.REGISTRY.getNameForObject(block).toString());
+		nbt.setByte("Metadata", (byte)this.metadata);
 		NBTTagCompound var2 = new NBTTagCompound();
 
 		if (this.tileentity != null)
 			this.tileentity.writeToNBT(var2);
 
-		var1.setTag("TileEntity", var2);
+		nbt.setTag("TileEntity", var2);
 		
 		
 	}
 
 	@Override
-	protected void readEntityFromNBT(NBTTagCompound var1)
+	protected void readEntityFromNBT(NBTTagCompound nbt)
 	{
-		this.tile = (Block)Block.REGISTRY.getObject(new ResourceLocation(var1.getString("Tile")));
-		this.metadata = var1.getByte("Metadata") & 15;
-		this.type = var1.getInteger("blocktype");
+		this.block = (Block)Block.REGISTRY.getObject(new ResourceLocation(nbt.getString("Tile")));
+		this.metadata = nbt.getByte("Metadata") & 15;
 		this.tileentity = null;
 
-		if (this.tile instanceof BlockContainer)
+		if (this.block instanceof BlockContainer)
 		{
-			this.tileentity = ((BlockContainer)this.tile).createNewTileEntity(world, metadata);
-			NBTTagCompound var2 = var1.getCompoundTag("TileEntity");
+			this.tileentity = ((BlockContainer)this.block).createNewTileEntity(world, metadata);
+			NBTTagCompound var2 = nbt.getCompoundTag("TileEntity");
 			this.tileentity.readFromNBT(var2);
 		}
-		
-		if (type == 0) {
-			//setDead(); //kill flying block on reload for tornado spazing fix
-			killNextTick = true;
-		}
-	}
-
-	@Override
-	public boolean isInRangeToRender3d(double x, double y, double z) {
-		return super.isInRangeToRender3d(x, y, z);
-	}
-
-	@Override
-	public void setDead()
-	{
-		owner = null;
-		super.setDead();
 	}
 
 	@Override
 	public void writeSpawnData(ByteBuf data)
 	{
 		String str = "blank";
-		if (tile != null && Block.REGISTRY.getNameForObject(tile) != null) {
-			str = Block.REGISTRY.getNameForObject(tile).toString();
-		}
+		if (block != null && Block.REGISTRY.getNameForObject(block) != null)
+			str = Block.REGISTRY.getNameForObject(block).toString();
 		ByteBufUtils.writeUTF8String(data, str);
 		data.writeInt(metadata);
 	}
@@ -462,14 +388,18 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 	public void readSpawnData(ByteBuf data)
 	{
 		String str = ByteBufUtils.readUTF8String(data);
-		if (!str.equals("blank")) {
-			tile = Block.REGISTRY.getObject(new ResourceLocation(str));
+		if (!str.equals("blank"))
+		{
+			block = Block.REGISTRY.getObject(new ResourceLocation(str));
 			metadata = data.readInt();
-		} else {
-			tile = Blocks.STONE;
+		}
+		else
+		{
+			block = Blocks.STONE;
 			metadata = 0;
 		}
 
-		stateCached = tile.getStateFromMeta(metadata);
+		state = block.getStateFromMeta(metadata);
+		material = state.getMaterial();
 	}
 }

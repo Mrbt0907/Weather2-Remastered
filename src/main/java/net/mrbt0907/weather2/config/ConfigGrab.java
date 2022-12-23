@@ -63,8 +63,6 @@ public class ConfigGrab implements IConfigCategory
 	public static int max_grabbed_blocks_per_tick = 12;
 	@ConfigComment("How many blocks can be grabbed per tick")
 	public static int max_replaced_blocks_per_tick = 125;
-	//Blocks Grab
-	public static int grab_list_process_delay = 10;
 	@ConfigComment("How often do storms process grabbed blocks in ticks?")
 	public static int grab_process_delay = 10;
 	

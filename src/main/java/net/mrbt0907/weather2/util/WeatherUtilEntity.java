@@ -16,10 +16,10 @@ import net.minecraft.world.World;
 import net.mrbt0907.weather2.api.WeatherUtilData;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.entity.EntityMovingBlock;
-import net.mrbt0907.weather2.weather.WindManager;
 import CoroUtil.api.weather.IWindHandler;
 import CoroUtil.util.CoroUtilEntOrParticle;
-import CoroUtil.util.Vec3;
+import net.mrbt0907.weather2.util.Maths.Vec3;
+import net.mrbt0907.weather2.weather.WindManager;
 import extendedrenderer.particle.entity.EntityRotFX;
 
 public class WeatherUtilEntity {
@@ -157,14 +157,13 @@ public class WeatherUtilEntity {
 		//weather2: shouldnt be needed since its particles only now, ish
 		//if (!WeatherUtil.canUseWindOn(ent)) return false;
 		
-		WindManager windMan = ClientTickHandler.weatherManager.windMan;
+		WindManager windMan = ClientTickHandler.weatherManager.windManager;
 		
 		double speed = 10.0D;
-		int startX = (int)(ent.posX - speed * (double)(-MathHelper.sin(windMan.getWindAngleForPriority(null) / 180.0F * (float)Math.PI) * MathHelper.cos(0F/*weatherMan.wind.yDirection*/ / 180.0F * (float)Math.PI)));
-		int startZ = (int)(ent.posZ - speed * (double)(MathHelper.cos(windMan.getWindAngleForPriority(null) / 180.0F * (float)Math.PI) * MathHelper.cos(0F/*weatherMan.wind.yDirection*/ / 180.0F * (float)Math.PI)));
+		int startX = (int)(ent.posX - speed * (double)(-MathHelper.sin(windMan.windAngle / 180.0F * (float)Math.PI) * MathHelper.cos(0F/*weatherMan.wind.yDirection*/ / 180.0F * (float)Math.PI)));
+		int startZ = (int)(ent.posZ - speed * (double)(MathHelper.cos(windMan.windAngle / 180.0F * (float)Math.PI) * MathHelper.cos(0F/*weatherMan.wind.yDirection*/ / 180.0F * (float)Math.PI)));
 
-		return ent.world.rayTraceBlocks((new Vec3(ent.posX, ent.posY + (double)ent.getEyeHeight(), ent.posZ)).toMCVec(), (new Vec3(startX, ent.posY + (double)ent.getEyeHeight(), startZ)).toMCVec()) == null;
-		//return true;
+		return ent.world.rayTraceBlocks((new Vec3(ent.posX, ent.posY + (double)ent.getEyeHeight(), ent.posZ)).toVec3MC(), (new Vec3(startX, ent.posY + (double)ent.getEyeHeight(), startZ)).toVec3MC()) == null;
 	}
 	
 	public static boolean isEntityOutside(Entity parEnt) {
@@ -184,20 +183,20 @@ public class WeatherUtilEntity {
 		int rangeCheck = 5;
 		int yOffset = 1;
 		
-		if (WeatherUtilBlock.getPrecipitationHeightSafe(parWorld, new BlockPos(MathHelper.floor(parPos.xCoord), 0, MathHelper.floor(parPos.zCoord))).getY() < parPos.yCoord+1) return true;
+		if (WeatherUtilBlock.getPrecipitationHeightSafe(parWorld, new BlockPos(MathHelper.floor(parPos.posX), 0, MathHelper.floor(parPos.posZ))).getY() < parPos.posY+1) return true;
 		
 		if (cheapCheck) return false;
 		
-		Vec3 vecTry = new Vec3(parPos.xCoord + EnumFacing.NORTH.getFrontOffsetX()*rangeCheck, parPos.yCoord+yOffset, parPos.zCoord + EnumFacing.NORTH.getFrontOffsetZ()*rangeCheck);
+		Vec3 vecTry = new Vec3(parPos.posX + EnumFacing.NORTH.getFrontOffsetX()*rangeCheck, parPos.posY+yOffset, parPos.posZ + EnumFacing.NORTH.getFrontOffsetZ()*rangeCheck);
 		if (checkVecOutside(parWorld, parPos, vecTry)) return true;
 		
-		vecTry = new Vec3(parPos.xCoord + EnumFacing.SOUTH.getFrontOffsetX()*rangeCheck, parPos.yCoord+yOffset, parPos.zCoord + EnumFacing.SOUTH.getFrontOffsetZ()*rangeCheck);
+		vecTry = new Vec3(parPos.posX + EnumFacing.SOUTH.getFrontOffsetX()*rangeCheck, parPos.posY+yOffset, parPos.posZ + EnumFacing.SOUTH.getFrontOffsetZ()*rangeCheck);
 		if (checkVecOutside(parWorld, parPos, vecTry)) return true;
 		
-		vecTry = new Vec3(parPos.xCoord + EnumFacing.EAST.getFrontOffsetX()*rangeCheck, parPos.yCoord+yOffset, parPos.zCoord + EnumFacing.EAST.getFrontOffsetZ()*rangeCheck);
+		vecTry = new Vec3(parPos.posX + EnumFacing.EAST.getFrontOffsetX()*rangeCheck, parPos.posY+yOffset, parPos.posZ + EnumFacing.EAST.getFrontOffsetZ()*rangeCheck);
 		if (checkVecOutside(parWorld, parPos, vecTry)) return true;
 		
-		vecTry = new Vec3(parPos.xCoord + EnumFacing.WEST.getFrontOffsetX()*rangeCheck, parPos.yCoord+yOffset, parPos.zCoord + EnumFacing.WEST.getFrontOffsetZ()*rangeCheck);
+		vecTry = new Vec3(parPos.posX + EnumFacing.WEST.getFrontOffsetX()*rangeCheck, parPos.posY+yOffset, parPos.posZ + EnumFacing.WEST.getFrontOffsetZ()*rangeCheck);
 		if (checkVecOutside(parWorld, parPos, vecTry)) return true;
 		
 		return false;
@@ -205,7 +204,7 @@ public class WeatherUtilEntity {
 	
 	public static boolean checkVecOutside(World parWorld, Vec3 parPos, Vec3 parCheckPos)
 	{
-		return parWorld.rayTraceBlocks(parPos.toMCVec(), parCheckPos.toMCVec()) == null && WeatherUtilBlock.getPrecipitationHeightSafe(parWorld, new BlockPos(MathHelper.floor(parCheckPos.xCoord), 0, MathHelper.floor(parCheckPos.zCoord))).getY() < parCheckPos.yCoord;
+		return parWorld.rayTraceBlocks(parPos.toVec3MC(), parCheckPos.toVec3MC()) == null && WeatherUtilBlock.getPrecipitationHeightSafe(parWorld, new BlockPos(MathHelper.floor(parCheckPos.posX), 0, MathHelper.floor(parCheckPos.posZ))).getY() < parCheckPos.posY;
 	}
 
 	public static EntityPlayer getClosestPlayer(World world, double posX, double posY, double posZ, double distance)

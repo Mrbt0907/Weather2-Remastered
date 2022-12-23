@@ -7,8 +7,8 @@
 		"mcversion": "${mcversion}",
 		"url": "http://Coros.us/",
 		"updateUrl": "",
-		"authorList": ["Corosus", "Mrbt0907", "Fartsy"],
-		"credits": "A huge thanks to Corosus for developing the Weather 2 mod for all of us to enjoy.",
+		"authorList": ["Corosus", "Mrbt0907"],
+		"credits": "A huge thanks to Corosus for developing the Weather 2 mod for all of us to enjoy, Fartsy for helping with many of the methods in the backend, Muddy Water for server testing and weather knowledge, Frisk for some really great ideas, teksturepako for a few of the item textures, dizasterman and logan for the rest of the item textures and the snow radar icon, and the rest in the community for giving me amazing ideas.",
 		"logoFile": "",
 		"screenshots": [],
 		"dependencies": []

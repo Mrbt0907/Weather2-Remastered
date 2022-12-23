@@ -1,63 +1,66 @@
 package net.mrbt0907.weather2.registry;
 
-import java.util.HashMap;
-
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.mrbt0907.weather2.Weather2;
 
-public class SoundRegistry {
+public class SoundRegistry
+{
+	//Blocks and Items
+	/*Sound that plays when a siren block is activated*/
+	public static SoundEvent siren;
+	/*Sound that plays when a siren block is activated, playing darude sandstorm*/
+	public static SoundEvent sirenDarude;
+	/*Sound that plays when an advanced siren block is activated, playing a constant sound*/
+	public static SoundEvent sirenAdvanced;
+	
+	//Ambient
+	/*Sound that plays when leaves are nearby and the wind is at least breezy*/
+	public static SoundEvent leaves;
+	/*Sound that plays when a lot of water is falling nearby*/
+	public static SoundEvent waterfall;
+	/*Sound that plays when the wind speed is 60MPH and higher*/
+	public static SoundEvent windReallyFast;
+	/*Sound that plays when the wind speed is 40MPH and higher*/
+	public static SoundEvent windFast;
+	/*Sound that plays when the wind speed is 20MPH and higher*/
+	public static SoundEvent wind;
+	/*Sound that plays when the wind speed is 10MPH and higher*/
+	public static SoundEvent windSlow;
+	/*Sound that plays when the wind speed is 5MPH and higher*/
+	public static SoundEvent windBreeze;
+	
+	//Weather
+	/*Sound that plays when a cyclone is damaging blocks nearby*/
+	public static SoundEvent debris;
+	/*Sound that plays when a strong sandstorm is nearby*/
+	public static SoundEvent sandstormFast;
+	/*Sound that plays when a sandstorm is nearby*/
+	public static SoundEvent sandstorm;
+	/*Sound that plays when a weak sandstorm is nearby*/
+	public static SoundEvent sandstormSlow;
 
-	private static HashMap<String, SoundEvent> lookupStringToEvent = new HashMap<String, SoundEvent>();
-
-	public static void init() {
-		register("env.waterfall");
-		register("env.wind_calm");
-		register("env.wind_calmfade");
-		register("streaming.destruction");
-		register("streaming.destruction_0_");
-		register("streaming.destruction_1_");
-		register("streaming.destruction_2_");
-		register("streaming.destruction_s");
-		register("streaming.destructionb");
-		register("streaming.siren");
-		register("streaming.wind_close");
-		register("streaming.wind_close_0_");
-		register("streaming.wind_close_1_");
-		register("streaming.wind_close_2_");
-		register("streaming.wind_far");
-		register("streaming.wind_far_0_");
-		register("streaming.wind_far_1_");
-		register("streaming.wind_far_2_");
-
-		register("streaming.sandstorm_high1");
-		register("streaming.sandstorm_med1");
-		register("streaming.sandstorm_med2");
-		register("streaming.sandstorm_low1");
-		register("streaming.sandstorm_low2");
-
-		register("streaming.siren_sandstorm_1");
-		register("streaming.siren_sandstorm_2");
-		register("streaming.siren_sandstorm_3");
-		register("streaming.siren_sandstorm_4");
-		register("streaming.siren_sandstorm_5_extra");
-		register("streaming.siren_sandstorm_6_extra");
-		
+	public static void init()
+	{
+		siren = register("block.siren");
+		sirenDarude = register("block.siren.darude");
+		sirenAdvanced = register("block.siren.advanced");
+		leaves = register("ambient.leaves");
+		waterfall = register("ambient.waterfall");
+		windFast = register("ambient.wind.fast");
+		wind = register("ambient.wind");
+		debris = register("weather.debris");
+		sandstormFast = register("weather.sandstorm.fast");
+		sandstorm = register("weather.sandstorm");
+		sandstormSlow = register("weather.sandstorm.slow");
 	}
 
-	public static void register(String soundPath) {
-		ResourceLocation resLoc = new ResourceLocation(Weather2.MODID, soundPath);
-		SoundEvent event = new SoundEvent(resLoc).setRegistryName(resLoc);
-		ForgeRegistries.SOUND_EVENTS.register(event);
-		if (lookupStringToEvent.containsKey(soundPath)) {
-			System.out.println("WEATHER SOUNDS WARNING: duplicate sound registration for " + soundPath);
-		}
-		lookupStringToEvent.put(soundPath, event);
+	private static SoundEvent register(String path)
+	{
+		ResourceLocation id = new ResourceLocation(Weather2.MODID, path);
+		SoundEvent sound = new SoundEvent(id).setRegistryName(id);
+		ForgeRegistries.SOUND_EVENTS.register(sound);
+		return sound;
 	}
-
-	public static SoundEvent get(String soundPath) {
-		return lookupStringToEvent.get(soundPath);
-	}
-
 }

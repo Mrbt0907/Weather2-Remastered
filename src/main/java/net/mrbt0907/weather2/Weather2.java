@@ -19,19 +19,19 @@ import net.mrbt0907.weather2.player.PlayerData;
 import net.mrbt0907.weather2.registry.BlockRegistry;
 import net.mrbt0907.weather2.server.command.CommandWeather2;
 import net.mrbt0907.weather2.server.event.ServerTickHandler;
-import net.mrbt0907.weather2.server.weather.WeatherSystemServer;
+import net.mrbt0907.weather2.server.weather.WeatherManagerServer;
 import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Weather2.MODID, name=Weather2.MOD, version=Weather2.VERSION, dependencies="required-after:coroutil@[1.12.1-1.2.12,)")
+@Mod(modid = Weather2.MODID, name=Weather2.MOD, version=Weather2.VERSION, acceptedMinecraftVersions="[1.12.2]", dependencies="required-after:coroutil@[1.12.1-1.2.37,);required-after:forge@[14.23.5.2847,);")
 public class Weather2
 {
 	public static final String MOD = "Weather 2 - Remastered";
 	public static final String MODID = "weather2";
-	public static final String VERSION = "2.7.7-alpha";
+	public static final String VERSION = "2.8.0-indev-b";
 	public static final FMLEventChannel event_channel = NetworkRegistry.INSTANCE.newEventDrivenChannel(MODID);
 	public static final CreativeTabs TAB = new CreativeTabs(MODID) {@Override public ItemStack getTabIconItem() {return new ItemStack(BlockRegistry.tornado_sensor);}};
 	@Mod.Instance( value = Weather2.MODID )
@@ -52,6 +52,7 @@ public class Weather2
 		MinecraftForge.EVENT_BUS.register(new EventHandlerFML());
 		MinecraftForge.EVENT_BUS.register(new EventHandlerForge());
 		ConfigMod.addConfigFile(event, addConfig(new ConfigMisc()));
+		ConfigMod.addConfigFile(event, addConfig(new ConfigVolume()));
 		ConfigMod.addConfigFile(event, addConfig(new ConfigParticle()));
 		ConfigMod.addConfigFile(event, addConfig(new ConfigStorm()));
 		ConfigMod.addConfigFile(event, addConfig(new ConfigGrab()));
@@ -90,14 +91,6 @@ public class Weather2
 	public void serverStarting(FMLServerStartingEvent event)
 	{
 		event.registerServerCommand(new CommandWeather2());
-		WeatherUtilConfig.dimNames.put(-2, -2 + ":>  " + "Test place A");
-		WeatherUtilConfig.dimNames.put(2, 2 + ":>  " + "Test place B");
-		WeatherUtilConfig.dimNames.put(3, 3 + ":>  " + "Test place C");
-		WeatherUtilConfig.dimNames.put(4, 4 + ":>  " + "Test place D");
-		WeatherUtilConfig.dimNames.put(256, 256 + ":>  " + "Test place E");
-		WeatherUtilConfig.dimNames.put(512, 512 + ":>  " + "Test place F");
-		WeatherUtilConfig.dimNames.put(420, 420 + ":>  " + "Test place G");
-		WeatherUtilConfig.dimNames.put(-90, -90 + ":>  " + "Test place H");
 		WeatherAPI.refreshDimensionRules();
 	}
 	
@@ -111,6 +104,8 @@ public class Weather2
 		
 		initProperNeededForWorld = true;
 	}
+	
+	
 	
 	/**
 	 * To work around the need to force a configmod refresh on these when EZ GUI changes values
@@ -132,7 +127,7 @@ public class Weather2
 	{
 		//write out overworld only, because only dim with volcanos planned
 		try {
-			WeatherSystemServer wm = ServerTickHandler.dimensionSystems.get(0);
+			WeatherManagerServer wm = ServerTickHandler.dimensionSystems.get(0);
 			if (wm != null) {
 				wm.writeToFile();
 			}

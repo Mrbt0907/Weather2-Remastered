@@ -2,7 +2,6 @@ package net.mrbt0907.weather2.entity.AI;
 
 import CoroUtil.ai.ITaskInitializer;
 import CoroUtil.util.CoroUtilPhysics;
-import CoroUtil.util.Vec3;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
@@ -10,10 +9,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.village.Village;
 import net.minecraft.village.VillageDoorInfo;
+import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.server.event.ServerTickHandler;
-import net.mrbt0907.weather2.weather.WeatherSystem;
-import net.mrbt0907.weather2.weather.storm.WeatherEnum;
+import net.mrbt0907.weather2.util.Maths.Vec3;
+import net.mrbt0907.weather2.weather.WeatherManager;
 import net.mrbt0907.weather2.weather.storm.WeatherObject;
 import net.mrbt0907.weather2.weather.storm.SandstormObject;
 
@@ -51,7 +51,7 @@ public class EntityAIMoveIndoorsStorm extends EntityAIBase implements ITaskIniti
     public boolean shouldExecute()
     {
 
-        WeatherSystem weatherManager = ServerTickHandler.getWeatherSystemForDim(entityObj.world.provider.getDimension());
+        WeatherManager weatherManager = ServerTickHandler.getWeatherSystemForDim(entityObj.world.provider.getDimension());
         if (weatherManager == null) return false;
 
         BlockPos blockpos = new BlockPos(this.entityObj);
@@ -64,7 +64,7 @@ public class EntityAIMoveIndoorsStorm extends EntityAIBase implements ITaskIniti
             runInside = true;
         else
         {
-            WeatherObject so = weatherManager.getClosestStorm(pos, ConfigStorm.villager_detection_range, WeatherEnum.Type.TORNADO);
+            WeatherObject so = weatherManager.getClosestWeather(pos, ConfigStorm.villager_detection_range, Stage.SEVERE.getStage(), Integer.MAX_VALUE);
 
             if (so != null) {
                 runInside = true;
@@ -73,9 +73,9 @@ public class EntityAIMoveIndoorsStorm extends EntityAIBase implements ITaskIniti
                 SandstormObject sandstorm = weatherManager.getClosestSandstormByIntensity(pos);
 
                 if (sandstorm != null) {
-                    List<Vec3> points = sandstorm.getSandstormAsShape();
+                    List<CoroUtil.util.Vec3> points = sandstorm.getSandstormAsShape();
 
-                    if (CoroUtilPhysics.getDistanceToShape(pos, points) < ConfigStorm.villager_detection_range) {
+                    if (CoroUtilPhysics.getDistanceToShape(pos.toVec3Coro(), points) < ConfigStorm.villager_detection_range) {
                         runInside = true;
                     }
                 }

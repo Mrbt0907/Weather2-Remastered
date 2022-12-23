@@ -1,5 +1,6 @@
 package net.mrbt0907.weather2.network.packets;
 
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.mrbt0907.weather2.weather.storm.WeatherObject;
 
@@ -27,7 +28,13 @@ public class PacketWeatherObject extends PacketBase
 	public static void remove(int dimension, WeatherObject wo)
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setUniqueId("uuid", wo.getUUID());
+		nbt.setUniqueId("frontObject", wo.front.getUUID());
+		nbt.setUniqueId("weatherObject", wo.getUUID());
 		send(3, nbt, dimension);
+	}
+	
+	public static void clientCleanup(EntityPlayerMP player)
+	{
+		send(14, new NBTTagCompound(), player);
 	}
 }

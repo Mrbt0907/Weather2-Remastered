@@ -20,7 +20,7 @@ import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.client.gui.elements.GuiButtonBoolean;
 import net.mrbt0907.weather2.client.gui.elements.GuiButtonCycle;
 import net.mrbt0907.weather2.network.packets.PacketEZGUI;
-import net.mrbt0907.weather2.util.EXMap;
+import net.mrbt0907.weather2.util.TriMapEx;
 import net.mrbt0907.weather2.util.WeatherUtilConfig;
 
 import org.apache.commons.lang3.text.WordUtils;
@@ -98,9 +98,9 @@ public class GuiEZConfig extends GuiScreen
 	/**Button Frequency With None<br>0 - None<br>1 - Rarest<br>2 - Very Rare<br>3 - Rare<br>4 - Normal<br>5 - Common<br>6 - Very Common<br>7 - Most Common*/
 	@SuppressWarnings("unused")
 	private static final List<String> BL_RARE_ALT = new ArrayList<String>(Arrays.asList(BUTTONL[3], BUTTONL[24], BUTTONL[23], BUTTONL[22], BUTTONL[21], BUTTONL[20], BUTTONL[19], BUTTONL[18]));
-	private static final EXMap<Integer, List<String>, Integer> BA_List = new EXMap<Integer, List<String>, Integer>();
-	private static final EXMap<Integer, List<String>, Integer> BB_List = new EXMap<Integer, List<String>, Integer>();
-	private static final EXMap<Integer, List<String>, Integer> BC_List = new EXMap<Integer, List<String>, Integer>();
+	private static final TriMapEx<Integer, List<String>, Integer> BA_List = new TriMapEx<Integer, List<String>, Integer>();
+	private static final TriMapEx<Integer, List<String>, Integer> BB_List = new TriMapEx<Integer, List<String>, Integer>();
+	private static final TriMapEx<Integer, List<String>, Integer> BC_List = new TriMapEx<Integer, List<String>, Integer>();
 	private static final Map<Integer, String> TA_List = new HashMap<Integer, String>();
 	private static final Map<Integer, String> TB_List = new HashMap<Integer, String>();
 	private static final Map<Integer, String> TC_List = new HashMap<Integer, String>();

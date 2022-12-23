@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import CoroUtil.forge.CULog;
-import CoroUtil.util.Vec3;
 import modconfig.ConfigMod;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -13,6 +12,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemSpade;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
@@ -26,32 +26,30 @@ import net.mrbt0907.weather2.entity.EntityLightningBoltCustom;
 import net.mrbt0907.weather2.network.packets.PacketEZGUI;
 import net.mrbt0907.weather2.network.packets.PacketLightning;
 import net.mrbt0907.weather2.registry.BlockRegistry;
-import net.mrbt0907.weather2.server.weather.WeatherSystemServer;
+import net.mrbt0907.weather2.server.weather.WeatherManagerServer;
+import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.util.WeatherUtilBlock;
 import net.mrbt0907.weather2.util.WeatherUtilConfig;
 
 public class ServerTickHandler
 {
 	//Main lookup method for dim to weather systems
-	public static Map<Integer, WeatherSystemServer> dimensionSystems = new HashMap<Integer, WeatherSystemServer>();
+	public static Map<Integer, WeatherManagerServer> dimensionSystems = new HashMap<Integer, WeatherManagerServer>();
 	public static World lastWorld;
 	public static NBTTagCompound worldNBT = new NBTTagCompound(); 
 	
-	
 	public static void onTickInGame()
 	{
-		
 		if (FMLCommonHandler.instance() == null || FMLCommonHandler.instance().getMinecraftServerInstance() == null)
 		{
 			return;
 		}
-
-		World world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(0);
+		MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+		World world = server.getWorld(0);
 		
-		if (world != null && lastWorld != world) {
+		if (world != null && lastWorld != world)
+		{
 			lastWorld = world;
-			//((ServerCommandManager)FMLCommonHandler.instance().getMinecraftServerInstance().getCommandManager()).registerCommand(new CommandWaveHeight());
-			//((ServerCommandManager)FMLCommonHandler.instance().getMinecraftServerInstance().getCommandManager()).registerCommand(new CommandWeather());
 		}
 		
 		//regularly save data
@@ -173,14 +171,14 @@ public class ServerTickHandler
 	{
 		int dim = world.provider.getDimension();
 		Weather2.debug("Registering Weather2 manager for dim: " + dim);
-		WeatherSystemServer wm = new WeatherSystemServer(world);
+		WeatherManagerServer wm = new WeatherManagerServer(world);
 		dimensionSystems.put(dim, wm);
 		wm.readFromFile();
 	}
 	
 	public static void removeWeatherSystem(int dim) {
 		Weather2.debug("Weather2: Unregistering manager for dim: " + dim);
-		WeatherSystemServer wm = dimensionSystems.get(dim);
+		WeatherManagerServer wm = dimensionSystems.get(dim);
 		
 		if (wm != null)
 			dimensionSystems.remove(dim);
@@ -190,7 +188,7 @@ public class ServerTickHandler
 	}
 
 	public static void playerClientRequestsFullSync(EntityPlayerMP entP) {
-		WeatherSystemServer wm = dimensionSystems.get(entP.world.provider.getDimension());
+		WeatherManagerServer wm = dimensionSystems.get(entP.world.provider.getDimension());
 		if (wm != null) {
 			wm.playerJoinedWorldSyncFull(entP);
 		}
@@ -212,7 +210,7 @@ public class ServerTickHandler
 		}
 	}
 	
-	public static WeatherSystemServer getWeatherSystemForDim(int dimID) {
+	public static WeatherManagerServer getWeatherSystemForDim(int dimID) {
 		return dimensionSystems.get(dimID);
 	}
 

@@ -25,7 +25,7 @@ public class ParticleTallGrass extends ParticleTexLeafColor {
     @Override
     public void onUpdate() {
         super.onUpdate();
-        float windSpeed = ClientTickHandler.weatherManager.windMan.getWindSpeedForPriority();
+        float windSpeed = ClientTickHandler.weatherManager.windManager.windSpeed;
         this.rotationPitch = windSpeed * 60F;
         this.rotationPitch = (float)Math.toDegrees(Math.sin(this.getAge() * 0.1F) * 0.2F);
     }

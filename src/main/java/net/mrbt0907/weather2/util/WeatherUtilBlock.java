@@ -8,7 +8,6 @@ import net.minecraft.util.math.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBush;
-import net.minecraft.block.BlockChest;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.BlockSnow;
 import net.minecraft.block.material.Material;
@@ -20,8 +19,8 @@ import net.mrbt0907.weather2.api.WeatherAPI;
 import net.mrbt0907.weather2.block.BlockSandLayer;
 import net.mrbt0907.weather2.config.ConfigGrab;
 import net.mrbt0907.weather2.registry.BlockRegistry;
+import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.weather.storm.StormObject;
-import CoroUtil.util.Vec3;
 
 /**
  * All stackable block code in this class considers "height" as a meta val height, not actual pixel height of AABB, basically 1 meta height = 2 pixel height, this is also used for all amount values
@@ -58,7 +57,7 @@ public class WeatherUtilBlock
 		 */
 		
 		//fix for starting on a layerable block
-		IBlockState stateTest = world.getBlockState(posSource.toBlockPos());
+		IBlockState stateTest = ChunkUtils.getBlockState(world, posSource.toBlockPos());
 		if (stateTest.getBlock() == blockLayerable) {
 			int heightTest = getHeightForAnyBlock(stateTest);
 			if (heightTest < 8) {}
@@ -71,12 +70,12 @@ public class WeatherUtilBlock
 		
 		//float startScan = scanDistance;
 		
-		Vec3 posLastNonWall = new Vec3(posSource);
+		Vec3 posLastNonWall = posSource.copy();
 		Vec3 posWall = null;
 		
 		BlockPos lastScannedPosXZ = null;//new BlockPos(posSourcei);
 		
-		//System.out.println("Start block (should be air): " + world.getBlockState(posSourcei));
+		//System.out.println("Start block (should be air): " + ChunkUtils.getBlockState(world, posSourcei));
 		
 		int previousBlockHeight = 0;
 		
@@ -85,12 +84,12 @@ public class WeatherUtilBlock
 			double vecX = (-Math.sin(Math.toRadians(directionYaw)) * (i));
     		double vecZ = (Math.cos(Math.toRadians(directionYaw)) * (i));
     		
-    		int x = MathHelper.floor(posSource.xCoord + vecX);
-    		int z = MathHelper.floor(posSource.zCoord + vecZ);
+    		int x = MathHelper.floor(posSource.posX + vecX);
+    		int z = MathHelper.floor(posSource.posZ + vecZ);
     		
     		BlockPos pos = new BlockPos(x, y, z);
     		BlockPos posXZ = new BlockPos(x, 0, z);
-    		IBlockState state = world.getBlockState(pos);
+    		IBlockState state = ChunkUtils.getBlockState(world, pos);
     		
     		if (lastScannedPosXZ == null || !posXZ.equals(lastScannedPosXZ)) {
     		
@@ -103,7 +102,7 @@ public class WeatherUtilBlock
 				//if solid ground we can place on
 	    		if (state.getMaterial() != Material.AIR && state.getMaterial() != Material.PLANTS && (!state.getBlock().isReplaceable(world, pos) && !listAABBCollision.isEmpty())) {
 	    			BlockPos posUp = new BlockPos(x, y + 1, z);
-	    			IBlockState stateUp = world.getBlockState(posUp);
+	    			IBlockState stateUp = ChunkUtils.getBlockState(world, posUp);
 					//if above it is air
 	    			if (stateUp.getMaterial() == Material.AIR) {
 		    			int height = getHeightForAnyBlock(state);
@@ -118,27 +117,27 @@ public class WeatherUtilBlock
 		    					previousBlockHeight = height;
 		    				}
 		    				
-		    				posLastNonWall = new Vec3(posSource.xCoord + vecX, y, posSource.zCoord + vecZ);
+		    				posLastNonWall = new Vec3(posSource.posX + vecX, y, posSource.posZ + vecZ);
 		    				
 		    				//System.out.println(posLastNonWall);
 		    				
 		    				continue;
 		    			//too high, count as a wall
 		    			} else {
-		    				posWall = new Vec3(posSource.xCoord + vecX, y, posSource.zCoord + vecZ);
+		    				posWall = new Vec3(posSource.posX + vecX, y, posSource.posZ + vecZ);
 		    				break;
 		    			}
 		    		//hit a wall
 	    			} else {
-	    				posWall = new Vec3(posSource.xCoord + vecX, y, posSource.zCoord + vecZ);
+	    				posWall = new Vec3(posSource.posX + vecX, y, posSource.posZ + vecZ);
 	    				break;
 	    			}
 	    			
 	    			//startScan = i;
-	    			//posWall = new Vec3(posSource.xCoord + vecX, y, posSource.zCoord + vecZ);
+	    			//posWall = new Vec3(posSource.posX + vecX, y, posSource.posZ + vecZ);
 	    			//break;
 	    		} else {
-	    			posLastNonWall = new Vec3(posSource.xCoord + vecX, y, posSource.zCoord + vecZ);
+	    			posLastNonWall = new Vec3(posSource.posX + vecX, y, posSource.posZ + vecZ);
 	    		}
 	    		
     		} else {
@@ -150,11 +149,11 @@ public class WeatherUtilBlock
 			int amountWeHave = 1;
 			int amountToAddPerXZ = 1;
 			
-			IBlockState state = world.getBlockState(posWall.toBlockPos());
-			IBlockState state1 = world.getBlockState(posLastNonWall.toBlockPos().add(1, 0, 0));
-			IBlockState state22 = world.getBlockState(posLastNonWall.toBlockPos().add(-1, 0, 0));
-			IBlockState state3 = world.getBlockState(posLastNonWall.toBlockPos().add(0, 0, 1));
-			IBlockState state4 = world.getBlockState(posLastNonWall.toBlockPos().add(0, 0, -1));
+			IBlockState state = ChunkUtils.getBlockState(world, posWall.toBlockPos());
+			IBlockState state1 = ChunkUtils.getBlockState(world, posLastNonWall.toBlockPos().add(1, 0, 0));
+			IBlockState state22 = ChunkUtils.getBlockState(world, posLastNonWall.toBlockPos().add(-1, 0, 0));
+			IBlockState state3 = ChunkUtils.getBlockState(world, posLastNonWall.toBlockPos().add(0, 0, 1));
+			IBlockState state4 = ChunkUtils.getBlockState(world, posLastNonWall.toBlockPos().add(0, 0, -1));
 
 			//check all around place spot for cactus and cancel if true, to prevent cactus pop off when we place next to it
 			if (state.getBlock() == Blocks.CACTUS || state1.getBlock() == Blocks.CACTUS ||
@@ -162,13 +161,13 @@ public class WeatherUtilBlock
 				return;
 			}
 			
-			BlockPos pos2 = new BlockPos(posLastNonWall.xCoord, posLastNonWall.yCoord, posLastNonWall.zCoord);
-			IBlockState state2 = world.getBlockState(pos2);
+			BlockPos pos2 = new BlockPos(posLastNonWall.posX, posLastNonWall.posY, posLastNonWall.posZ);
+			IBlockState state2 = ChunkUtils.getBlockState(world, pos2);
 			if (state2.getMaterial() == Material.WATER || state2.getMaterial() == Material.LAVA) {
 				return;
 			}
 			
-			amountWeHave = trySpreadOnPos2(world, new BlockPos(posLastNonWall.xCoord, posLastNonWall.yCoord, posLastNonWall.zCoord), amountWeHave, amountToAddPerXZ, 10, blockLayerable);
+			amountWeHave = trySpreadOnPos2(world, new BlockPos(posLastNonWall.posX, posLastNonWall.posY, posLastNonWall.posZ), amountWeHave, amountToAddPerXZ, 10, blockLayerable);
 		} else {
 			//System.out.println("no wall found");
 		}
@@ -189,13 +188,13 @@ public class WeatherUtilBlock
 		int y = ySource;
 		
 		//override y so it scans from where ground at coord is
-		y = (int) posSource.yCoord;
+		y = (int) posSource.posY;
 		//for sandstorm we might want to scan upwards in some scenarios.... but what
 		
 		@SuppressWarnings("unused")
 		float startScan = scanDistance;
 		
-		Vec3 posLastNonWall = new Vec3(posSource);
+		Vec3 posLastNonWall = posSource.copy();
 		Vec3 posWall = null;
 		
 		//scan outwards to find closest wall
@@ -203,18 +202,18 @@ public class WeatherUtilBlock
 			double vecX = (-Math.sin(Math.toRadians(directionYaw)) * (i));
     		double vecZ = (Math.cos(Math.toRadians(directionYaw)) * (i));
     		
-    		int x = MathHelper.floor(posSource.xCoord + vecX);
-    		int z = MathHelper.floor(posSource.zCoord + vecZ);
+    		int x = MathHelper.floor(posSource.posX + vecX);
+    		int z = MathHelper.floor(posSource.posZ + vecZ);
     		
     		BlockPos pos = new BlockPos(x, y, z);
-    		IBlockState state = world.getBlockState(pos);
+    		IBlockState state = ChunkUtils.getBlockState(world, pos);
     		
     		if (state.getMaterial() != Material.AIR) {
     			startScan = i;
-    			posWall = new Vec3(posSource.xCoord + vecX, y, posSource.zCoord + vecZ);
+    			posWall = new Vec3(posSource.posX + vecX, y, posSource.posZ + vecZ);
     			break;
     		} else {
-    			posLastNonWall = new Vec3(posSource.xCoord + vecX, y, posSource.zCoord + vecZ);
+    			posLastNonWall = new Vec3(posSource.posX + vecX, y, posSource.posZ + vecZ);
     		}
 		}
 		
@@ -227,7 +226,7 @@ public class WeatherUtilBlock
 			int heightNeeded = 2;
 			while (heightOfWall++ < heightNeeded) {
 				posCheck = posCheck.add(0, 1, 0);
-				IBlockState stateCheck = world.getBlockState(posCheck);
+				IBlockState stateCheck = ChunkUtils.getBlockState(world, posCheck);
 				if (!stateCheck.isSideSolid(world, posCheck, EnumFacing.UP)) {
 					break;
 				}
@@ -237,7 +236,7 @@ public class WeatherUtilBlock
 				int amountWeHave = 4;
 				int amountToAddPerXZ = 2;
 				
-				amountWeHave = trySpreadOnPos2(world, new BlockPos(posLastNonWall.xCoord, posLastNonWall.yCoord, posLastNonWall.zCoord), amountWeHave, amountToAddPerXZ, 10, blockLayerable);
+				amountWeHave = trySpreadOnPos2(world, new BlockPos(posLastNonWall.posX, posLastNonWall.posY, posLastNonWall.posZ), amountWeHave, amountToAddPerXZ, 10, blockLayerable);
 			}
 		}
 		
@@ -283,13 +282,13 @@ public class WeatherUtilBlock
 		int y = ySource;
 		
 		//override y so it scans from where ground at coord is
-		y = (int) posSource.yCoord;
+		y = (int) posSource.posY;
 		//for sandstorm we might want to scan upwards in some scenarios.... but what
 		
 		@SuppressWarnings("unused")
 		float startScan = scanDistance;
 		
-		Vec3 posLastNonWall = new Vec3(posSource);
+		Vec3 posLastNonWall = posSource.copy();
 		@SuppressWarnings("unused")
 		Vec3 posWall = null;
 		
@@ -298,22 +297,22 @@ public class WeatherUtilBlock
 			double vecX = (-Math.sin(Math.toRadians(directionYaw)) * (i));
     		double vecZ = (Math.cos(Math.toRadians(directionYaw)) * (i));
     		
-    		int x = MathHelper.floor(posSource.xCoord + vecX);
-    		int z = MathHelper.floor(posSource.zCoord + vecZ);
+    		int x = MathHelper.floor(posSource.posX + vecX);
+    		int z = MathHelper.floor(posSource.posZ + vecZ);
     		
     		BlockPos pos = new BlockPos(x, y, z);
-    		IBlockState state = world.getBlockState(pos);
+    		IBlockState state = ChunkUtils.getBlockState(world, pos);
     		
     		if (state.getMaterial() != Material.AIR) {
     			startScan = i;
-    			posWall = new Vec3(posSource.xCoord + vecX, y, posSource.zCoord + vecZ);
+    			posWall = new Vec3(posSource.posX + vecX, y, posSource.posZ + vecZ);
     			break;
     		} else {
-    			posLastNonWall = new Vec3(posSource.xCoord + vecX, y, posSource.zCoord + vecZ);
+    			posLastNonWall = new Vec3(posSource.posX + vecX, y, posSource.posZ + vecZ);
     		}
 		}
 		
-		double distFromSourceToWall = posSource.distanceTo(posLastNonWall);
+		double distFromSourceToWall = posSource.distance(posLastNonWall);
 
 		boolean doRadius = true;
 		
@@ -377,15 +376,15 @@ public class WeatherUtilBlock
 						double vecX = (-Math.sin(Math.toRadians(directionYaw - (angle * orientationMulti))) * (i));
 			    		double vecZ = (Math.cos(Math.toRadians(directionYaw - (angle * orientationMulti))) * (i));
 			    		
-			    		int x = MathHelper.floor(posSource.xCoord + vecX);
-			    		int z = MathHelper.floor(posSource.zCoord + vecZ);
+			    		int x = MathHelper.floor(posSource.posX + vecX);
+			    		int z = MathHelper.floor(posSource.posZ + vecZ);
 			    		
 			    		//fix for derp y
-			    		y = (int)posSource.yCoord;
+			    		y = (int)posSource.posY;
 			    		
 			    		BlockPos pos = new BlockPos(x, y, z);
 			    		
-			    		//IBlockState state = world.getBlockState(pos);
+			    		//IBlockState state = ChunkUtils.getBlockState(world, pos);
 			    		if (!listProcessedFilter.contains(pos)) {
 			    			listProcessedFilter.add(pos);
 			    			//amountWeHave = trySpreadOnPos2(world, pos, amountWeHave, amountToAddBasedOnDist, maxFallDist, blockLayerable);
@@ -400,7 +399,7 @@ public class WeatherUtilBlock
 		//TEMP OVERRIDE!!!! set pos to player
 		//posLastNonWall = posSource;
 		
-		amountWeHave = trySpreadOnPos2(world, new BlockPos(posLastNonWall.xCoord, posLastNonWall.yCoord, posLastNonWall.zCoord), amountWeHave, amountToAddPerXZ, maxFallDist, blockLayerable);
+		amountWeHave = trySpreadOnPos2(world, new BlockPos(posLastNonWall.posX, posLastNonWall.posY, posLastNonWall.posZ), amountWeHave, amountToAddPerXZ, maxFallDist, blockLayerable);
 		
 		//TEMP!!!!
 		//doRadius = false;
@@ -434,22 +433,22 @@ public class WeatherUtilBlock
 						double vecX = (-Math.sin(Math.toRadians(directionYaw - (angle * orientationMulti))) * (i));
 			    		double vecZ = (Math.cos(Math.toRadians(directionYaw - (angle * orientationMulti))) * (i));
 			    		
-			    		int x = MathHelper.floor(posLastNonWall.xCoord + vecX);
-			    		int z = MathHelper.floor(posLastNonWall.zCoord + vecZ);
+			    		int x = MathHelper.floor(posLastNonWall.posX + vecX);
+			    		int z = MathHelper.floor(posLastNonWall.posZ + vecZ);
 			    		
 			    		//fix for derp y
-			    		y = (int)posLastNonWall.yCoord;
+			    		y = (int)posLastNonWall.posY;
 			    		
 			    		BlockPos pos = new BlockPos(x, y, z);
 			    		
 			    		//scan a bit higher than positions for better result
-			    		Vec3d sourceTest = posSource.addVector(0, 1D, 0).toMCVec();
+			    		Vec3d sourceTest = posSource.addVector(0, 1D, 0).toVec3MC();
 			    		Vec3d destTest = new Vec3d(x + 0.5F, y + 1.5F, z + 0.5F);
 			    		
 			    		RayTraceResult destFound = world.rayTraceBlocks(sourceTest, destTest, false);
 			    		
 			    		if (destFound == null) {
-				    		//IBlockState state = world.getBlockState(pos);
+				    		//IBlockState state = ChunkUtils.getBlockState(world, pos);
 				    		if (!listProcessedFilter.contains(pos)) {
 				    			listProcessedFilter.add(pos);
 				    			amountWeHave = trySpreadOnPos2(world, pos, amountWeHave, amountToAddBasedOnDist, maxFallDist, blockLayerable);
@@ -467,7 +466,7 @@ public class WeatherUtilBlock
 		
 		int amountTaken = 0;
 		
-		IBlockState statePos = world.getBlockState(posTakeFrom);
+		IBlockState statePos = ChunkUtils.getBlockState(world, posTakeFrom);
 		
 		//
 		if (!isLayeredOrVanillaVersionOfBlock(statePos, blockLayerable) && statePos.getBlock() != Blocks.AIR) {
@@ -478,7 +477,7 @@ public class WeatherUtilBlock
 		BlockPos posScan = new BlockPos(posTakeFrom);
 		while (statePos.getBlock() == Blocks.AIR && dropDist++ < maxDropAllowed) {
 			posScan = posScan.add(0, -1, 0);
-			statePos = world.getBlockState(posScan);
+			statePos = ChunkUtils.getBlockState(world, posScan);
 			if (!isLayeredOrVanillaVersionOfBlock(statePos, blockLayerable) && statePos.getBlock() != Blocks.AIR) {
 				return amount;
 			}
@@ -490,7 +489,7 @@ public class WeatherUtilBlock
 			int amountReturn = takeHeightFromLayerableBlock(world, posScan, blockLayerable/*statePos.getBlock()*/, amountLeftToTake);
 			amountTaken += amountReturn;
 			posScan = posScan.add(0, -1, 0);
-			statePos = world.getBlockState(posScan);
+			statePos = ChunkUtils.getBlockState(world, posScan);
 			//see if we can continue to take more
 			if (!isLayeredOrVanillaVersionOfBlock(statePos, blockLayerable)) {
 				break;
@@ -519,21 +518,21 @@ public class WeatherUtilBlock
 		
 		//must have clear air above first spots
 		//TODO: might need special case so we can fill up a partially layered snow block
-		if (world.getBlockState(posSpreadTo.add(0, 1, 0)).getMaterial() != Material.AIR) {
+		if (ChunkUtils.getBlockState(world, posSpreadTo.add(0, 1, 0)).getMaterial() != Material.AIR) {
 			return amount;
 		}
 		
-		//IBlockState statePos = world.getBlockState(posSpreadTo);
+		//IBlockState statePos = ChunkUtils.getBlockState(world, posSpreadTo);
 		
 		BlockPos posCheckNonAir = new BlockPos(posSpreadTo);
-		IBlockState stateCheckNonAir = world.getBlockState(posCheckNonAir);
+		IBlockState stateCheckNonAir = ChunkUtils.getBlockState(world, posCheckNonAir);
 		
 		int depth = 0;
 		
 		//find first non air
 		while (stateCheckNonAir.getMaterial() == Material.AIR) {
 			posCheckNonAir = posCheckNonAir.add(0, -1, 0);
-			stateCheckNonAir = world.getBlockState(posCheckNonAir);
+			stateCheckNonAir = ChunkUtils.getBlockState(world, posCheckNonAir);
 			depth++;
 			//bail if drop too far, aka sand/snow fully particleizes
 			if (depth > maxDropAllowed) {
@@ -542,7 +541,7 @@ public class WeatherUtilBlock
 		}
 		
 		BlockPos posCheckPlaceable = new BlockPos(posCheckNonAir);
-		IBlockState stateCheckPlaceable = world.getBlockState(posCheckPlaceable);
+		IBlockState stateCheckPlaceable = ChunkUtils.getBlockState(world, posCheckPlaceable);
 		
 		int distForPlaceableBlocks = 0;
 		
@@ -554,7 +553,7 @@ public class WeatherUtilBlock
 
 			if (stateCheckPlaceable.getBlock() != blockLayerable && stateCheckPlaceable.getBlock().isReplaceable(world, posCheckPlaceable) && listAABBCollision.isEmpty()) {
 				posCheckPlaceable = posCheckPlaceable.add(0, -1, 0);
-				stateCheckPlaceable = world.getBlockState(posCheckPlaceable);
+				stateCheckPlaceable = ChunkUtils.getBlockState(world, posCheckPlaceable);
 				distForPlaceableBlocks++;
 				continue;
 			//if its the kind of solid we want, break loop
@@ -582,11 +581,11 @@ public class WeatherUtilBlock
 		
 		//lets clear out the blocks we found between air and solid or snow block
 		for (int i = 0; i < distForPlaceableBlocks; i++) {
-			world.setBlockState(posCheckNonAir.add(0, -i, 0), Blocks.AIR.getDefaultState());
+			ChunkUtils.setBlockState(world, posCheckNonAir.add(0, -i, 0), Blocks.AIR.getDefaultState());
 		}
 		
 		BlockPos posPlaceLayerable = new BlockPos(posCheckPlaceable);
-		IBlockState statePlaceLayerable = world.getBlockState(posPlaceLayerable);
+		IBlockState statePlaceLayerable = ChunkUtils.getBlockState(world, posPlaceLayerable);
 		
 		int amountToAdd = amountAllowedToAdd;
 		
@@ -595,7 +594,7 @@ public class WeatherUtilBlock
 		
 		//just place while stuff to add and air above
 		
-		while (amountAllowedToAdd > 0 && world.getBlockState(posPlaceLayerable.add(0, 1, 0)).getMaterial() == Material.AIR) {
+		while (amountAllowedToAdd > 0 && ChunkUtils.getBlockState(world, posPlaceLayerable.add(0, 1, 0)).getMaterial() == Material.AIR) {
 			//if no more layers to add
 			if (amountAllowedToAdd <= 0) {
 				break;
@@ -613,7 +612,7 @@ public class WeatherUtilBlock
 						amountAllowedToAdd = 0;
 					}
 					try {
-						world.setBlockState(posPlaceLayerable, setBlockWithLayerState(blockLayerable, height));
+						ChunkUtils.setBlockState(world, posPlaceLayerable, setBlockWithLayerState(blockLayerable, height));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -621,13 +620,13 @@ public class WeatherUtilBlock
 					//if we maxed it, up the val
 					if (height == layerableHeightPropMax) {
 						posPlaceLayerable = posPlaceLayerable.add(0, 1, 0);
-						statePlaceLayerable = world.getBlockState(posPlaceLayerable);
+						statePlaceLayerable = ChunkUtils.getBlockState(world, posPlaceLayerable);
 					}
 				//}
 			//solid block------------------- or air because we moved up 1 due to the previous being fully filled snow
 			} else if (statePlaceLayerable.isSideSolid(world, posPlaceLayerable, EnumFacing.UP)) {
 				posPlaceLayerable = posPlaceLayerable.add(0, 1, 0);
-				statePlaceLayerable = world.getBlockState(posPlaceLayerable);
+				statePlaceLayerable = ChunkUtils.getBlockState(world, posPlaceLayerable);
 			//air
 			} else if (statePlaceLayerable.getMaterial() == Material.AIR) {
 				//copypasta, refactor/reduce once things work
@@ -640,7 +639,7 @@ public class WeatherUtilBlock
 					amountAllowedToAdd = 0;
 				}
 				try {
-					world.setBlockState(posPlaceLayerable, setBlockWithLayerState(blockLayerable, height));
+					ChunkUtils.setBlockState(world, posPlaceLayerable, setBlockWithLayerState(blockLayerable, height));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -648,7 +647,7 @@ public class WeatherUtilBlock
 				//if we maxed it, up the val
 				if (height == layerableHeightPropMax) {
 					posPlaceLayerable = posPlaceLayerable.add(0, 1, 0);
-					statePlaceLayerable = world.getBlockState(posPlaceLayerable);
+					statePlaceLayerable = ChunkUtils.getBlockState(world, posPlaceLayerable);
 				}
 			} else {
 				CULog.dbg("wat! - " + statePlaceLayerable);
@@ -798,7 +797,7 @@ public class WeatherUtilBlock
 	 * @return
 	 */
 	public static int addHeightToLayerableBLock(World world, BlockPos pos, Block block, int sourceAmount, int amount) {
-		//IBlockState state = world.getBlockState(pos);
+		//IBlockState state = ChunkUtils.getBlockState(world, pos);
 		int curAmount = sourceAmount;//getHeightForLayeredBlock(state);
 		curAmount += amount;
 		int leftOver = 0;
@@ -809,7 +808,7 @@ public class WeatherUtilBlock
 			leftOver = 0;
 		}
 		try {
-			world.setBlockState(pos, setBlockWithLayerState(block, curAmount));
+			ChunkUtils.setBlockState(world, pos, setBlockWithLayerState(block, curAmount));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -818,7 +817,7 @@ public class WeatherUtilBlock
 	}
 	
 	public static int takeHeightFromLayerableBlock(World world, BlockPos pos, Block block, int amount) {
-		IBlockState state = world.getBlockState(pos);
+		IBlockState state = ChunkUtils.getBlockState(world, pos);
 		int height = getHeightForLayeredBlock(state);
 		int amountReceived = 0;
 		int newHeight = 0;
@@ -834,7 +833,7 @@ public class WeatherUtilBlock
 		
 		if (newHeight > 0) {
 			try {
-				world.setBlockState(pos, setBlockWithLayerState(block, newHeight));
+				ChunkUtils.setBlockState(world, pos, setBlockWithLayerState(block, newHeight));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -871,13 +870,12 @@ public class WeatherUtilBlock
 		return false;
 	}
 	
-	public static boolean canGrabBlock(StormObject storm, BlockPos pos)
+	public static boolean canGrabBlock(StormObject storm, BlockPos pos, IBlockState state)
 	{
-		if (!ConfigGrab.grab_blocks) return false;
+		if (!ConfigGrab.grab_blocks || pos == null) return false;
 		World world = storm.manager.getWorld();
 		if (world == null || !canReachBlock(world, pos)) return false;
-		IBlockState state = world.getBlockState(pos);
-		if (state != null && checkIllegalList(state))
+		if (checkIllegalList(state))
 			return true;
 		return false;
 	}
@@ -886,13 +884,13 @@ public class WeatherUtilBlock
 	{
 		Block block = state.getBlock();
 		Material material = state.getMaterial();
-		return !(block instanceof BlockAir || material.isLiquid() || block instanceof BlockChest || block instanceof BlockRepairingBlock || block.equals(Blocks.JUKEBOX)) && (material.isSolid() || block instanceof BlockBush);
+		return !(block instanceof BlockAir || material.isLiquid() || block instanceof BlockRepairingBlock) && (material.isSolid() || block instanceof BlockBush);
 	}
 	
 	public static boolean checkResistance(StormObject storm, String blockID)
 	{
-		WeatherUtilList list = WeatherAPI.getWRList();
-		float resistance = list.exists(blockID) ? (float) list.get(blockID) : -1.0F;
+		ConfigList list = WeatherAPI.getWRList();
+		float resistance = list.exists(blockID) ? (float) list.get(blockID) / 9.657718F : -1.0F;
 		return resistance > -1.0F && storm.stormWind >= resistance;
 	}
 	

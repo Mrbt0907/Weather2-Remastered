@@ -25,6 +25,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.registry.ItemRegistry;
+import net.mrbt0907.weather2.util.ChunkUtils;
 
 public class BlockSandLayer extends Block
 {
@@ -43,9 +44,7 @@ public class BlockSandLayer extends Block
 	public BlockSandLayer()
 	{
 		super(Material.SAND);
-		//TODO: full block set before this is called
 		this.setDefaultState(this.blockState.getBaseState().withProperty(LAYERS, Integer.valueOf(8)));
-		//this.setTickRandomly(true);
 		this.setCreativeTab(CreativeTabs.DECORATIONS);
 		this.setSoundType(SoundType.SAND);
 	}
@@ -96,12 +95,6 @@ public class BlockSandLayer extends Block
 		return ((Integer)state.getValue(LAYERS)).intValue() >= 8;
 	}
 	
-	//TODO: for testing heightmap issue
-	/*@Override
-	public boolean isFullBlock(IBlockState state) {
-		return ((Integer)state.getValue(LAYERS)).intValue() >= 8;
-	}*/
-
 	@Override
 	public boolean canPlaceBlockAt(World worldIn, BlockPos pos)
 	{
@@ -190,7 +183,8 @@ public class BlockSandLayer extends Block
 	@Override
 	public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos)
 	{
-		return ((Integer)worldIn.getBlockState(pos).getValue(LAYERS)).intValue() == 1;
+		IBlockState state = ChunkUtils.getBlockState((World) worldIn, pos);
+		return	state.getPropertyKeys().contains(LAYERS) ? ((Integer)state.getValue(LAYERS)).intValue() == 1 : false;
 	}
 
 	/**

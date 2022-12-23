@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.IGuiHandler;
 import net.mrbt0907.weather2.api.WeatherAPI;
+import net.mrbt0907.weather2.client.weather.StormNames;
 import net.mrbt0907.weather2.registry.BlockRegistry;
 import net.mrbt0907.weather2.registry.EntityRegistry;
 import net.mrbt0907.weather2.registry.ItemRegistry;
@@ -18,7 +19,10 @@ import net.mrbt0907.weather2.registry.SoundRegistry;
 @Mod.EventBusSubscriber
 public class CommonProxy implements IGuiHandler
 {
-	public void preInit() {}
+	public void preInit()
+	{
+		StormNames.init();
+	}
 	
 	public void init()
 	{

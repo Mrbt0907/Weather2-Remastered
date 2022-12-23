@@ -2,28 +2,31 @@ package net.mrbt0907.weather2.weather.storm;
 
 import java.util.UUID;
 
-import CoroUtil.util.Vec3;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.api.weather.IWeatherDetectable;
+import net.mrbt0907.weather2.api.weather.WeatherEnum;
+import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.util.CachedNBTTagCompound;
-import net.mrbt0907.weather2.weather.WeatherSystem;
+import net.mrbt0907.weather2.util.Maths.Vec3;
+import net.mrbt0907.weather2.weather.WeatherManager;
 
-public class WeatherObject
+public abstract class WeatherObject implements IWeatherDetectable
 {
 	private UUID id;
-	public WeatherSystem manager;
+	public FrontObject front;
+	public WeatherManager manager;
 	public CachedNBTTagCompound nbt;
 	public WeatherEnum.Type type = WeatherEnum.Type.CLOUD;
-	public EnumWeatherObjectType weatherObjectType = EnumWeatherObjectType.CLOUD;
 	public Vec3 pos = new Vec3(0, 0, 0);
 	public Vec3 posGround = new Vec3(0, 0, 0);
 	public Vec3 motion = new Vec3(0, 0, 0);
 	public boolean isDying = false;
 	public boolean isDead = false;
 	public long ticks = 0L;
-	public int size = 50;
-
+	public int size = ConfigStorm.min_storm_size;
+	
 	/**
 	 * used to count up to a threshold to finally remove weather objects,
 	 * solves issue of simbox cutoff removing storms for first few ticks as player is joining in singleplayer
@@ -31,9 +34,10 @@ public class WeatherObject
 	 */
 	public int ticksSinceNoNearPlayer = 0;
 
-	public WeatherObject(WeatherSystem manager)
+	public WeatherObject(FrontObject front)
 	{
-		this.manager = manager;
+		this.front = front;
+		manager = front.getWeatherManager();
 		nbt = new CachedNBTTagCompound();
 		init();
 	}
@@ -60,7 +64,7 @@ public class WeatherObject
 		
 		//cleanup memory
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT) 
-			cleanupClient();
+			cleanupClient(true);
 		
 		cleanup();
 	}
@@ -69,8 +73,7 @@ public class WeatherObject
 	public void cleanup() {manager = null;}
 	
 	@SideOnly(Side.CLIENT)
-	public void cleanupClient() {}
-	
+	public void cleanupClient(boolean wipe) {}
 	public void readFromNBT() {}
 	public void writeToNBT() {}
 	public void readNBT()
@@ -80,26 +83,49 @@ public class WeatherObject
 		motion = new Vec3(nbt.getDouble("vecX"), nbt.getDouble("vecY"), nbt.getDouble("vecZ"));
 		size = nbt.getInteger("size");
 		type = WeatherEnum.Type.get(nbt.getInteger("weatherType"));
-		weatherObjectType = EnumWeatherObjectType.get(nbt.getInteger("weatherObjectType"));
+		isDying = nbt.getBoolean("isDying");
+		isDead = nbt.getBoolean("isDead");
 	}
 	
-	public void writeNBT()
+	public CachedNBTTagCompound writeNBT()
 	{
-		nbt.setDouble("posX", pos.xCoord);
-		nbt.setDouble("posY", pos.yCoord);
-		nbt.setDouble("posZ", pos.zCoord);
-		nbt.setDouble("vecX", motion.xCoord);
-		nbt.setDouble("vecY", motion.yCoord);
-		nbt.setDouble("vecZ", motion.zCoord);
+		nbt.setDouble("posX", pos.posX);
+		nbt.setDouble("posY", pos.posY);
+		nbt.setDouble("posZ", pos.posZ);
+		nbt.setDouble("vecX", motion.posX);
+		nbt.setDouble("vecY", motion.posY);
+		nbt.setDouble("vecZ", motion.posZ);
 		nbt.setUUID("ID", id);
+		nbt.setUUID("frontUUID", front.getUUID());
 		//just blind set ID into non cached data so client always has it, no need to check for forced state and restore orig state
 		nbt.getNewNBT().setUniqueId("ID", id);
 		nbt.setInteger("size", size);
 		nbt.setInteger("weatherType", type.ordinal());
-		nbt.setInteger("weatherObjectType", weatherObjectType.ordinal());
+		nbt.setBoolean("isDying", isDying);
+		nbt.setBoolean("isDead", isDead);
+		return nbt;
 	}
 	
 	public int getNetRate() {return 40;}
 	public boolean isDangerous() {return type.isDangerous();}
 	public UUID getUUID() {return id;}
+	
+
+	@SideOnly(Side.CLIENT)
+	public abstract int getParticleCount();
+	
+	@SideOnly(Side.CLIENT)
+	public abstract boolean canSpawnParticle();
+
+	@Override
+	public Vec3 getPos()
+	{
+		return pos;
+	}
+
+	@Override
+	public boolean isDying()
+	{
+		return isDying;
+	}
 }

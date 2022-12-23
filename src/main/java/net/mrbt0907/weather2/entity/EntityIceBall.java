@@ -12,8 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.util.Maths;
 import CoroUtil.api.weather.IWindHandler;
 import CoroUtil.entity.EntityThrowableUsefull;
 import CoroUtil.util.Vec3;
@@ -22,186 +21,125 @@ public class EntityIceBall extends EntityThrowableUsefull implements IWindHandle
 {
 	public int ticksInAir;
 	
-	@SideOnly(Side.CLIENT)
-	public boolean hasDeathTicked;
 
 	public EntityIceBall(World world)
 	{
 		super(world);
+		ticksMaxAlive = Integer.MAX_VALUE;
+		float size = Maths.random(0.08F, 0.3F);
+		setSize(size, size);
 	}
 
 	public EntityIceBall(World world, EntityLivingBase entityliving)
 	{
 		super(world, entityliving);
-		
-		//float speed = 0.7F;
 		float f = 0.4F;
+		float size = Maths.random(0.1F, 0.6F);
+		setSize(size, size);
         this.motionX = (double)(-MathHelper.sin(-this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(-this.rotationPitch / 180.0F * (float)Math.PI) * f);
         this.motionZ = (double)(MathHelper.cos(-this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(-this.rotationPitch / 180.0F * (float)Math.PI) * f);
         this.motionY = (double)(-MathHelper.sin((-this.rotationPitch + this.func_70183_g()) / 180.0F * (float)Math.PI) * f);
-        //this.setThrowableHeading(this.motionX, this.motionY, this.motionZ, speed, 1.0F);
+		ticksMaxAlive = Integer.MAX_VALUE;
+		
 	}
 
 	public EntityIceBall(World world, double d, double d1, double d2)
 	{
 		super(world, d, d1, d2);
+		ticksMaxAlive = Integer.MAX_VALUE;
 	}
 	
 	@Override
 	public void onUpdate()
     {
 		super.onUpdate();
-		
 		//gravity
-		this.motionY -= 0.1F;
-		
-		if (this.motionY <= -3) {
-			this.motionY = -3;
-		}
+		if (motionY > -3.0D)
+			motionY -= 0.1D;
 		
 		if (!this.world.isRemote)
         {
-			
-			ticksInAir++;
-			
-			if (this.collided) {
+			if (collided || isInWater())
 				setDead();
-			}
-			
-			if (ticksInAir > 120) {
-				setDead();
-			}
-			
-			if (this.world.getClosestPlayer(this.posX, 50, this.posZ, 80, false) == null) {
-				setDead();
-			}
-			
-			if (isInWater()) {
-				setDead();
-			}
-        } else {
-        	tickAnimate();
         }
     }
 	
 	@Override
-	protected float getGravityVelocity() {
+	protected float getGravityVelocity()
+	{
 		return 0F;
 	}
 	
 	@Override
-	public RayTraceResult tickEntityCollision(Vec3 vec3, Vec3 vec31) {
-		RayTraceResult movingobjectposition = null;
-		
-        Entity entity = null;
-        List<Entity> list = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().grow(this.motionX, this.motionY, this.motionZ).grow(0.5D, 1D, 0.5D));
-       // double d0 = 0.0D;
-        EntityLivingBase entityliving = this.getThrower();
-
-        for (int j = 0; j < list.size(); ++j)
-        {
-            Entity entity1 = (Entity)list.get(j);
-
-            if (entity1.canBeCollidedWith() && (entity1 != entityliving && this.ticksInAir >= 4))
-            {
-                entity = entity1;
-                break;
-            }
-        }
+	public RayTraceResult tickEntityCollision(Vec3 vec3, Vec3 vec31)
+	{
+		RayTraceResult movingobjectposition = null;		
+        Entity entity = null, target = null;
+        List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(this, getEntityBoundingBox().grow(motionX, motionY, motionZ).grow(0.5D, 1D, 0.5D));
+        EntityLivingBase owner = getThrower();
+        
+        if (ticksInAir >= 4)
+	        for (int j = 0; j < list.size(); ++j)
+	        {
+	            target = list.get(j);
+	
+	            if (target.canBeCollidedWith() && target != owner)
+	            {
+	            	entity = target;
+	                break;
+	            }
+	        }
 
         if (entity != null)
-        {
             movingobjectposition = new RayTraceResult(entity);
-            /*if (movingobjectposition != null) {
-            	this.onImpact(movingobjectposition);
-            	setDead();
-            }*/
-        }
+        
         return movingobjectposition;
 	}
 
 	@Override
 	protected void onImpact(RayTraceResult movingobjectposition)
 	{
-		
-		if (movingobjectposition.entityHit != null)
+		if (!world.isRemote)
 		{
-			if (!world.isRemote)
+			if (movingobjectposition.entityHit != null)
 			{
-				
-				byte damage = 5;
-				
+				float damage = width * 10.0F * (float) (-motionY / 3.0F);
 				movingobjectposition.entityHit.attackEntityFrom(DamageSource.FALLING_BLOCK, damage);
-
-				if (!world.isRemote) {
-					setDead();
-				}
-
 			}
-		}
-		
-		
-		
-		if (!world.isRemote) {
-			world.playSound(null, new BlockPos(posX, posY, posZ), SoundEvents.BLOCK_STONE_STEP, SoundCategory.AMBIENT, 3F, 5F);//0.2F + world.rand.nextFloat() * 0.1F);
+			
+			world.playSound(null, new BlockPos(posX, posY, posZ), SoundEvents.BLOCK_STONE_STEP, SoundCategory.AMBIENT, 3F, 5F - width * 5.0F);//0.2F + world.rand.nextFloat() * 0.1F);
 			setDead();
-			//System.out.println("server: " + posX);
-		} else {
-			tickDeath();
 		}
-		
 	}
 	
 	@Override
-	public void setDead() {
-		if (world.isRemote) tickDeath();
+	public void setDead()
+	{
 		super.setDead();
 	}
 	
-	@SideOnly(Side.CLIENT)
-	public void tickAnimate() {
-		
-	}
-	
-	@SideOnly(Side.CLIENT)
-	public void tickDeath() {
-		if (!hasDeathTicked) {
-			//System.out.println("client: " + posX);
-			hasDeathTicked = true;
-		}
-	}
 
 	@Override
-	public float getWindWeight() {
+	public float getWindWeight()
+	{
 		return 4;
 	}
 
 	@Override
-	public int getParticleDecayExtra() {
+	public int getParticleDecayExtra()
+	{
 		return 0;
 	}
 
 	@Override
-	public void shoot(double x, double y, double z, float velocity, float inaccuracy) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void shoot(double x, double y, double z, float velocity, float inaccuracy) {}
 
 	@Override
-	protected void entityInit() {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void entityInit() {}
 
 	@Override
-	protected void readEntityFromNBT(NBTTagCompound compound) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void readEntityFromNBT(NBTTagCompound compound) {}
 
 	@Override
-	protected void writeEntityToNBT(NBTTagCompound compound) {
-		// TODO Auto-generated method stub
-		
-	}
+	protected void writeEntityToNBT(NBTTagCompound compound) {}
 }

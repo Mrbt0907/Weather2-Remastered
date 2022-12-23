@@ -9,35 +9,28 @@ import java.io.File;
 public class ConfigWind implements IConfigCategory {
 	@ConfigComment("Enables villagers to detect storms and run inside")
     public static boolean enable = true;
-	@ConfigComment("Enables villagers to detect storms and run inside")
-    public static boolean enable_low_wind_events = true;
-	@ConfigComment("Enables villagers to detect storms and run inside")
-    public static boolean enable_high_wind_events = true;
-
-	@ConfigComment("How many ticks does the world wait before trying to have low winds")
-    public static int lowWindTimerEnableAmountBase = 20*60*2;
-	@ConfigComment("How far can the randomizer add up towards the base value of Low Wind")
-    public static int lowWindTimerEnableAmountRnd = 20*60*10;
-    @ConfigComment("The world has a 1 in x chance for low wind events to take place")
-    public static int lowWindOddsTo1 = 20*200;
-
-    @ConfigComment("How many ticks does the world wait before trying to have high winds")
-    public static int highWindTimerEnableAmountBase = 20*60*2;
-    @ConfigComment("How far can the randomizer add up towards the base value of High Wind")
-    public static int highWindTimerEnableAmountRnd = 20*60*10;
-    @ConfigComment("The world has a 1 in x chance for high wind events to take place")
-    public static int highWindOddsTo1 = 20*400;
-
-	@ConfigComment("Wind change rates")
-    public static double globalWindChangeAmountRate = 1F;
-
+	@ConfigComment("Enables the ability for wind to push entities.")
+	public static boolean enableWindAffectsEntities = true;
+	@ConfigComment("The multiplier for players weight while being pushed by wind. Lower values makes the player lighter.")
+	public static double windPlayerWeightMult = 1.0F;
+	@ConfigComment("The multiplier for entities other than players weight while being pushed by wind. Lower values makes the player lighter.")
+	public static double windEntityWeightMult = 1.0F;
+	@ConfigComment("The multiplier for all entities weight while being pushed by wind while swimming. Lower values makes all entities lighter while in liquid. Stacks ontop of the other two multipliers")
+	public static double windSwimmingWeightMult = 1.0F;
+	
+	@ConfigComment("The maximum angle in degrees that wind angle can change with.")
+    public static double windAngleChangeMax = 30.0F;
+	@ConfigComment("The multiplier for how smooth wind can change. Lower values increases the smoothness.")
+    public static double windChangeMult = 1.0F;
+	
     @ConfigComment("Min wind speed to maintain for storms and clouds. Higher means faster storms.")
-    public static double windSpeedMin = 0.0001D;
+    public static double windSpeedMin = 0.0D;
     @ConfigComment("Max wind speed to maintain for storms and clouds. Higher means faster storms.")
-    public static double windSpeedMax = 0.75D;
-
-    @ConfigComment("Min wind speed to maintain if its raining with global overcast mode on, overrides low wind events and windSpeedMin")
-    public static double windSpeedMinGlobalOvercastRaining = 0.3D;
+    public static double windSpeedMax = 2.5D;
+    @ConfigComment("The minimum amount of time in ticks it can take for wind to change speed and direction.")
+    public static int windRefreshMin = 100;
+    @ConfigComment("The maximum amount of time in ticks it can take for wind to change speed and direction.")
+    public static int windRefreshMax = 400;
 
     @Override
     public String getName() {

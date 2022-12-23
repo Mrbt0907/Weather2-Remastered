@@ -1,13 +1,10 @@
 package net.mrbt0907.weather2.config;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
 import modconfig.ConfigComment;
 import modconfig.IConfigCategory;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WeatherAPI;
-import net.mrbt0907.weather2.weather.storm.StormObject;
 
 
 public class ConfigMisc implements IConfigCategory {
@@ -22,10 +19,16 @@ public class ConfigMisc implements IConfigCategory {
 	public static boolean debug_mode = false;
 	@ConfigComment("Enables the mod to output data into all radars about storms")
 	public static boolean debug_mode_radar = false;
-	@ConfigComment("Enables the mod to output data into all radars about storms")
-	public static double radar_range = 2048.0D;
+	@ConfigComment("How far do Radars sense storms?")
+	public static double radar_range = 1024.0D;
+	@ConfigComment("How far do Doppler Radars sense storms?")
+	public static double doppler_radar_range = 2048.0D;
+	@ConfigComment("How far do Pulse Doppler Radars sense storms?")
+	public static double pulse_doppler_radar_range = 4096.0D;
 	
 	//Weather
+	@ConfigComment("How often does the mod sync storms in ticks? Fixes desync when ran")
+	public static int sync_interval = 2400;
 	@ConfigComment("If true, storms are removed when no players are in the dimension")
 	public static boolean remove_storms_if_no_players = false;
 	@ConfigComment("If true, lets server side do vanilla weather rules, weather2 will only make storms when server side says 'rain' is on")
@@ -106,11 +109,6 @@ public class ConfigMisc implements IConfigCategory {
 	@Override
 	public void hookUpdatedValues()
 	{
-		StormObject.weather_layer_0 = ConfigStorm.cloud_layer_0_height;
-		StormObject.weather_layer_1 = ConfigStorm.cloud_layer_1_height;
-		StormObject.weather_layer_2 = ConfigStorm.cloud_layer_2_height;
-		StormObject.layers = new ArrayList<>(Arrays.asList(StormObject.weather_layer_0, StormObject.weather_layer_1, StormObject.weather_layer_2));
-		
 		WeatherAPI.refreshDimensionRules();
 	}
 

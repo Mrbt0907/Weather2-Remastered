@@ -1,7 +1,6 @@
 package net.mrbt0907.weather2.item;
 
 import CoroUtil.packet.PacketHelper;
-import CoroUtil.util.Vec3;
 import extendedrenderer.particle.ParticleRegistry;
 import extendedrenderer.particle.behavior.ParticleBehaviorSandstorm;
 import net.minecraft.client.Minecraft;
@@ -24,6 +23,7 @@ import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.entity.particle.ParticleSandstorm;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.registry.BlockRegistry;
+import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.util.WeatherUtilBlock;
 
 import java.util.Random;
@@ -68,7 +68,7 @@ public class ItemPocketSand extends Item
     public static void particulate(World world, EntityLivingBase player) {
 
         if (particleBehavior == null) {
-            particleBehavior = new ParticleBehaviorSandstorm(new Vec3(player.getPosition()));
+            particleBehavior = new ParticleBehaviorSandstorm(new Vec3(player.getPosition()).toVec3Coro());
         }
 
         Random rand = world.rand;
@@ -136,7 +136,7 @@ public class ItemPocketSand extends Item
             part.windWeight = 1F;
 
             particleBehavior.particles.add(part);
-            ClientTickHandler.weatherManager.addWeatheredParticle(part);
+            ClientTickHandler.weatherManager.addEffectedParticle(part);
             part.spawnAsWeatherEffect();
         }
 
@@ -156,7 +156,7 @@ public class ItemPocketSand extends Item
     @SideOnly(Side.CLIENT)
     public void tickClient(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
         if (particleBehavior == null) {
-            particleBehavior = new ParticleBehaviorSandstorm(new Vec3(entityIn.getPosition()));
+            particleBehavior = new ParticleBehaviorSandstorm(new Vec3(entityIn.getPosition()).toVec3Coro());
         }
         particleBehavior.tickUpdateList();
     }

@@ -12,26 +12,20 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
-import net.mrbt0907.weather2.ClientProxy;
-import net.mrbt0907.weather2.api.IWeatherStages;
+import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.block.TileRadar;
 import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
-import net.mrbt0907.weather2.client.weather.WeatherSystemClient;
+import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
 import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.config.ConfigSimulation;
-import net.mrbt0907.weather2.config.ConfigStorm;
+import net.mrbt0907.weather2.registry.ParticleRegistry;
+import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.util.WeatherUtil;
 import net.mrbt0907.weather2.weather.storm.StormObject;
-import net.mrbt0907.weather2.weather.storm.WeatherObject;
-import net.mrbt0907.weather2.weather.storm.SandstormObject;
-import net.mrbt0907.weather2.weather.storm.WeatherEnum;
 
 import org.lwjgl.opengl.GL11;
-
-import CoroUtil.util.Vec3;
 
 public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 {
@@ -39,11 +33,6 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 	public void render(TileEntity tile, double x, double y, double z, float var8, int destroyStage, float alpha)
 	{
 		TileRadar radar = (TileRadar) tile;
-		WeatherObject lastWO = radar.lastTickStormObject;
-		
-		double sizeSimBoxDiameter = ConfigMisc.radar_range;
-		float sizeRenderBoxDiameter = 2;
-		
 		GlStateManager.pushMatrix();
 		GlStateManager.translate((float)x + 0.5F, (float)y+1.1F, (float)z + 0.5F);
 		GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
@@ -55,6 +44,10 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 		BufferBuilder worldrenderer = tessellator.getBuffer();
 		GlStateManager.disableTexture2D();
 		worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+		worldrenderer.pos((double)-(radar.renderRange - 0.5D), 0, -(double)(radar.renderRange - 0.5D)).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+	    worldrenderer.pos((double)-(radar.renderRange - 0.5D), 0, (double)(radar.renderRange - 0.5D)).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+	    worldrenderer.pos((double)(radar.renderRange - 0.5D), 0, (double)(radar.renderRange - 0.5D)).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
+	    worldrenderer.pos((double)(radar.renderRange - 0.5D), 0, -(double)(radar.renderRange - 0.5D)).color(0.0F, 0.0F, 0.0F, 0.25F).endVertex();
 		tessellator.draw();
 		GlStateManager.depthMask(true);
 		GlStateManager.enableTexture2D();
@@ -64,214 +57,160 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 		GlStateManager.popMatrix();
 
 		float playerViewY = Minecraft.getMinecraft().getRenderManager().playerViewY;
-		
-		renderLivingLabel("\u00A7" + '6' + "|", x, y + 1.2F, z, 1, 10, 10, playerViewY);
+		renderLivingLabel("\u00A7" + '6' + "|", x, y + 1.2F, z, 1, 10, 10, playerViewY, 1.0F);
 
 		if (ConfigMisc.debug_mode_radar)
 		{
 			EntityPlayer player = Minecraft.getMinecraft().player;
 			if (player != null)
 			{
-				WeatherSystemClient wm = ClientTickHandler.weatherManager;
+				WeatherManagerClient wm = ClientTickHandler.weatherManager;
 				if (ConfigSimulation.simulation_enable)
 				{
-					if (lastWO != null && lastWO instanceof IWeatherStages)
-					{
-						BlockPos ground = new BlockPos(lastWO.posGround.xCoord, lastWO.posGround.yCoord, lastWO.posGround.zCoord);
-						float groundHumidity = WeatherUtil.getHumidity(wm.getWorld(), ground);
-						float groundTemp = WeatherUtil.getTemperature(wm.getWorld(), ground);
-						String stormType = lastWO.type.toString();
-						int stormStage = ((IWeatherStages)lastWO).getStage();
-						
-						if (stormStage > -1)
-							stormType += " " + (lastWO.type.equals(WeatherEnum.Type.TORNADO) ? "EF" : "C") + stormStage;
-						
-						renderLivingLabel("\u00A7" + String.format(" Ground Humidity: %01.01f%%  (%01.04f)", groundHumidity * 100.0F, groundHumidity), x, y + 1.7F, z, 1, 10, 10, playerViewY);
-						renderLivingLabel("\u00A7" + String.format(" Ground Temperature: %01.01f°F or %01.01f°C  (%01.04f)", WeatherUtil.toFahrenheit(groundTemp), WeatherUtil.toCelsius(groundTemp), groundTemp), x, y + 1.6F, z, 1, 10, 10, playerViewY);
-						//renderLivingLabel("\u00A7" + String.format(" Forming Strength: %01.01f%%  (%01.04f)", wo.stormFormingStrength * 100.0F, wo.stormFormingStrength), x, y + 2.3F, z, 1, 10, 10, playerViewY);
-						//renderLivingLabel("\u00A7" + String.format(" Instability: %01.04f", wo.stormIntensity), x, y + 2.2F, z, 1, 10, 10, playerViewY);
-						//renderLivingLabel("\u00A7" + String.format(" Wind Speed: %01.04f", wo.stormWind), x, y + 2.1F, z, 1, 10, 10, playerViewY);
-						//renderLivingLabel("\u00A7" + String.format(" Humidity: %01.01f%%  (%01.04f)", wo.stormRain * 100.0F, wo.stormRain), x, y + 2.0F, z, 1, 10, 10, playerViewY);
-						//renderLivingLabel("\u00A7" + String.format(" Temperature: %01.01f°F or %01.01f°C  (%01.04f)", WeatherUtil.toFahrenheit(wo.stormTemperature), WeatherUtil.toCelsius(wo.stormTemperature), wo.stormTemperature), x, y + 1.9F, z, 1, 10, 10, playerViewY);
-						renderLivingLabel("\u00A7" + String.format(" %s (X:%01.01f, Y:%01.01f, Z:%01.01f)", stormType, lastWO.pos.xCoord, lastWO.pos.yCoord, lastWO.pos.zCoord), x, y + 2.4F, z, 1, 10, 10, playerViewY);
-					}
+					
 				}
 				else
 				{
-					float precipStr = Math.abs(SceneEnhancer.getRainStrengthAndControlVisuals(player, true));
-					boolean clientWeather2Rain = precipStr > 0;
-	
-					String rainThunder = player.world.rainingStrength + " / " + player.world.thunderingStrength;
-					renderLivingLabel("\u00A7" + " Vanilla Weather Time: " + wm.weatherRainTime, x, y + 1.9F, z, 1, 10, 10, playerViewY);
-					renderLivingLabel("\u00A7" + " Client Weather: " + (player.world.isThundering() ? "Thundering" : player.world.isRaining() ? "Heavy Rain" : clientWeather2Rain ? "Light Rain" : "Clear"), x, y + 2.0F, z, 1, 10, 10, playerViewY);
-					renderLivingLabel("\u00A7" + " Server Weather: " + (wm.weatherID == 2 ? "Thunder" : wm.weatherID == 1 ? "Rain" : "Clear"), x, y + 2.1F, z, 1, 10, 10, playerViewY);
-					renderLivingLabel("\u00A7" + " Precipitation Strength: " + SceneEnhancer.getRainStrengthAndControlVisuals(player), x, y + 2.2F, z, 1, 10, 10, playerViewY);
-					renderLivingLabel("\u00A7" + " Vanilla Rain/Thunder Strength: " + rainThunder, x, y + 2.3F, z, 1, 10, 10, playerViewY);
-					renderLivingLabel("\u00A7" + " -------------------------", x, y + 2.4F, z, 1, 10, 10, playerViewY);
-					if (lastWO != null && lastWO instanceof StormObject)
+					float precipStr = Math.abs(SceneEnhancer.curPrecipStr);
+					String rainThunder = Math.round(player.world.rainingStrength * 100.0F) + "% / " + Math.round(player.world.thunderingStrength * 100.0F) + "%";
+					renderLivingLabel("\u00A7" + " Vanilla Weather Time: " + wm.weatherRainTime, x, y + 1.9F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Client Weather: " + (player.world.isThundering() ? "Thundering" : precipStr >= 0.5F ? "Heavy Rain" : precipStr >= 0.15F ? "Light Rain" : precipStr > 0.01F ? "Drizzle" : "Clear"), x, y + 2.0F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Server Weather: " + (wm.weatherID == 2 ? "Thunder" : wm.weatherID == 1 ? "Rain" : "Clear"), x, y + 2.1F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Precipitation Strength: " + Math.round(precipStr * 100.0F) + "%", x, y + 2.2F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Vanilla Rain/Thunder Strength: " + rainThunder, x, y + 2.3F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " -------------------------", x, y + 2.4F, z, 1, 10, 10, playerViewY, 1.0F);
+					if (radar.system != null && radar.system instanceof StormObject)
 					{
-						renderLivingLabel("\u00A7" + " Stage Complete: " + ((((StormObject)lastWO).stormIntensity - (((StormObject)lastWO).stormStage - 1)) * 100.0F) + "%", x, y + 2.5F, z, 1, 10, 10, playerViewY);
-						renderLivingLabel("\u00A7" + " Current Funnel Wind Speed: " + (long)((StormObject)lastWO).stormWind + " MPH", x, y + 2.6F, z, 1, 10, 10, playerViewY);
-						renderLivingLabel("\u00A7" + " Current Funnel Size: " + (long)((StormObject)lastWO).funnel_size + " Blocks", x, y + 2.7F, z, 1, 10, 10, playerViewY);
-						renderLivingLabel("\u00A7" + " Current Stage/MaxStage: " + ((StormObject)lastWO).getStage() + "/" + ((StormObject)lastWO).stormStageMax, x, y + 2.8F, z, 1, 10, 10, playerViewY);
-						renderLivingLabel("\u00A7" + " Growth Percentage: " + (((StormObject)lastWO).stormSizeRate * 100) + "%", x, y + 2.9F, z, 1, 10, 10, playerViewY);
-						renderLivingLabel("\u00A7" + " Is Violent: " + ((StormObject)lastWO).isViolent, x, y + 3.0F, z, 1, 10, 10, playerViewY);
-						renderLivingLabel("\u00A7" + " UUID: " + lastWO.getUUID().toString(), x, y + 3.1F, z, 1, 10, 10, playerViewY);
-						String stage = "Unknown Storm";
-						switch(lastWO.type.getStage())
-						{
-						case 0:
-							stage = "Cloud";
-							break;
-						case 1:
-							stage = "Rainstorm";
-							break;
-						case 2:
-							stage = "Thunderstorm";
-							break;
-						case 3:
-							if (((StormObject)lastWO).stormStage == 2)
-								stage = "Supercell";
-							else
-								stage = "Hailing Supercell";
-							break;
-						case 4:
-							if(((StormObject)lastWO).stormType == 1)
-								stage = "Tropical Storm";
-							else
-								if (ConfigStorm.enable_ef_scale)
-									stage = "Tornado - EF" + (((StormObject)lastWO).stormStage - 4);
-								else
-									stage = "Tornado - F" + (int)MathHelper.clamp(Math.floor(((StormObject)lastWO).funnel_size * 0.0206611570247933884297520661157F), 0, ((StormObject)lastWO).stormStageMax - 4);
-							break;
-						case 5:
-							stage = "Hurricane - Category " + (((StormObject)lastWO).stormStage - 4);
-							break;
-						}
-						if (((StormObject)lastWO).isDying)
+						StormObject system = (StormObject) radar.system;
+						renderLivingLabel("\u00A7" + " Stage Complete: " + (((system.stormIntensity - system.stormStage + 1)) * 100.0F) + "%", x, y + 2.5F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Current Funnel Wind Speed: " + (long)WeatherUtil.toMph(system.stormWind) + " MPH", x, y + 2.6F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Current Funnel Size: " + (long)system.funnel_size + " Blocks", x, y + 2.7F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Current Stage/MaxStage: " + system.stormStage + "/" + system.stormStageMax, x, y + 2.8F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Growth Percentage: " + (system.stormSizeRate * 100) + "%", x, y + 2.9F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Is Violent: " + system.isViolent, x, y + 3.0F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " UUID: " + system.getUUID(), x, y + 3.1F, z, 1, 10, 10, playerViewY, 1.0F);
+						String stage = radar.system.getName();
+						
+						if (system.isDying)
 							stage += "  (Dying)";
-						renderLivingLabel("\u00A7" + " " + TextFormatting.BOLD + stage, x, y + 3.2F, z, 1, 10, 10, playerViewY);
+						renderLivingLabel("\u00A7" + " " + TextFormatting.BOLD + stage, x, y + 3.2F, z, 1, 10, 10, playerViewY, 1.0F);
 					}
+
+					renderLivingLabel("\u00A7" + " Radar Tier " + radar.getTier() + " (R:" + radar.pingRange + ")", x, y + 3.3F, z, 1, 10, 10, playerViewY, 1.0F);
 				}
 			}
 		}
 		
-		radar.storms.forEach(wo ->
+		BlockPos pos = radar.getPos();
+		radar.systems.forEach(so ->
 		{
 			GlStateManager.pushMatrix();
 			
-			Vec3 posRenderOffset = new Vec3(wo.pos.xCoord - radar.getPos().getX(), 0, wo.pos.zCoord - radar.getPos().getZ());
-			posRenderOffset.xCoord /= sizeSimBoxDiameter;
-			posRenderOffset.zCoord /= sizeSimBoxDiameter;
+			Vec3 posRenderOffset = so.pos.copy();
+			posRenderOffset.posX -= pos.getX();
+			posRenderOffset.posZ -= pos.getZ();	
+			posRenderOffset.posX /= radar.pingRange;
+			posRenderOffset.posZ /= radar.pingRange;
+			posRenderOffset.posX *= radar.renderRange - 0.5D;
+			posRenderOffset.posZ *= radar.renderRange - 0.5D;
 			
-			posRenderOffset.xCoord *= sizeRenderBoxDiameter - 0.5D;
-			posRenderOffset.zCoord *= sizeRenderBoxDiameter - 0.5D;
-			
 
-			GlStateManager.translate(posRenderOffset.xCoord, 0, posRenderOffset.zCoord);
-
-			if (wo instanceof StormObject) {
-				StormObject storm = (StormObject)wo;
-				if (storm.stormStage > StormObject.Stage.HAIL.getInt())
-				{
-					
-					if (storm.stormType == StormObject.Type.WATER.getInt())
-					{
-						renderIconNew(x, y + 1.4F, z, 16, 16, playerViewY, ClientProxy.radarIconCyclone);
-						renderLivingLabel("C" + (storm.stormStage - 4), x, y + 1.5F, z, 1, 15, 5, playerViewY);
-					}
-					else
-					{
-						renderIconNew(x, y + 1.4F, z, 16, 16, playerViewY, ClientProxy.radarIconTornado);
-						if (ConfigStorm.enable_ef_scale)
-							renderLivingLabel("EF" + (storm.stormStage - 4), x, y + 1.5F, z, 1, 12, 5, playerViewY);
-						else
-							renderLivingLabel("F" + (int)MathHelper.clamp(Math.floor(storm.funnel_size * 0.0206611570247933884297520661157F), 0, storm.stormStageMax - 4), x, y + 1.5F, z, 1, 12, 5, playerViewY);
-					}
-				}
-				else
-					switch(storm.stormStage)
-					{
-						case 1:
-						{
-							renderIconNew(x, y + 1.4F, z, 16, 16, playerViewY, ClientProxy.radarIconLightning);
-							break;
-						}
-						case 2:
-						{
-							renderIconNew(x, y + 1.4F, z, 16, 16, playerViewY, ClientProxy.radarIconLightning);
-							renderIconNew(x, y + 1.4F, z, 16, 16, playerViewY, ClientProxy.radarIconWind);
-							break;
-						}
-						case 3:
-						{
-							renderIconNew(x, y + 1.4F, z, 16, 16, playerViewY, ClientProxy.radarIconHail);
-							renderIconNew(x, y + 1.4F, z, 16, 16, playerViewY, ClientProxy.radarIconWind);
-							break;
-						}
-						default:
-						{
-							if (storm.isRaining)
-							{
-								renderIconNew(x, y + 1.4F, z, 16, 16, playerViewY, ClientProxy.radarIconRain);;
-							}
-							break;
-						}
-					}
-
-				String charCode = "|";
-				if (ConfigMisc.debug_mode_radar) {
-					if (storm.stormTemperature > 0) {
-						charCode = TextFormatting.DARK_RED.toString();
-					} else {
-						charCode = TextFormatting.BLUE.toString();
-					}
-				}
-
-				if (storm.stormStage > StormObject.Stage.NORMAL.getInt()) {
-					if (ConfigMisc.debug_mode_radar && storm.equals(lastWO)) {
-						renderLivingLabel(TextFormatting.GOLD + "" +  TextFormatting.BOLD + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY);
-					}
-					else
-					{
-						if (storm.isDying)
-							renderLivingLabel("\u00A7" + '4' + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY);
-						else
-							renderLivingLabel("\u00A7" + '2' + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY);
-					}
-				} else {
-					if (ConfigMisc.debug_mode_radar) {
-						if (storm.isCloudless) {
-							renderLivingLabel(TextFormatting.BLACK + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY);
-						} else {
-							renderLivingLabel(charCode + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY);
-							//renderLivingLabel("\u00A7" + 'f' + charCode, x, y + 1.1F, z, 1, 5, 5, playerViewY);
-						}
-					} else {
-						renderLivingLabel(TextFormatting.WHITE + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY);
-					}
-				}
-			} else if (wo instanceof SandstormObject) {
-				renderIconNew(x, y + 1.4F, z, 16, 16, playerViewY, ClientProxy.radarIconSandstorm);
-				if (((SandstormObject)wo).isFrontGrowing) {
-					renderLivingLabel("\u00A7" + '2' + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY);
-				} else {
-					renderLivingLabel("\u00A7" + '4' + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY);
-				}
+			GlStateManager.translate(posRenderOffset.posX, 0, posRenderOffset.posZ);
+			if (radar.showRating)
+			{
+				FontRenderer font = Minecraft.getMinecraft().getRenderManager().getFontRenderer();
+				renderLivingLabel(so.typeName, x, y + (so.type == 0 ? 1.54F : 1.5F), z, 1, font.getStringWidth(so.typeName), 5, playerViewY, radar.renderAlpha);
 			}
-			GlStateManager.translate(-posRenderOffset.xCoord, 0, -posRenderOffset.zCoord);
+			
+			if (so.type == 1 || so.type == 2)
+			{
+				//float offset = Float.parseFloat(so.toString().replaceAll("\\D", ""));
+				switch(so.stage)
+				{
+					case 0:
+						renderIconNew(x, y + 1.4F, z, 16, 16, 0.0F, playerViewY, 0.0F, radar.renderAlpha * 0.5F, ParticleRegistry.radarIconCloud);
+						//renderIconNew(x, y + 1.01F, z, 32, 32, 90.0F, 0.0F, offset, radar.renderAlpha, ParticleRegistry.radarIconReflectivityA);
+						break;
+					case 1:
+						if (so.isRaining)
+							if (so.name.toLowerCase().contains("snowstorm"))
+								renderIconNew(x, y + 1.4F, z, 16, 16, 0.0F, playerViewY, 0.0F, radar.renderAlpha, ParticleRegistry.radarIconSnow);
+							else
+								renderIconNew(x, y + 1.4F, z, 16, 16, 0.0F, playerViewY, 0.0F, radar.renderAlpha, ParticleRegistry.radarIconRain);
+						else
+							renderIconNew(x, y + 1.4F, z, 16, 16, 0.0F, playerViewY, 0.0F, radar.renderAlpha, ParticleRegistry.radarIconCloud);
+						//renderIconNew(x, y + 1.01F, z, 32, 32, 90.0F, 0.0F, offset, radar.renderAlpha, ParticleRegistry.radarIconReflectivityB);
+						break;
+					case 2:
+						renderIconNew(x, y + 1.4F, z, 16, 16, 0.0F, playerViewY, 0.0F, radar.renderAlpha, ParticleRegistry.radarIconLightning);
+						//renderIconNew(x, y + 1.01F, z, 32, 32, 90.0F, 0.0F, offset, radar.renderAlpha, ParticleRegistry.radarIconReflectivityC);
+						break;
+					case 3:
+						renderIconNew(x, y + 1.4F, z, 16, 16, 0.0F, playerViewY, 0.0F, radar.renderAlpha, ParticleRegistry.radarIconLightning);
+						renderIconNew(x, y + 1.4F, z, 16, 16, 0.0F, playerViewY, 0.0F, radar.renderAlpha, ParticleRegistry.radarIconWind);
+						///renderIconNew(x, y + 1.01F, z, 32, 32, 90.0F, 0.0F, offset, radar.renderAlpha, ParticleRegistry.radarIconReflectivityD);
+						break;
+					default:
+						if (so.type == 1)
+						{
+							renderIconNew(x, y + 1.4F, z, 16, 16, 0.0F, playerViewY, 0.0F, radar.renderAlpha, ParticleRegistry.radarIconTornado);
+							//renderIconNew(x, y + 1.01F, z, 32, 32, 90.0F, 0.0F, offset, radar.renderAlpha, ParticleRegistry.radarIconReflectivityE);
+						}
+						else
+						{
+							renderIconNew(x, y + 1.4F, z, 16, 16, 0.0F, playerViewY, 0.0F, radar.renderAlpha, ParticleRegistry.radarIconCyclone);
+							//renderIconNew(x, y + 1.01F, z, 32, 32, 90.0F, 0.0F, offset, radar.renderAlpha, ParticleRegistry.radarIconReflectivityF);
+						}
+				}
+				
+				if (so.isHailing)
+					renderIconNew(x, y + 1.4F, z, 16, 16, 0.0F, playerViewY, 0.0F, radar.renderAlpha, ParticleRegistry.radarIconHail);
+				
+				if (ConfigMisc.debug_mode_radar && radar.system != null && so.uuid.equals(radar.system.getUUID()))
+					renderLivingLabel(TextFormatting.GOLD + "" +  TextFormatting.BOLD + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY, radar.renderAlpha);
+				else
+				{
+					if (so.stage == Stage.NORMAL.getStage())
+						renderLivingLabel(TextFormatting.GRAY + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY, radar.renderAlpha * 0.35F);
+					else if (so.isDying)
+						renderLivingLabel(TextFormatting.RED + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY, radar.renderAlpha);
+					else
+						renderLivingLabel(TextFormatting.GREEN + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY, radar.renderAlpha);
+				}
+				
+			}
+			else if (so.type == 0)
+			{
+				int type = so.name.toLowerCase().contains("stationary") ? 0 : so.name.toLowerCase().contains("warm") ? 2 : so.name.toLowerCase().contains("cold") ? 1 : 3;
+				renderIconNew(x, y + 1.12F, z, (int)(64 * radar.renderRange), (int)(64 * radar.renderRange), 90.0F, 0.0F, so.angle, radar.renderAlpha, type == 0 ? ParticleRegistry.radarIconStationaryFront : type == 1 ? ParticleRegistry.radarIconColdFront : type == 2 ? ParticleRegistry.radarIconWarmFront : ParticleRegistry.radarIconOccludedFront);
+				if (!so.isDying)
+					renderLivingLabel(TextFormatting.BOLD + "" + TextFormatting.DARK_GREEN + "|", x, y + 1.22F, z, 1, 5, 5, playerViewY, radar.renderAlpha);
+				else
+					renderLivingLabel(TextFormatting.BOLD + "" + TextFormatting.DARK_RED + "|", x, y + 1.22F, z, 1, 5, 5, playerViewY, radar.renderAlpha);
+			}
+			else
+			{
+				renderIconNew(x, y + 1.4F, z, 16, 16, 0.0F, playerViewY, 0.0F, radar.renderAlpha, ParticleRegistry.radarIconSandstorm);
+				if (!so.isDying)
+					renderLivingLabel("\u00A7" + '2' + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY, radar.renderAlpha);
+				else
+					renderLivingLabel("\u00A7" + '4' + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY, radar.renderAlpha);
+			}
+			
+			GlStateManager.translate(-posRenderOffset.posX, 0, -posRenderOffset.posZ);
 			GlStateManager.popMatrix();
 		});
 	}
 	
-	protected void renderLivingLabel(String par2Str, double par3, double par5, double par7, int par9, float angle)
+	protected void renderLivingLabel(String par2Str, double par3, double par5, double par7, int par9, float angle, float alpha)
 	{
-		renderLivingLabel(par2Str, par3, par5, par7, par9, 200, 80, angle);
+		renderLivingLabel(par2Str, par3, par5, par7, par9, 200, 80, angle, alpha);
 	}
 	
-	protected void renderLivingLabel(String par2Str, double par3, double par5, double par7, int par9, int width, int height, float angle)
+	protected void renderLivingLabel(String par2Str, double par3, double par5, double par7, int par9, int width, int height, float angle, float alpha)
 	{
-
+		int hexAlpha = (int) (255 * alpha) << 24, c1 = 0xFFFFFF;
+		c1 += hexAlpha;
 		int borderSize = 2;
 
 		GlStateManager.disableCull();
@@ -336,12 +275,12 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 		//GL11.glEnable(GL11.GL_TEXTURE_2D);
 		//GL11.glEnable(GL11.GL_DEPTH_TEST);
 		//GL11.glDepthMask(true);
-		var11.drawString(par2Str, -width/2+borderSize, 0, 0xFFFFFF);
+		var11.drawString(par2Str, -width/2+borderSize, 0, c1);
 		GlStateManager.enableLighting();
 		//GL11.glEnable(GL11.GL_LIGHTING);
 		GlStateManager.enableBlend();
 		//GL11.glDisable(GL11.GL_BLEND);
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.color(1.0F, 1.0F, 1.0F, alpha);
 		//GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.popMatrix();
 		//GL11.glPopMatrix();
@@ -350,7 +289,7 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 		//GL11.glEnable(GL11.GL_CULL_FACE);
 	}
 	
-	public void renderIconNew(double x, double y, double z, int width, int height, float angle, TextureAtlasSprite parIcon) {
+	public void renderIconNew(double x, double y, double z, int width, int height, float angleX, float angleY, float angleZ, float alpha, TextureAtlasSprite parIcon) {
 		float f6 = parIcon.getMinU();
 		float f7 = parIcon.getMaxU();
 		float f9 = parIcon.getMinV();
@@ -362,7 +301,9 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 		GlStateManager.translate((float)x + 0.5F, (float)y, (float)z + 0.5F);
 		GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
 		//GL11.glNormal3f(0.0F, 1.0F, 0.0F);
-		GlStateManager.rotate(-angle, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotate(angleX, 1.0F, 0.0F, 0.0F);
+		GlStateManager.rotate(-angleY, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotate(angleZ, 0.0F, 0.0F, 1.0F);
 		GlStateManager.scale(-var13, -var13, var13);
 		
 		int borderSize = 2;
@@ -383,26 +324,25 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 		worldrenderer
 		.pos((double)(-width / 2 - borderSize), (double)(-borderSize), 0.0D)
 		.tex(f6, f9)
-		.color(r, g, b, 1.0F).endVertex();
+		.color(r, g, b, alpha).endVertex();
 		
 		worldrenderer
 		.pos((double)(-width / 2 - borderSize), (double)(height), 0.0D)
 		.tex(f6, f8)
-		.color(r, g, b, 1.0F).endVertex();
+		.color(r, g, b, alpha).endVertex();
 		
 		worldrenderer
 		.pos((double)(width / 2 + borderSize), (double)(height), 0.0D)
 		.tex(f7, f8)
-		.color(r, g, b, 1.0F).endVertex();
+		.color(r, g, b, alpha).endVertex();
 		
 		worldrenderer
 		.pos((double)(width / 2 + borderSize), (double)(-borderSize), 0.0D)
 		.tex(f7, f9)
-		.color(r, g, b, 1.0F).endVertex();
+		.color(r, g, b, alpha).endVertex();
 		
 		tessellator.draw();
 
 		GlStateManager.popMatrix();
-		//GL11.glPopMatrix();
 	}
 }

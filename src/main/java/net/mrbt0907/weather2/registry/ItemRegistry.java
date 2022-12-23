@@ -15,6 +15,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.item.ItemPocketSand;
 import net.mrbt0907.weather2.item.ItemSandLayer;
+import net.mrbt0907.weather2.item.ItemSensor;
 import net.mrbt0907.weather2.item.ItemWeatherRecipe;
 
 public class ItemRegistry
@@ -22,11 +23,25 @@ public class ItemRegistry
 	private static RegistryEvent.Register<Item> registry;
 	private static final List<Block> item_blocks = new ArrayList<Block>();
 	
-	public static final Item sensor = new ItemPocketSand();
-	public static final Item thermometer = new ItemPocketSand();
-	public static final Item hygrometer = new ItemPocketSand();
-	public static final Item anemometer = new ItemPocketSand();
+	public static final Item sensor = new ItemSensor(0);
+	public static final Item thermometer = new ItemSensor(1);
+	public static final Item hygrometer = new ItemSensor(2);
+	public static final Item anemometer = new ItemSensor(3);
 	public static final Item radio = new ItemPocketSand();
+	
+	public static final Item itemMotor = new Item();
+	public static final Item itemSpeaker = new Item();
+	public static final Item itemAntenna0 = new Item();
+	public static final Item itemAntenna1 = new Item();
+	public static final Item itemAntenna2 = new Item();
+	public static final Item itemCPU0 = new Item();
+	public static final Item itemCPU1 = new Item();
+	public static final Item itemCPU2 = new Item();
+	public static final Item itemBulb = new Item();
+	public static final Item itemDryBulb = new Item();
+	public static final Item itemWetBulb = new Item();
+	public static final Item itemLCD0 = new Item();
+	public static final Item itemLCD1 = new Item();
 	
 	public static final Item itemSandLayer = new ItemSandLayer(BlockRegistry.sand_layer);
 	public static final Item itemWeatherRecipe = new ItemWeatherRecipe();
@@ -44,6 +59,26 @@ public class ItemRegistry
 		add("sand_layer_placeable", itemSandLayer);
 		add("weather_item", itemWeatherRecipe);
 		add("pocket_sand", itemPocketSand);
+		
+
+		add("handheld_thermometer", thermometer);
+		add("handheld_hygrometer", hygrometer);
+		add("handheld_anemometer", anemometer);
+		
+		add("motor", itemMotor);
+		add("speaker", itemSpeaker);
+		add("antenna_0", itemAntenna0);
+		add("antenna_1", itemAntenna1);
+		add("antenna_2", itemAntenna2);
+		add("cpu_0", itemCPU0);
+		add("cpu_1", itemCPU1);
+		add("cpu_2", itemCPU2);
+		add("bulb", itemBulb);
+		add("bulb_dry", itemDryBulb);
+		add("bulb_wet", itemWetBulb);
+		add("lcd_0", itemLCD0);
+		add("lcd_1", itemLCD1);
+		
 		for (Block block : item_blocks)
 			add(block.getRegistryName().getResourcePath(), new ItemBlock(block));
 		

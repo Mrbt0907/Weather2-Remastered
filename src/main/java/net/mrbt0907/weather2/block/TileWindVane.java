@@ -7,9 +7,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.util.Maths.Vec3;
+import net.mrbt0907.weather2.api.WindReader;
 import net.mrbt0907.weather2.util.WeatherUtilEntity;
-import net.mrbt0907.weather2.util.WindReader;
-import CoroUtil.util.Vec3;
 
 public class TileWindVane extends TileEntity implements ITickable
 {
@@ -36,17 +36,10 @@ public class TileWindVane extends TileEntity implements ITickable
     			isOutsideCached = WeatherUtilEntity.isPosOutside(world, new Vec3(getPos().getX()+0.5F, getPos().getY()+0.5F, getPos().getZ()+0.5F));
     		}
     		
-    		if (isOutsideCached) {
-	    		//x1 * y2 - y1 * x2 cross product to get optimal turn angle, errr i have angle and target angle, not positions...
-	    		
-	    		//smoothAngle = 0;
-	    		//smoothAngleRotationalVel = 0;
-	    		//smoothAngleRotationalVelAccel = 0;
-	    		
+    		if (isOutsideCached)
+    		{	
 	    		float targetAngle = WindReader.getWindAngle(world, new Vec3(getPos().getX(), getPos().getY(), getPos().getZ()));
 	    		float windSpeed = WindReader.getWindSpeed(world, new Vec3(getPos().getX(), getPos().getY(), getPos().getZ()));
-	    		
-	    		//System.out.println("targetAngle: " + targetAngle);
 	    		
 	    		if (smoothAngle > 180) smoothAngle-=360;
 	    		if (smoothAngle < -180) smoothAngle+=360;

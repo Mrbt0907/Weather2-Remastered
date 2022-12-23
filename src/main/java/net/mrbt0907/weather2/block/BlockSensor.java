@@ -16,10 +16,9 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.server.event.ServerTickHandler;
-import net.mrbt0907.weather2.server.weather.WeatherSystemServer;
-import net.mrbt0907.weather2.weather.storm.WeatherEnum;
+import net.mrbt0907.weather2.server.weather.WeatherManagerServer;
+import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.weather.storm.WeatherObject;
-import CoroUtil.util.Vec3;
 
 public class BlockSensor extends Block
 {
@@ -39,11 +38,11 @@ public class BlockSensor extends Block
     public void updateTick(World world, BlockPos pos, IBlockState state, Random rand)
     {
     	if (world.isRemote) return;
-    	WeatherSystemServer wms = ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
+    	WeatherManagerServer wms = ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
     	
     	if (wms != null)
     	{
-    		WeatherObject wo = wms.getWorstStorm(new Vec3(pos.getX(), pos.getY(), pos.getZ()), ConfigMisc.sensor_scan_range, WeatherEnum.Type.TORNADO);
+    		WeatherObject wo = wms.getWorstWeather(new Vec3(pos.getX(), pos.getY(), pos.getZ()), ConfigMisc.sensor_scan_range);
     		if (wo != null)
     			world.setBlockState(pos, state.withProperty(POWER, 15), 3);
     		else

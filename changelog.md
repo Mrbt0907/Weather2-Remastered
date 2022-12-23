@@ -1,4 +1,73 @@
 # Weather2 - Remastered
+## Version 2.8, Storms Awaken
+## Special Thanks To Corosus and the entire weather2 community
+------------------------------
+### Additions
+  - Added in fronts
+  - Added in particle render distance. Particles are now able to render outside chunk render range. (Does not work with Optifine installed)
+  - Added back in the ability for wind to move entities (Modifiable in new wind config)
+  - Added storm names. Natural hurricanes will now have names on the radar
+  - Added in max particles config to limit how many can spawn.
+  - Added in distant downfall config, allowing you to adjust how much distant downfall particles can spawn.
+  - Added in rain change multiplier config, allowing you to adjust how fast rain rates can change.
+  - Added more sound configs in ConfigVolume
+  - Added in 2 new tiers of radar blocks to craft
+  - Added in 13 new crafting components and harder recipes for every block
+  - Added in 3 new handheld sensors to help you storm chase
+  - Added in 6 new block sensors and 1 new block for crafting
+  - Added new particles for when wind is very high
+  - Added in debris clouds for tornados
+  - Added in new radar icons
+  - Added in new /storm create flags that give you much more control over each storm.
+  - Added in a few new storm types that can be spawned with /storm create. Random for example spawns in a storm that is randomly picked based on your configs 
+  - Added new Temperature, Humidity, and Pressure variables to the world. They do not account for storms atm
+  - Added in a size curve multiplier config, allowing you to adjust how drastic size changes on each stage. To get a near-realistic experience, set this to 1.7
+------------------------------
+### Changes
+  - Complete overhaul of the wind system, allowing for smoother wind transitions
+  - Greatly optimized block grabbing for all storms. In certain circumstances, this should improve preformance by 2x
+  - Complete overhaul of the weather manager system. If you played with 2.6 or 2.7, those storms will transfer over to the new system.
+  - Changed the sound system to be easier to manage
+  - Changed around the api and removed redundant methods in the api. Feel free to recommend anything that I can add into the api
+  - Changed how hurricanes look. They should be a little better now.
+  - Hurricanes are now much bigger than normal storms.
+  - The normal radar has been nerfed dramatically.
+  - Tornado funnels now change color based on what they pick up (limited for now)
+  - All radars now ping at a rate specified by each radar. Information will only update when the radar pings
+  - Changed the sound of tornados to have a deeper pitch
+  - Wind sounds change based on how fast the wind is blowing
+  - Some radar icons were updated to look a bit better
+  - Changes the early stages of hurricanes to start from Tropical Disturbance at Thunderstorm stage
+  - Rain rates are now more dynamic. They are based on the closest storm's rain rates rather than just assuming all storms need max rain
+  - Changed how hail spawns around players. This should help solve bigger storms creating less hail.
+  - Tornado/Hurricane chances are now configured in two seperate lists, allowing for any kind of stage to spawn naturally. Order does matter here.
+------------------------------
+### Removed
+  - Removed tile entity grab restrictions. It is still not recommended to add them to grab lists 
+  - Removed old chances for tornados/cyclone configs
+------------------------------
+### Fixes
+  - Fixed storm sounds stopping when particles are disabled
+  - Fixed several crashes related to storm ticking and block grabbing
+  - Fixed sandstorm command not working
+  - Fixed create command not working sometimes
+  - Fixed ghost storms (Hopefully?)
+  - Fixed F0 not touching down/lifting correctly
+  - Fixed rain storms spawning everywhere
+------------------------------
+### Known Bugs
+  - Severe lag when reloading any block list in configs in big modpacks
+  - Severe lag with sandstorms
+  - Severe server lag with huge tornados
+  - Temperature, Humidity, and Pressure is not taking into consideration nearby fronts/storms
+  - EZ Gui is too big for bigger gui scales
+  - Render Distance config does not work with Optifine installed
+  - Wind angle sometimes changes weirdly
+  - Rain sometimes doesn't change correctly.
+  - Hail rates get lower the more players are on.
+------------------------------
+There is probably a lot I left out. More coming soon!
+
 ## Version 2.7.7-alpha, Bug Fix Update
 ## Special Thanks To Corosus and Fartsy
 ------------------------------

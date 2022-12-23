@@ -6,9 +6,9 @@ import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.util.Maths.Vec3;
+import net.mrbt0907.weather2.api.WindReader;
 import net.mrbt0907.weather2.util.WeatherUtilEntity;
-import net.mrbt0907.weather2.util.WindReader;
-import CoroUtil.util.Vec3;
 
 public class TileAnemometer extends TileEntity implements ITickable
 {
@@ -38,9 +38,9 @@ public class TileAnemometer extends TileEntity implements ITickable
     		if (isOutsideCached) {
 	    		float windSpeed = WindReader.getWindSpeed(world, new Vec3(getPos().getX(), getPos().getY(), getPos().getZ()));
 	    		
-	    		smoothAngleRotationalVel += windSpeed * 1F;
+	    		smoothAngleRotationalVel += windSpeed * 0.35F;
 	    		
-	    		if (smoothAngleRotationalVel > 50F) smoothAngleRotationalVel = 50F;
+	    		if (smoothAngleRotationalVel > 100F) smoothAngleRotationalVel = 100F;
 	    		if (smoothAngle >= 180) smoothAngle -= 360;
 	    		if (smoothAnglePrev >= 180) smoothAnglePrev -= 360;
 	    		

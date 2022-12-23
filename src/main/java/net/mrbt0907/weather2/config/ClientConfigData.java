@@ -20,7 +20,8 @@ public class ClientConfigData {
      *
      * @param nbt
      */
-    public void readNBT(NBTTagCompound nbt) {
+    public void readNBT(NBTTagCompound nbt)
+    {
         overcastMode = nbt.getBoolean("overcastMode");
         Storm_Tornado_grabPlayer = nbt.getBoolean("Storm_Tornado_grabPlayer");
         Storm_Tornado_grabMobs = nbt.getBoolean("Storm_Tornado_grabMobs");
@@ -35,8 +36,8 @@ public class ClientConfigData {
      *
      * @param data
      */
-    public static void writeNBT(NBTTagCompound data) {
-
+    public static void writeNBT(NBTTagCompound data)
+    {
         data.setBoolean("overcastMode", ConfigMisc.overcast_mode);
         data.setBoolean("Storm_Tornado_grabPlayer", ConfigGrab.grab_players);
         data.setBoolean("Storm_Tornado_grabMobs", ConfigGrab.grab_mobs);
@@ -44,8 +45,6 @@ public class ClientConfigData {
         data.setBoolean("Storm_Tornado_grabVillagers", ConfigGrab.grab_villagers);
         data.setBoolean("Storm_Tornado_grabItems", ConfigGrab.grab_items);
         data.setBoolean("Aesthetic_Only_Mode", ConfigMisc.aesthetic_mode);
-
-
     }
 
 }

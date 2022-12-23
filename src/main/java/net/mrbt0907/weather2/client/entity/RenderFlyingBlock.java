@@ -48,16 +48,14 @@ public class RenderFlyingBlock extends Render<Entity>
     {
 		IBlockState state = null;
 
-		if (entity instanceof EntityMovingBlock) {
-			if (((EntityMovingBlock) entity).stateCached != null) {
-				state = ((EntityMovingBlock) entity).stateCached;
-			} else {
-				state = ((EntityMovingBlock) entity).tile.getDefaultState();
-			}
-		} else {
-			if (renderBlock != null) {
+		if (entity instanceof EntityMovingBlock)
+		{
+				state = ((EntityMovingBlock) entity).state;
+		}
+		else
+		{
+			if (renderBlock != null)
 				state = renderBlock.getDefaultState();
-			}
 		}
 
 		try {
@@ -94,7 +92,7 @@ public class RenderFlyingBlock extends Render<Entity>
 						GlStateManager.rotate((float)(age * 0.1F * 180.0D / (Math.PI * 2D) - 0.0D), 0.0F, 1.0F, 0.0F);
 						GlStateManager.rotate((float)(age * 0.1F * 180.0D / (Math.PI * 2D) - 0.0D), 0.0F, 0.0F, 1.0F);
 						if (entity instanceof EntityIceBall) {
-							float iceScale = 0.3F;
+							float iceScale = entity.width;
 							GlStateManager.scale(iceScale, iceScale, iceScale);
 						}
 						BlockRendererDispatcher blockrendererdispatcher = Minecraft.getMinecraft().getBlockRendererDispatcher();

@@ -18,18 +18,49 @@ public class RecipeRegistry
 	public static void postInit()
 	{
 		Weather2.debug("Registering recipies...");
-		addShaped(ConfigMisc.disable_weather_item, new ItemStack(ItemRegistry.itemWeatherRecipe, 1), "X X,DID,X X", "ingotIron", "dustRedstone", "ingotGold");
-		addShaped(ConfigMisc.disable_sensor, new ItemStack(BlockRegistry.tornado_sensor, 1), "X X,DID,X X", "ingotIron", "dustRedstone", ItemRegistry.itemWeatherRecipe);
-		addShaped(ConfigMisc.disable_siren, new ItemStack(BlockRegistry.emergency_siren, 1), "XDX,DID,XDX", "ingotIron", "dustRedstone", BlockRegistry.tornado_sensor);
-		addShaped(ConfigMisc.disable_manual_siren, new ItemStack(BlockRegistry.emergency_siren_manual, 1), "XLX,DID,XLX", "ingotIron", Blocks.LEVER, "dustRedstone", BlockRegistry.tornado_sensor);
+		//addShaped(ConfigMisc.disable_weather_item, new ItemStack(ItemRegistry.itemWeatherRecipe, 1), "X X,DID,X X", "ingotIron", "dustRedstone", "ingotGold");
+		//addShaped(ConfigMisc.disable_sensor, new ItemStack(BlockRegistry.tornado_sensor, 1), "X X,DID,X X", "ingotIron", "dustRedstone", ItemRegistry.itemWeatherRecipe);
+		//addShaped(ConfigMisc.disable_siren, new ItemStack(BlockRegistry.emergency_siren, 1), "XDX,DID,XDX", "ingotIron", "dustRedstone", BlockRegistry.tornado_sensor);
+		//addShaped(ConfigMisc.disable_manual_siren, new ItemStack(BlockRegistry.emergency_siren_manual, 1), "XLX,DID,XLX", "ingotIron", Blocks.LEVER, "dustRedstone", BlockRegistry.tornado_sensor);
 		addShaped(ConfigMisc.disable_wind_vane, new ItemStack(BlockRegistry.wind_vane, 1), "X X,DXD,X X", ItemRegistry.itemWeatherRecipe, "dustRedstone");
 		addShaped(ConfigMisc.disable_anemometer, new ItemStack(BlockRegistry.anemometer, 1), "X X,XDX,X X", ItemRegistry.itemWeatherRecipe, "dustRedstone");
-		addShaped(ConfigMisc.disable_weather_radar, new ItemStack(BlockRegistry.weather_radar, 1), "XDX,DID,XDX", ItemRegistry.itemWeatherRecipe, "dustRedstone", Items.COMPASS);
-		addShaped(ConfigMisc.disable_weather_machine, new ItemStack(BlockRegistry.weather_constructor, 1), "XDX,DID,XDX", ItemRegistry.itemWeatherRecipe, "dustRedstone", "gemDiamond");
-		addShaped(ConfigMisc.disable_weather_deflector, new ItemStack(BlockRegistry.weather_deflector, 1), "XDX,DID,XDX", "ingotIron", "dustRedstone", ItemRegistry.itemWeatherRecipe);
+		//addShaped(ConfigMisc.disable_weather_radar, new ItemStack(BlockRegistry.weather_radar, 1), "XDX,DID,XDX", ItemRegistry.itemWeatherRecipe, "dustRedstone", Items.COMPASS);
+		//addShaped(ConfigMisc.disable_weather_machine, new ItemStack(BlockRegistry.weather_constructor, 1), "XDX,DID,XDX", ItemRegistry.itemWeatherRecipe, "dustRedstone", "gemDiamond");
+		//addShaped(ConfigMisc.disable_weather_deflector, new ItemStack(BlockRegistry.weather_deflector, 1), "XDX,DID,XDX", "ingotIron", "dustRedstone", ItemRegistry.itemWeatherRecipe);
 		addShaped(ConfigMisc.disable_sand_layer, new ItemStack(ItemRegistry.itemSandLayer, 64), "DDD,DID,DDD", "sand", ItemRegistry.itemWeatherRecipe);
 		addShaped(ConfigMisc.disable_sand, new ItemStack(Blocks.SAND, 1), "DDD,D D,DDD", ItemRegistry.itemSandLayer);
 		addShaped(ConfigMisc.disable_pocket_sand, new ItemStack(ItemRegistry.itemPocketSand, 8), "DDD,DID,DDD", ItemRegistry.itemSandLayer, ItemRegistry.itemWeatherRecipe);
+		addShaped(false, new ItemStack(BlockRegistry.machineCase, 1), "ABA,BCB,ABA", "ingotIron", "blockGlass", "ingotGold");
+		addShaped(false, new ItemStack(ItemRegistry.itemWeatherRecipe, 1), "ABA,ACA, B ", "ingotIron", "obsidian", "gemDiamond");
+		
+		addShaped(ConfigMisc.disable_sensor, new ItemStack(BlockRegistry.tornado_sensor, 1), "ABA,CDE,AFA", "ingotIron", new ItemStack(ItemRegistry.itemCPU1), new ItemStack(BlockRegistry.humiditySensor), new ItemStack(BlockRegistry.machineCase), new ItemStack(BlockRegistry.temperatureSensor), new ItemStack(ItemRegistry.itemAntenna1, 1));
+		addShaped(ConfigMisc.disable_siren, new ItemStack(BlockRegistry.emergency_siren, 1), "ABA,CDC,ABA", "ingotIron", new ItemStack(ItemRegistry.itemCPU1), new ItemStack(BlockRegistry.tornado_sensor, 1), new ItemStack(BlockRegistry.emergency_siren_manual, 1));
+		addShaped(ConfigMisc.disable_manual_siren, new ItemStack(BlockRegistry.emergency_siren_manual, 1), "ABA,CDC,ABA", "ingotIron", "dustRedstone", new ItemStack(ItemRegistry.itemSpeaker), new ItemStack(BlockRegistry.machineCase));
+		addShaped(ConfigMisc.disable_weather_machine, new ItemStack(BlockRegistry.weather_constructor, 1), "ABA,CDC,CEC", new ItemStack(ItemRegistry.itemCPU2), new ItemStack(ItemRegistry.itemAntenna2, 1), "ingotIron", new ItemStack(BlockRegistry.machineCase, 1), new ItemStack(ItemRegistry.itemWeatherRecipe, 1));
+		addShaped(ConfigMisc.disable_weather_deflector, new ItemStack(BlockRegistry.weather_deflector, 1), "ABA,CDC,CEC", new ItemStack(ItemRegistry.itemAntenna2, 1), new ItemStack(ItemRegistry.itemCPU2), "ingotIron", new ItemStack(BlockRegistry.machineCase), new ItemStack(ItemRegistry.itemWeatherRecipe, 1));
+		addShaped(ConfigMisc.disable_weather_radar, new ItemStack(BlockRegistry.weather_radar, 1), "ABA,CDC,AEA", "ingotIron", new ItemStack(ItemRegistry.itemLCD1, 1), new ItemStack(BlockRegistry.tornado_sensor, 1), new ItemStack(BlockRegistry.machineCase), new ItemStack(ItemRegistry.itemCPU0, 1));
+		addShaped(ConfigMisc.disable_weather_radar, new ItemStack(BlockRegistry.weather_doppler_radar, 1), "AAA,BCB,DED", new ItemStack(ItemRegistry.itemLCD1, 1), new ItemStack(ItemRegistry.itemCPU1, 1), new ItemStack(BlockRegistry.weather_radar), "ingotIron", new ItemStack(ItemRegistry.itemAntenna1, 1));
+		addShaped(ConfigMisc.disable_weather_radar, new ItemStack(BlockRegistry.weather_pulse_radar, 1), "AAA,BCB,DED", new ItemStack(ItemRegistry.itemLCD1, 1), new ItemStack(ItemRegistry.itemCPU2, 1), new ItemStack(BlockRegistry.weather_doppler_radar), "obsidian", new ItemStack(ItemRegistry.itemAntenna2, 1));
+		
+		addShaped(false, new ItemStack(BlockRegistry.stormSensor, 1), "ABA,CDC,ABA", "obsidian", new ItemStack(ItemRegistry.itemWeatherRecipe, 1), new ItemStack(ItemRegistry.itemCPU2, 1), new ItemStack(BlockRegistry.tornado_sensor, 1));
+		addShaped(false, new ItemStack(BlockRegistry.humiditySensor, 1), "ABA,CDE,AFA", "ingotIron", new ItemStack(Items.BUCKET), new ItemStack(ItemRegistry.itemDryBulb, 1), new ItemStack(BlockRegistry.rainSensor, 1), new ItemStack(ItemRegistry.itemWetBulb, 1), new ItemStack(ItemRegistry.itemCPU1, 1));
+		addShaped(false, new ItemStack(BlockRegistry.rainSensor, 1), "ABA,CDC,ACA", "ingotIron", new ItemStack(Items.GLASS_BOTTLE, 1), "dustRedstone", new ItemStack(BlockRegistry.machineCase, 1));
+		addShaped(false, new ItemStack(BlockRegistry.temperatureSensor, 1), "ABA,CDC,AEA", "ingotIron", new ItemStack(Items.BLAZE_ROD, 1), new ItemStack(ItemRegistry.itemBulb, 1), new ItemStack(BlockRegistry.machineCase, 1), "dustRedstone");
+		addShaped(false, new ItemStack(BlockRegistry.windSensor, 1), "ABA, C ,ADA", "ingotIron", new ItemStack(BlockRegistry.anemometer, 1), new ItemStack(BlockRegistry.machineCase, 1), "dustRedstone");
+		
+		addShaped(false, new ItemStack(ItemRegistry.itemMotor, 1), "ABA, C ,ABA", "ingotIron", "dustRedstone", "ingotGold");
+		addShaped(false, new ItemStack(ItemRegistry.itemSpeaker, 2), "ABA,ACA, B ", "wool", "ingotIron", "dustRedstone");
+		addShaped(false, new ItemStack(ItemRegistry.itemAntenna0, 1), " A ,BCB,DBD", "blockRedstone", "ingotIron", "dustRedstone", new ItemStack(ItemRegistry.itemMotor, 1));
+		addShaped(false, new ItemStack(ItemRegistry.itemAntenna1, 1), "ABA,CDC,ABA", "ingotIron", "dustRedstone", "gemDiamond", new ItemStack(ItemRegistry.itemAntenna0, 1));
+		addShaped(false, new ItemStack(ItemRegistry.itemAntenna2, 1), "ABA,CDC,ABA", "obsidian", "dustRedstone", new ItemStack(ItemRegistry.itemWeatherRecipe, 1), new ItemStack(ItemRegistry.itemAntenna1, 1));
+		addShaped(false, new ItemStack(ItemRegistry.itemCPU0, 1), "ABA,CDC,ABA", "ingotIron", "dustRedstone", "paneGlass", "ingotGold");
+		addShaped(false, new ItemStack(ItemRegistry.itemCPU1, 1), "ABA,BCB,ABA", "ingotIron", "ingotGold", new ItemStack(ItemRegistry.itemCPU0, 1));
+		addShaped(false, new ItemStack(ItemRegistry.itemCPU2, 1), "ABA,BCB,ABA", "obsidian", "gemDiamond", new ItemStack(ItemRegistry.itemCPU1, 1));
+		addShaped(false, new ItemStack(ItemRegistry.itemBulb, 6), "A A,A A,AAA", "paneGlass");
+		addShaped(false, new ItemStack(ItemRegistry.itemDryBulb, 1), " A , B , C ", "ingotIron", "sand", new ItemStack(ItemRegistry.itemBulb, 1));
+		addShaped(false, new ItemStack(ItemRegistry.itemWetBulb, 1), " A , B , C ", "ingotIron", "wool", new ItemStack(ItemRegistry.itemBulb, 1));
+		addShaped(false, new ItemStack(ItemRegistry.itemLCD0, 3), "ABA,BCB,ABA", "paneGlass", "dustRedstone", "dustGlowstone");
+		addShaped(false, new ItemStack(ItemRegistry.itemLCD1, 1), "AAA,AAA,AAA", new ItemStack(ItemRegistry.itemLCD0, 1));
 		Weather2.debug("Finished registering recipies...");
 	}
 	

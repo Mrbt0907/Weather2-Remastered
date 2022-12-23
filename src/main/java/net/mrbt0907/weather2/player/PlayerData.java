@@ -4,8 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.UUID;
 
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -14,65 +13,59 @@ import CoroUtil.util.CoroUtilFile;
 
 public class PlayerData {
 
-	public static HashMap<String, NBTTagCompound> playerNBT = new HashMap<String, NBTTagCompound>();
+	public static HashMap<UUID, NBTTagCompound> playerNBT = new HashMap<UUID, NBTTagCompound>();
 	
-	public static NBTTagCompound getPlayerNBT(String username) {
-		if (!playerNBT.containsKey(username)) {
-			tryLoadPlayerNBT(username);
-		}
-		return playerNBT.get(username);
+	public static NBTTagCompound getPlayerNBT(UUID playerUUID) {
+		if (!playerNBT.containsKey(playerUUID))
+			tryLoadPlayerNBT(playerUUID);
+		
+		return playerNBT.get(playerUUID);
 	}
 	
-	public static void tryLoadPlayerNBT(String username) {
-		//try read from hw/playerdata/player.dat
-		//init with data, if fail, init default blank
+	public static void tryLoadPlayerNBT(UUID playerUUID)
+	{
+		NBTTagCompound nbt = new NBTTagCompound();
 		
-		NBTTagCompound playerData = new NBTTagCompound();
-		
-		try {
-			String fileURL = CoroUtilFile.getWorldSaveFolderPath() + CoroUtilFile.getWorldFolderName() + File.separator + "weather2" + File.separator + "PlayerData" + File.separator + username + ".dat";
+		try
+		{
+			String fileURL = CoroUtilFile.getWorldSaveFolderPath() + CoroUtilFile.getWorldFolderName() + File.separator + "weather2" + File.separator + "PlayerData" + File.separator + playerUUID.toString() + ".dat";
 			
-			if ((new File(fileURL)).exists()) {
-				playerData = CompressedStreamTools.readCompressed(new FileInputStream(fileURL));
+			if ((new File(fileURL)).exists())
+			{
+				nbt = CompressedStreamTools.readCompressed(new FileInputStream(fileURL));
 			}
 		} catch (Exception ex) {
 			//Weather.dbg("no saved data found for " + username);
 		}
 		
-		playerNBT.put(username, playerData);
+		playerNBT.put(playerUUID, nbt);
 	}
 	
-	@SuppressWarnings("rawtypes")
-	public static void writeAllPlayerNBT(boolean resetData) {
-		//Weather.dbg("writing out all player nbt");
-		
+	public static void writeAllPlayerNBT(boolean resetData)
+	{		
 		String fileURL = CoroUtilFile.getWorldSaveFolderPath() + CoroUtilFile.getWorldFolderName() + File.separator + "weather2" + File.separator + "PlayerData";
 		if (!new File(fileURL).exists()) new File(fileURL).mkdir();
 		
-		Iterator<?> it = playerNBT.entrySet().iterator();
-	    while (it.hasNext()) {
-	        Map.Entry pairs = (Map.Entry)it.next();
-	        //Weather.dbg(pairs.getKey() + " = " + pairs.getValue());
-	        writePlayerNBT((String)pairs.getKey(), (NBTTagCompound)pairs.getValue());
-	    }
+		playerNBT.forEach((uuid, nbt) -> writePlayerNBT((uuid), nbt));
 	    
-	    if (resetData) {
+	    if (resetData)
 	    	playerNBT.clear();
-	    }
 	}
 	
-	public static void writePlayerNBT(String username, NBTTagCompound parData) {
-		//Weather.dbg("writing " + username);
+	public static void writePlayerNBT(UUID playerUUID, NBTTagCompound nbt)
+	{
+		String fileURL = CoroUtilFile.getWorldSaveFolderPath() + CoroUtilFile.getWorldFolderName() + File.separator + "weather2" + File.separator + "PlayerData" + File.separator + playerUUID.toString() + ".dat";
 		
-		String fileURL = CoroUtilFile.getWorldSaveFolderPath() + CoroUtilFile.getWorldFolderName() + File.separator + "weather2" + File.separator + "PlayerData" + File.separator + username + ".dat";
-		
-		try {
+		try
+		{
 			FileOutputStream fos = new FileOutputStream(fileURL);
-	    	CompressedStreamTools.writeCompressed(parData, fos);
+	    	CompressedStreamTools.writeCompressed(nbt, fos);
 	    	fos.close();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex)
+		{
 			ex.printStackTrace();
-			Weather2.debug("Error writing Weather2 player data for " + username);
+			Weather2.debug("Error writing Weather2 player data for " + playerUUID.toString());
 		}
 	}
 	

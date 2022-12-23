@@ -1,0 +1,6 @@
+{
+  "variants":
+  {
+    "normal": {"model": "weather2:machine_case"}
+  }
+}

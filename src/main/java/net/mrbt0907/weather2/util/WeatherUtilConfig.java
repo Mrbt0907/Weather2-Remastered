@@ -19,7 +19,7 @@ import modconfig.ConfigMod;
 
 public class WeatherUtilConfig
 {
-	public static final String version = "2.0";
+	public static final String version = "2.2";
 	public static final Map<Integer, Integer> DEFAULTS = new HashMap<Integer, Integer>();
 	private static List<Integer> weatherList = new ArrayList<Integer>();
 	private static List<Integer> effectList = new ArrayList<Integer>();
@@ -54,11 +54,9 @@ public class WeatherUtilConfig
 						switch(value)
 						{
 							case 0:
-								ConfigStorm.max_storms = 10;
-								ConfigStorm.storm_per_player_1_in_x = 25;
-								ConfigStorm.storm_per_player_delay = 240000;
-								ConfigStorm.storm_global_1_in_x = 25;
-								ConfigStorm.storm_global_delay = 240000;
+								ConfigStorm.max_weather_objects = 10;
+								ConfigStorm.storm_spawn_chance = 25;
+								ConfigStorm.storm_spawn_delay = 240000;
 								ConfigStorm.storm_developing_above_land_10_in_x = -1;
 								ConfigStorm.storm_developing_above_ocean_10_in_x = 600;
 								ConfigStorm.storms_aim_at_player = false;
@@ -67,11 +65,9 @@ public class WeatherUtilConfig
 								ConfigSand.sandstorm_spawn_delay = 240000;
 								break;
 							case 1:
-								ConfigStorm.max_storms = 10;
-								ConfigStorm.storm_per_player_1_in_x = 25;
-								ConfigStorm.storm_per_player_delay = 120000;
-								ConfigStorm.storm_global_1_in_x = 25;
-								ConfigStorm.storm_global_delay = 120000;
+								ConfigStorm.max_weather_objects = 10;
+								ConfigStorm.storm_spawn_chance = 25;
+								ConfigStorm.storm_spawn_delay = 120000;
 								ConfigStorm.storm_developing_above_land_10_in_x = -1;
 								ConfigStorm.storm_developing_above_ocean_10_in_x = 500;
 								ConfigStorm.storms_aim_at_player = false;
@@ -80,11 +76,9 @@ public class WeatherUtilConfig
 								ConfigSand.sandstorm_spawn_delay = 120000;
 								break;
 							case 2:
-								ConfigStorm.max_storms = 15;
-								ConfigStorm.storm_per_player_1_in_x = 25;
-								ConfigStorm.storm_per_player_delay = 48000;
-								ConfigStorm.storm_global_1_in_x = 25;
-								ConfigStorm.storm_global_delay = 48000;
+								ConfigStorm.max_weather_objects = 15;
+								ConfigStorm.storm_spawn_chance = 25;
+								ConfigStorm.storm_spawn_delay = 48000;
 								ConfigStorm.storm_developing_above_land_10_in_x = -1;
 								ConfigStorm.storm_developing_above_ocean_10_in_x = 450;
 								ConfigStorm.storms_aim_at_player = false;
@@ -93,11 +87,9 @@ public class WeatherUtilConfig
 								ConfigSand.sandstorm_spawn_delay = 48000;
 								break;
 							case 3:
-								ConfigStorm.max_storms = 20;
-								ConfigStorm.storm_per_player_1_in_x = 25;
-								ConfigStorm.storm_per_player_delay = 24000;
-								ConfigStorm.storm_global_1_in_x = 25;
-								ConfigStorm.storm_global_delay = 24000;
+								ConfigStorm.max_weather_objects = 20;
+								ConfigStorm.storm_spawn_chance = 25;
+								ConfigStorm.storm_spawn_delay = 24000;
 								ConfigStorm.storm_developing_above_land_10_in_x = -1;
 								ConfigStorm.storm_developing_above_ocean_10_in_x = 300;
 								ConfigStorm.storms_aim_at_player = false;
@@ -106,11 +98,9 @@ public class WeatherUtilConfig
 								ConfigSand.sandstorm_spawn_delay = 24000;
 								break;
 							case 4:
-								ConfigStorm.max_storms = 25;
-								ConfigStorm.storm_per_player_1_in_x = 25;
-								ConfigStorm.storm_per_player_delay = 12000;
-								ConfigStorm.storm_global_1_in_x = 25;
-								ConfigStorm.storm_global_delay = 12000;
+								ConfigStorm.max_weather_objects = 25;
+								ConfigStorm.storm_spawn_chance = 25;
+								ConfigStorm.storm_spawn_delay = 12000;
 								ConfigStorm.storm_developing_above_land_10_in_x = 600;
 								ConfigStorm.storm_developing_above_ocean_10_in_x = 256;
 								ConfigStorm.storms_aim_at_player = true;
@@ -119,11 +109,9 @@ public class WeatherUtilConfig
 								ConfigSand.sandstorm_spawn_delay = 12000;
 								break;
 							case 5:
-								ConfigStorm.max_storms = 50;
-								ConfigStorm.storm_per_player_1_in_x = 15;
-								ConfigStorm.storm_per_player_delay = 5000;
-								ConfigStorm.storm_global_1_in_x = 15;
-								ConfigStorm.storm_global_delay = 5000;
+								ConfigStorm.max_weather_objects = 50;
+								ConfigStorm.storm_spawn_chance = 15;
+								ConfigStorm.storm_spawn_delay = 5000;
 								ConfigStorm.storm_developing_above_land_10_in_x = 256;
 								ConfigStorm.storm_developing_above_ocean_10_in_x = 125;
 								ConfigStorm.storms_aim_at_player = true;
@@ -132,11 +120,9 @@ public class WeatherUtilConfig
 								ConfigSand.sandstorm_spawn_delay = 5000;
 								break;
 							case 6:
-								ConfigStorm.max_storms = 100;
-								ConfigStorm.storm_per_player_1_in_x = 2;
-								ConfigStorm.storm_per_player_delay = 1000;
-								ConfigStorm.storm_global_1_in_x = 2;
-								ConfigStorm.storm_global_delay = 1000;
+								ConfigStorm.max_weather_objects = 100;
+								ConfigStorm.storm_spawn_chance = 2;
+								ConfigStorm.storm_spawn_delay = 1000;
 								ConfigStorm.storm_developing_above_land_10_in_x = 100;
 								ConfigStorm.storm_developing_above_ocean_10_in_x = 50;
 								ConfigStorm.storms_aim_at_player = true;
@@ -161,7 +147,7 @@ public class WeatherUtilConfig
 						ConfigGrab.grab_players = value == 1;
 						break;
 					case GuiEZConfig.BC_STORM_PER_PLAYER:
-						ConfigStorm.enable_global_storm_rates = value == 0;
+						ConfigStorm.enable_spawn_per_player = value == 0;
 						ConfigSand.enable_global_rates_for_sandstorms = value == 0;
 						break;
 				}
@@ -268,33 +254,33 @@ public class WeatherUtilConfig
 								ConfigParticle.funnel_particle_delay = 666999;
 								break;
 							case 1:
-								ConfigParticle.sandstorm_debris_particle_rate = 0.05D;
-								ConfigParticle.sandstorm_dust_particle_rate = 0.1D;
+								ConfigParticle.sandstorm_debris_particle_rate = 0.025D;
+								ConfigParticle.sandstorm_dust_particle_rate = 0.05D;
 								ConfigParticle.funnel_particle_delay = 45;
 								break;
 							case 2:
-								ConfigParticle.sandstorm_debris_particle_rate = 0.15D;
-								ConfigParticle.sandstorm_dust_particle_rate = 0.2D;
+								ConfigParticle.sandstorm_debris_particle_rate = 0.05D;
+								ConfigParticle.sandstorm_dust_particle_rate = 0.1D;
 								ConfigParticle.funnel_particle_delay = 15;
 								break;
 							case 3:
-								ConfigParticle.sandstorm_debris_particle_rate = 0.3D;
-								ConfigParticle.sandstorm_dust_particle_rate = 0.4D;
+								ConfigParticle.sandstorm_debris_particle_rate = 0.1D;
+								ConfigParticle.sandstorm_dust_particle_rate = 0.15D;
 								ConfigParticle.funnel_particle_delay = 5;
 								break;
 							case 4:
-								ConfigParticle.sandstorm_debris_particle_rate = 1.0D;
-								ConfigParticle.sandstorm_dust_particle_rate = 2.0D;
+								ConfigParticle.sandstorm_debris_particle_rate = 0.15D;
+								ConfigParticle.sandstorm_dust_particle_rate = 0.4D;
 								ConfigParticle.funnel_particle_delay = 2;
 								break;
 							case 5:
-								ConfigParticle.sandstorm_debris_particle_rate = 2.0D;
-								ConfigParticle.sandstorm_dust_particle_rate = 4.0D;
+								ConfigParticle.sandstorm_debris_particle_rate = 0.25D;
+								ConfigParticle.sandstorm_dust_particle_rate = 0.6D;
 								ConfigParticle.funnel_particle_delay = 1;
 								break;
 							case 6:
-								ConfigParticle.sandstorm_debris_particle_rate = 4.0D;
-								ConfigParticle.sandstorm_dust_particle_rate = 8.0D;
+								ConfigParticle.sandstorm_debris_particle_rate = 0.5D;
+								ConfigParticle.sandstorm_dust_particle_rate = 1.0D;
 								ConfigParticle.funnel_particle_delay = 0;
 								break;
 						}

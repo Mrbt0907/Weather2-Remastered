@@ -1,5 +1,6 @@
 package net.mrbt0907.weather2.block;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.state.IBlockState;
@@ -15,10 +16,9 @@ import net.minecraft.world.World;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.network.packets.PacketWeatherObject;
 import net.mrbt0907.weather2.server.event.ServerTickHandler;
-import net.mrbt0907.weather2.server.weather.WeatherSystemServer;
-import net.mrbt0907.weather2.weather.storm.StormObject;
+import net.mrbt0907.weather2.server.weather.WeatherManagerServer;
+import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.weather.storm.WeatherObject;
-import CoroUtil.util.Vec3;
 
 public class TileWeatherDeflector extends TileEntity implements ITickable
 {
@@ -41,21 +41,22 @@ public class TileWeatherDeflector extends TileEntity implements ITickable
     	if (!world.isRemote)
     	{
     		if (world.getTotalWorldTime() % 100 == 0 && mode == MODE_KILLSTORMS)
-    		{	
-					WeatherSystemServer wm = ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
-					if (wm != null)
-					{
-						List<WeatherObject> storms = wm.getClosestStorms(new Vec3(getPos().getX(), StormObject.layers.get(0), getPos().getZ()), ConfigStorm.storm_deflector_range, ConfigStorm.storm_deflector_minimum_stage, 10);
-						WeatherObject wo;
-						int size = storms.size();
+    		{
+				WeatherManagerServer wm = ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
+				if (wm != null)
+				{
+					List<WeatherObject> storms = new ArrayList<WeatherObject>(wm.getWeatherSystems(new Vec3(getPos().getX(), getPos().getY(), getPos().getZ()), ConfigStorm.storm_deflector_range, ConfigStorm.storm_deflector_minimum_stage, Integer.MAX_VALUE).keySet());
+					WeatherObject wo;
+					int size = storms.size();
 						
-						for (int i = 0; i < size; i++)
-						{
-							wo = storms.get(i);
-							wm.removeStormObject(wo.getUUID());
-							PacketWeatherObject.remove(wm.getDimension(), wo);;
-						}
+					for (int i = 0; i < size; i++)
+					{
+						wo = storms.get(i);
+						wo.front.removeWeatherObject(wo.getUUID());
+						PacketWeatherObject.remove(wm.getDimension(), wo);;
 					}
+					storms.clear();
+				}
 			}
 
 			if (world.getTotalWorldTime() % 20 == 0)
@@ -64,7 +65,7 @@ public class TileWeatherDeflector extends TileEntity implements ITickable
     }
 
     public void maintainBlockDamageDeflect() {
-		WeatherSystemServer wm = ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
+		WeatherManagerServer wm = ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
 		if (wm != null) {
 			if (mode == MODE_KILLSTORMS) {
 				if (wm.getListWeatherBlockDamageDeflector().contains(getPos().toLong())) {
@@ -119,7 +120,7 @@ public class TileWeatherDeflector extends TileEntity implements ITickable
 
 		if (!world.isRemote) {
 			//always try to remove, incase they removed the block before the tick code could run after switching mode
-			WeatherSystemServer wm = ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
+			WeatherManagerServer wm = ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
 			wm.getListWeatherBlockDamageDeflector().remove(getPos().toLong());
 		}
 

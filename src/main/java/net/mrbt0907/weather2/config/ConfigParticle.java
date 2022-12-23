@@ -24,6 +24,10 @@ public class ConfigParticle implements IConfigCategory
     public static boolean enable_precipitation_splash = true;
 	@ConfigComment("Enables heavy downfall in severe storms")
     public static boolean enable_heavy_precipitation = true;
+	@ConfigComment("Enables distant downfall in severe storms")
+    public static boolean enable_distant_downfall = true;
+	@ConfigComment("Enables dust particles to kick up in high wind situations")
+    public static boolean enable_wind_particle = true;
 	@ConfigComment("Enables vanilla rain and thunder only")
 	public static boolean use_vanilla_rain_and_thunder = false;
 	@ConfigComment("Particle rates for rain, downfall, and ground splash particle types")
@@ -32,6 +36,10 @@ public class ConfigParticle implements IConfigCategory
 	public static double sandstorm_debris_particle_rate = 0.3D;
 	@ConfigComment("Particle rates for dust particles")
 	public static double sandstorm_dust_particle_rate = 0.4D;
+	@ConfigComment("Particle rates for wind particles")
+	public static double wind_particle_rate = 0.2D;
+	@ConfigComment("Particle rates for distant downfall particles")
+	public static double distant_downfall_particle_rate = 0.2D;
 	@ConfigComment("Particle delay in ticks for storm particles\n(Tornado or hurricane particles)")
 	public static int funnel_particle_delay = 5;
 	@ConfigComment("Particle multiplier used to increase or decrease particle rates")
@@ -46,11 +54,19 @@ public class ConfigParticle implements IConfigCategory
 	public static double cloud_coverage_change_amount = 0.05D;
 	@ConfigComment("Distance between cloud formations, not particles, this includes invisible cloudless formations used during partial cloud coverage")
 	public static int min_cloud_distance = 300;
+	@ConfigComment("Distance that particles can render up to in blocks. Does not work with optifine installed")
+	public static double render_distance = 3500.0D;
+
+	@ConfigComment("How many weather2 particles can exist at once. Set to -1 for infinite particles. A typical hailstorm spawns around 3500~ particles on ultra settings")
+	public static int max_particles = 3000;
+	@ConfigComment("Particle multiplier that adjusts how fast rain rates change. Set it higher to make rain change faster")
+	public static double rain_change_mult = 1.0D;
+	
 	//clouds
 	@ConfigComment("How many ticks between cloud particle spawning")
 	public static int cloud_particle_delay = 5;
 	@ConfigComment("Should rain show up?")
-	public static boolean enable_rain = false;
+	public static boolean enable_vanilla_rain = false;
 
     @Override
     public String getName() {

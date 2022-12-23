@@ -118,39 +118,13 @@ public class TornadoFunnel {
             while (piece.listParticles.size() < particleCount) {
                 BlockPos pos = new BlockPos(piece.posEnd.x, piece.posEnd.y, piece.posEnd.z);
 
-                //if (entP.getDistanceSq(pos) < 10D * 10D) continue;
-
-                //pos = world.getPrecipitationHeight(pos).add(0, 1, 0);
-
                 ParticleCustomMatrix rain = new ParticleCustomMatrix(entP.world,
                         pos.getX() + rand.nextFloat(),
                         pos.getY(),
                         pos.getZ() + rand.nextFloat(),
                         0D, 0D, 0D, ParticleRegistry.white_square);
-						/*ParticleTexExtraRender rain = new ParticleTexExtraRender(entP.world,
-								15608.5F,
-								70.5F,
-								235.5F,
-								0D, 0D, 0D, ParticleRegistry.test_texture);*/
-                //rain.setCanCollide(true);
-                //rain.setKillOnCollide(true);
-                //rain.setKillWhenUnderTopmostBlock(true);
-                //rain.setTicksFadeOutMaxOnDeath(5);
-
-                //rain.particleTextureJitterX = 0;
-                //rain.particleTextureJitterY = 0;
-
-                //rain.setDontRenderUnderTopmostBlock(true);
-                //rain.setExtraParticlesBaseAmount(5);
-                //rain.setDontRenderUnderTopmostBlock(true);
                 rain.setSlantParticleToWind(false);
-                //rain.noExtraParticles = true;
-                //rain.setExtraParticlesBaseAmount(1);
-                //rain.setSeverityOfRainRate(0);
                 rain.setDontRenderUnderTopmostBlock(false);
-
-                //boolean upward = rand.nextBoolean();
-
                 rain.windWeight = 999999F;
                 rain.setFacePlayer(false);
 
@@ -165,81 +139,35 @@ public class TornadoFunnel {
                  *
                  */
                 rain.setScale(5F);
-                //rain.setScale(25F);
                 rain.setMaxAge(100);
                 rain.setGravity(0.0F);
                 //opted to leave the popin for rain, its not as bad as snow, and using fade in causes less rain visual overall
                 rain.setTicksFadeInMax(0);
                 rain.setAlphaF(1);
                 rain.setTicksFadeOutMax(0);
-
-                rain.rotationYaw = 0;//rain.getWorld().rand.nextInt(360) - 180F;
+                rain.rotationYaw = 0;
                 rain.rotationPitch = 90;
                 rain.setMotionY(-0D);
-									/*rain.setMotionX(0);
-									rain.setMotionZ(0);*/
                 rain.setMotionX((rand.nextFloat() - 0.5F) * 0.01F);
                 rain.setMotionZ((rand.nextFloat() - 0.5F) * 0.01F);
-
-                //rain.setRBGColorF(1F, 1F, 1F);
                 rain.spawnAsWeatherEffect();
                 rain.weatherEffect = false;
-                //ClientTickHandler.weatherManager.addWeatheredParticle(rain);
-
                 rain.isTransparent = false;
-
                 rain.quatControl = true;
                 rain.useRotationAroundCenter = true;
 
                 piece.listParticles.add(rain);
             }
         }
-
-        //reset
-        /*for (int i = 0; i < listFunnel.size(); i++) {
-            FunnelPiece piece = listFunnel.get(i);
-
-            while (piece.listParticles.size() > particleCount) {
-                piece.listParticles.get(piece.listParticles.size() - 1).setExpired();
-                piece.listParticles.remove(piece.listParticles.size() - 1);
-            }
-        }*/
-        //listFunnel.clear();
-
-
     }
 
     private void tickUpdateFunnel() {
 
         World world = Minecraft.getMinecraft().world;
-        //EntityPlayer player = Minecraft.getMinecraft().player;
-
-        //for (FunnelPiece piece : listFunnel) {
-        for (int ii = 0; ii < listFunnel.size(); ii++) {
+        for (int ii = 0; ii < listFunnel.size(); ii++)
+        {
             FunnelPiece piece = listFunnel.get(ii);
-
-            /*if (ii == listFunnel.size() - 1) {
-                piece.posEnd = new Vec3d(piece.posStart.x, piece.posStart.y + 20, piece.posStart.z);
-            }*/
-
-            //double rate = 0.5F/* + (ii * 0.1F)*/;
             double distMax = 20;
-
-            //Random rand = new Random();
-
-            //piece.posEnd = piece.posEnd.addVector(rate * piece.vecDirX, 0, rate * piece.vecDirZ);
-            //piece.posEnd = piece.posEnd.addVector(rate * rand.nextFloat() * piece.vecDirX, 0, rate * rand.nextFloat() * piece.vecDirZ);
-
-            //int offset = 360 / listFunnel.size();
-            //long timeC = (world.getTotalWorldTime() * (ii+1) + (offset * ii)) * 1;
-            //float range = 35F;
-
-            //piece.posEnd = new Vec3d(piece.posStart.x + Math.sin(Math.toRadians(timeC % 360)) * range, piece.posStart.y + 3, piece.posStart.z + Math.cos(Math.toRadians(timeC % 360)) * range);
-
-            //piece.posEnd.
-
-            //piece.posEnd = piece.posEnd.addVector(-1, 0, 0);
-
             double xx = piece.posEnd.x - piece.posStart.x;
             double zz = piece.posEnd.z - piece.posStart.z;
             double xzDist2 = (double)MathHelper.sqrt(xx * xx + zz * zz);
@@ -261,14 +189,6 @@ public class TornadoFunnel {
                     piece.vecDirZ = 1;
                 }
             }
-
-            /*if (Math.abs(piece.posStart.x - piece.posEnd.x) > distMax) {
-                piece.vecDirX *= -1;
-            }
-
-            if (Math.abs(piece.posStart.z - piece.posEnd.z) > distMax) {
-                piece.vecDirZ *= -1;
-            }*/
 
             if (ii > 0) {
                 Vec3d prev = listFunnel.get(ii-1).posEnd;

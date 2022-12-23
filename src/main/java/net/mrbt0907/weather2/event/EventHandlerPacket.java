@@ -14,7 +14,7 @@ import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.network.packets.PacketEZGUI;
 import net.mrbt0907.weather2.server.event.ServerTickHandler;
 import net.mrbt0907.weather2.util.WeatherUtilConfig;
-
+import net.mrbt0907.weather2.util.WeatherUtilSound;
 import CoroUtil.packet.PacketHelper;
 import CoroUtil.util.CoroUtilEntity;
 
@@ -57,6 +57,13 @@ public class EventHandlerPacket {
 					case 10:
 						ClientTickHandler.clientConfigData.readNBT(nbt);
 						break;
+					case 11: case 12: case 13: case 14:
+						ClientTickHandler.checkClientWeather();
+						ClientTickHandler.weatherManager.nbtSyncFromServer(nbt);
+						break;
+					case 15:
+						WeatherUtilSound.reset();
+						Weather2.error("Refreshed weather2 sound system");
 					default:
 						Weather2.error("Recieved an invalid network packet from the server");
 				}

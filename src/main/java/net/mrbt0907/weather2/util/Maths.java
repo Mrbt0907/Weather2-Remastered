@@ -2,13 +2,16 @@ package net.mrbt0907.weather2.util;
 
 import java.util.Random;
 
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+
 /**A simple math library that can be used to simplify math related calculations*/
 public class Maths
 {
 	private static Random random = new Random();
 	
 	/**Used to create 2D vectors for positioning calculations*/
-	public class Vec
+	public static class Vec
 	{
 		/**Position X of this 2D vector*/
 		public double posX = 0.0D;
@@ -17,6 +20,18 @@ public class Maths
 		
 		/**Used to create 2D vectors for positioning calculations*/
 		public Vec() {}
+			/**Used to create 2D vectors for positioning calculations*/
+		public Vec(CoroUtil.util.Vec3 pos)
+		{
+			this.posX = pos.xCoord;
+			this.posZ = pos.zCoord;
+		}
+		/**Used to create 2D vectors for positioning calculations*/
+		public Vec(BlockPos pos)
+		{
+			this.posX = pos.getX();
+			this.posZ = pos.getZ();
+		}
 		/**Used to create 2D vectors for positioning calculations*/
 		public Vec(int posX, int posZ)
 		{
@@ -36,6 +51,33 @@ public class Maths
 			this.posZ = posZ;
 		}
 		
+		public Vec copy()
+		{
+			return new Vec(posX, posZ);
+		}
+		
+		public BlockPos toBlockPos(double posY)
+		{
+			return new BlockPos(posX, posY, posZ);
+		}
+		
+		public CoroUtil.util.Vec3 toVec3Coro()
+		{
+			return new CoroUtil.util.Vec3(posX, 0.0D, posZ);
+		}
+		
+		public net.minecraft.util.math.Vec3d toVec3MC()
+		{
+	    	return new net.minecraft.util.math.Vec3d(posX, 0.0D, posZ);
+	    }
+		
+		public Vec addVector(double x, double z)
+		{
+			posX += x;
+			posZ += z;
+			return this;
+		}
+		
 		/**Calculates the distance between this 2D vector and another set of positions*/
 		public double distance(double posX, double posZ)
 		{
@@ -53,10 +95,15 @@ public class Maths
 		{
 			return distance(vector.posX, vector.posZ);
 		}
+		
+		public double speed()
+		{
+			return Math.sqrt(posX * posX + posZ * posZ);
+		}
 	}
 	
 	/**Used to create 3D vectors for positioning calculations*/
-	public class Vec3
+	public static class Vec3
 	{
 		/**Position X of this 3D vector*/
 		public double posX = 0.0D;
@@ -67,6 +114,27 @@ public class Maths
 
 		/**Used to create 3D vectors for positioning calculations*/
 		public Vec3() {}
+		/**Used to create 3D vectors for positioning calculations*/
+		public Vec3(Vec3d pos)
+		{
+			posX = pos.x;
+			posY = pos.y;
+			posZ = pos.z;
+		}
+		/**Used to create 3D vectors for positioning calculations*/
+		public Vec3(CoroUtil.util.Vec3 pos)
+		{
+			posX = pos.xCoord;
+			posY = pos.yCoord;
+			posZ = pos.zCoord;
+		}
+		/**Used to create 3D vectors for positioning calculations*/
+		public Vec3(BlockPos pos)
+		{
+			posX = pos.getX();
+			posY = pos.getY();
+			posZ = pos.getZ();
+		}
 		/**Used to create 3D vectors for positioning calculations*/
 		public Vec3(int posX, int posY, int posZ)
 		{
@@ -89,6 +157,34 @@ public class Maths
 			this.posZ = posZ;
 		}
 		
+		public BlockPos toBlockPos()
+		{
+			return new BlockPos(posX, posY, posZ);
+		}
+		
+		public CoroUtil.util.Vec3 toVec3Coro()
+		{
+			return new CoroUtil.util.Vec3(posX, posY, posZ);
+		}
+		
+		public net.minecraft.util.math.Vec3d toVec3MC()
+		{
+	    	return new net.minecraft.util.math.Vec3d(posX, posY, posZ);
+	    }
+		
+		public Vec3 copy()
+		{
+			return new Vec3(posX, posY, posZ);
+		}
+		
+		public Vec3 addVector(double x, double y, double z)
+		{
+			posX += x;
+			posY += y;
+			posZ += z;
+			return this;
+		}
+		
 		/**Calculates the distance between this 3D vector and another set of positions*/
 		public double distance(double posX, double posY, double posZ)
 		{
@@ -105,6 +201,11 @@ public class Maths
 		public double distance(Vec3 vector)
 		{
 			return distance(vector.posX, vector.posY, vector.posZ);
+		}
+		
+		public double speed()
+		{
+			return Math.sqrt(posX * posX + posY * posY + posZ * posZ);
 		}
 	}
 	
@@ -184,5 +285,28 @@ public class Maths
 	public static double distance(double posXA, double posYA, double posZA, double posXB, double posYB, double posZB)
 	{
 		return Math.sqrt((posXA - posXB) * (posXA - posXB) + (posYA - posYB) * (posYA - posYB) + (posZA - posZB) * (posZA - posZB));
+	}
+	
+	/**Calculates the distance between one set of positions and a 3d vector*/
+	public static double distance(double posX, double posY, double posZ, Vec3 vector)
+	{
+		return Math.sqrt((posX - vector.posX) * (posX - vector.posX) + (posY - vector.posY) * (posY - vector.posY) + (posZ - vector.posZ) * (posZ - vector.posZ));
+	}
+	
+	/**Calculates the distance between one set of positions and another set of positions*/
+	public static double distance(double posXA, double posZA, double posXB, double posZB)
+	{
+		return Math.sqrt((posXA - posXB) * (posXA - posXB) + (posZA - posZB) * (posZA - posZB));
+	}
+	
+	/**Calculates the distance between one set of positions and a 2d vector*/
+	public static double distance(double posX, double posZ, Vec vector)
+	{
+		return Math.sqrt((posX - vector.posX) * (posX - vector.posX) + (posZ - vector.posZ) * (posZ - vector.posZ));
+	}
+	
+	public static double speed(double motionX, double motionY, double motionZ)
+	{
+		return Math.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
 	}
 }

@@ -1,7 +1,6 @@
 package net.mrbt0907.weather2.client.entity;
 
 import java.util.List;
-import CoroUtil.util.Vec3;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -17,6 +16,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.entity.EntityLightningBoltCustom;
+import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.weather.storm.SandstormObject;
 
 @SideOnly(Side.CLIENT)
@@ -85,9 +85,9 @@ public class RenderLightningBoltCustom extends Render<EntityLightningBoltCustom>
         Vec3 posPlayer = new Vec3(mc.player.posX, 0/*mc.player.posY*/, mc.player.posZ);
         SandstormObject sandstorm = ClientTickHandler.weatherManager.getClosestSandstormByIntensity(posPlayer);
         if (sandstorm != null) {
-            List<Vec3> wat = sandstorm.getSandstormAsShape();
+            List<CoroUtil.util.Vec3> wat = sandstorm.getSandstormAsShape();
             entity.listVec.clear();
-            for (Vec3 wat2 : wat) {
+            for (CoroUtil.util.Vec3 wat2 : wat) {
                 Vec3d wat3 = new Vec3d(wat2.xCoord - player.posX, -10, wat2.zCoord - player.posZ);
                 entity.listVec.add(wat3);
 

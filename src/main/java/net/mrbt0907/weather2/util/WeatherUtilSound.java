@@ -1,118 +1,170 @@
 package net.mrbt0907.weather2.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.mrbt0907.weather2.client.sound.MovingSoundStreamingSource;
-import net.mrbt0907.weather2.registry.SoundRegistry;
-import net.mrbt0907.weather2.weather.storm.StormObject;
-import CoroUtil.util.Vec3;
+import net.mrbt0907.weather2.client.sound.MovingSoundEX;
 
-/**
- * TODO: rewrite this to use a class that contains array of sounds, amount of them, length of them, and the last played time and next random index
- * would help cleanup the weird array use this class does
- */
-public class WeatherUtilSound {
-
-    public static String snd_tornado_dmg_close[] = new String[3];
-    public static String snd_wind_close[] = new String[3];
-    public static String snd_wind_far[] = new String[3];
-    public static String snd_sandstorm_low[] = new String[2];
-    public static String snd_sandstorm_med[] = new String[2];
-    public static String snd_sandstorm_high[] = new String[1];
-    public static HashMap<String, Integer> soundToLength = new HashMap<>();
-
-    /**
-     * These need to match the amount of array'd strings we use for sounds, was 3, now 6 for sandstorm addition
-     */
-    public static int snd_rand[] = new int[6];
-    public static long soundTimer[] = new long[6];
-    
-    public static void init() {
-    	Random rand = new Random();
-    	snd_tornado_dmg_close[0] = "destruction_0_";
-        snd_tornado_dmg_close[1] = "destruction_1_";
-        snd_tornado_dmg_close[2] = "destruction_2_";
-        snd_wind_close[0] = "wind_close_0_";
-        snd_wind_close[1] = "wind_close_1_";
-        snd_wind_close[2] = "wind_close_2_";
-        snd_wind_far[0] = "wind_far_0_";
-        snd_wind_far[1] = "wind_far_1_";
-        snd_wind_far[2] = "wind_far_2_";
-        snd_sandstorm_low[0] = "sandstorm_low1";
-        snd_sandstorm_low[1] = "sandstorm_low2";
-        snd_sandstorm_med[0] = "sandstorm_med1";
-        snd_sandstorm_med[1] = "sandstorm_med2";
-        snd_sandstorm_high[0] = "sandstorm_high1";
-        snd_rand[0] = rand.nextInt(snd_tornado_dmg_close.length);
-        snd_rand[1] = rand.nextInt(snd_wind_close.length);
-        snd_rand[2] = rand.nextInt(snd_wind_far.length);
-        snd_rand[3] = rand.nextInt(snd_sandstorm_high.length);
-        snd_rand[4] = rand.nextInt(snd_sandstorm_med.length);
-        snd_rand[5] = rand.nextInt(snd_sandstorm_low.length);
-        /*soundID[0] = -1;
-        soundID[1] = -1;
-        soundID[2] = -1;*/
-        soundToLength.put(snd_tornado_dmg_close[0], 2515);
-        soundToLength.put(snd_tornado_dmg_close[1], 2580);
-        soundToLength.put(snd_tornado_dmg_close[2], 2741);
-        soundToLength.put(snd_wind_close[0], 4698);
-        soundToLength.put(snd_wind_close[1], 7324);
-        soundToLength.put(snd_wind_close[2], 6426);
-        soundToLength.put(snd_wind_far[0], 12892);
-        soundToLength.put(snd_wind_far[1], 9653);
-        soundToLength.put(snd_wind_far[2], 12003);
-        soundToLength.put(snd_sandstorm_low[0], 8004);
-        soundToLength.put(snd_sandstorm_low[1], 7119);
-        soundToLength.put(snd_sandstorm_med[0], 16325);
-        soundToLength.put(snd_sandstorm_med[1], 12776);
-        soundToLength.put(snd_sandstorm_high[0], 23974);
-
-        soundToLength.put("siren_sandstorm_1", 11923);
-        soundToLength.put("siren_sandstorm_2", 20122);
-        soundToLength.put("siren_sandstorm_3", 10366);
-        soundToLength.put("siren_sandstorm_4", 44274);
-        soundToLength.put("siren_sandstorm_5_extra", 1282);
-    }
-    
-    @SideOnly(Side.CLIENT)
-    public static void playNonMovingSound(Vec3 parPos, String var1, float var5, float var6, float parCutOffRange)
-    {
-    	//String prefix = "streaming.";
-    	//String affix = ".ogg";
-    	//ResourceLocation res = new ResourceLocation(var1);
-    	SoundEvent event = SoundRegistry.get(var1);
-    	MovingSoundStreamingSource sound = new MovingSoundStreamingSource(parPos, event, SoundCategory.WEATHER, var5, var6, parCutOffRange);
-    	FMLClientHandler.instance().getClient().getSoundHandler().playSound(sound);
-    }
-    
-    @SideOnly(Side.CLIENT)
-    public static void playMovingSound(StormObject parStorm, String var1, float var5, float var6, float parCutOffRange)
-    {
-    	//String prefix = "streaming.";
-    	//String affix = ".ogg";
-    	
-    	//ResourceLocation res = new ResourceLocation(var1);
-    	SoundEvent event = SoundRegistry.get(var1);
-    	
-    	MovingSoundStreamingSource sound = new MovingSoundStreamingSource(parStorm, event, SoundCategory.WEATHER, var5, var6, parCutOffRange);
-    	
-    	FMLClientHandler.instance().getClient().getSoundHandler().playSound(sound);
-
-    }
-
-    @SideOnly(Side.CLIENT)
-    public static void playPlayerLockedSound(Vec3 parPos, String var1, float var5, float var6)
-    {
-        SoundEvent event = SoundRegistry.get(var1);
-        MovingSoundStreamingSource sound = new MovingSoundStreamingSource(parPos, event, SoundCategory.WEATHER, var5, var6, true);
-        FMLClientHandler.instance().getClient().getSoundHandler().playSound(sound);
-    }
+public class WeatherUtilSound
+{
+	private static final List<MovingSoundEX> allSounds = new ArrayList<MovingSoundEX>();
+	private static final Map<Integer, MovingSoundEX> sounds = new HashMap<Integer, MovingSoundEX>();
 	
-    
+	@SideOnly(Side.CLIENT)
+	public static void tick()
+	{
+		if (sounds.isEmpty()) return;
+		
+		Minecraft mc = Minecraft.getMinecraft();
+		Iterator<MovingSoundEX> soundList = allSounds.iterator();
+		Integer key;
+		MovingSoundEX sound;
+		
+		while (soundList.hasNext())
+		{
+			key = null;
+			sound = soundList.next();
+			
+			if (sound.canRepeat() && sound.isDonePlaying() && sound.ticksExisted > 20L || !sound.canRepeat() && !mc.getSoundHandler().isSoundPlaying(sound) && !sound.isDonePlaying() && sound.ticksExisted > 20L)
+			{
+				sound.setDone();
+				
+				for(Entry<Integer, MovingSoundEX> entry : sounds.entrySet())
+				{
+					if (entry.getValue().equals(sound))
+					{
+						key = entry.getKey();
+						break;
+					}
+				}
+				
+				if(key != null)
+					sounds.remove(key);
+					
+				soundList.remove();
+			}
+		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static boolean isSoundActive(int index)
+	{
+		boolean truth = sounds.containsKey(index);
+		
+		if (truth && sounds.get(index).isDonePlaying())
+		{
+			sounds.remove(index);
+			truth = false;
+		}
+			
+		return truth;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static boolean isSoundActive(int index, SoundEvent sound)
+	{
+		boolean truth = sounds.containsKey(index);
+		
+		if (truth && sounds.get(index).isDonePlaying())
+		{
+			sounds.remove(index);
+			truth = false;
+		}
+			
+		return truth && sounds.get(index).getSoundLocation().equals(sound.getSoundName());
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static void reset()
+	{
+		allSounds.forEach(sound -> {
+			sound.setDone();
+		});
+		
+		allSounds.clear();
+		sounds.clear();
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static boolean stopSound(int index)
+	{
+		boolean truth = sounds.containsKey(index);
+		
+		if (truth)
+		{
+			sounds.get(index).setDone();
+			sounds.remove(index);
+		}
+		
+		return truth;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static MovingSoundEX getActiveSound(int index)
+	{	
+		if (sounds.containsKey(index) && sounds.get(index).isDonePlaying())
+			sounds.remove(index);
+		return sounds.get(index);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static MovingSoundEX playForcedSound(SoundEvent soundEvent, SoundCategory category, Object obj, float volume, float pitch, float range, boolean useY, boolean repeat)
+	{
+		MovingSoundEX sound = new MovingSoundEX(obj, soundEvent, SoundCategory.WEATHER, volume, pitch, range, useY);
+		sound.setRepeat(repeat);
+		Minecraft.getMinecraft().getSoundHandler().playSound(sound);
+		allSounds.add(sound);
+		return sound;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	private static MovingSoundEX playSound(SoundEvent soundEvent, SoundCategory category, Object obj, int index, float volume, float pitch, float range, boolean useY, boolean repeat)
+	{
+		boolean truth = sounds.containsKey(index);
+		if (truth && sounds.get(index).isDonePlaying())
+		{
+			sounds.remove(index);
+			truth = false;
+		}
+		
+		if (!truth)
+		{
+			MovingSoundEX sound = new MovingSoundEX(obj, soundEvent, SoundCategory.WEATHER, volume, pitch, range, useY);
+
+			sound.setRepeat(repeat);
+			FMLClientHandler.instance().getClient().getSoundHandler().playSound(sound);
+			allSounds.add(sound);
+			sounds.put(index, sound);
+			return sound;
+		}
+		return null;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static MovingSoundEX playSound(SoundEvent sound, SoundCategory category, int index, float volume, float pitch, boolean repeat)
+	{
+		return playSound(sound, category, null, index, volume, pitch, -1.0F, false, repeat);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static MovingSoundEX play2DSound(SoundEvent sound, SoundCategory category, Object obj, int index, float volume, float pitch, float range, boolean repeat)
+	{	
+		return playSound(sound, category, obj, index, volume, pitch, range, false, repeat);
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static MovingSoundEX play3DSound(SoundEvent sound, SoundCategory category, int index, Object obj, float volume, float pitch, float range, boolean repeat)
+	{	
+		return playSound(sound, category, obj, index, volume, pitch, range, true, repeat);
+	}
 }

@@ -106,7 +106,7 @@ public class RenderFlyingBlockOld extends Render<Entity>
         IBlockState state = null;
 
         if (entity instanceof EntityMovingBlock) {
-        	state = ((EntityMovingBlock) entity).tile.getDefaultState();
+        	state = ((EntityMovingBlock) entity).state;
         } else {
         	if (renderBlock != null) {
         		state = renderBlock.getDefaultState();
