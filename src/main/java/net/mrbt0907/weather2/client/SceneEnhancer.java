@@ -11,7 +11,6 @@ import CoroUtil.config.ConfigCoroUtil;
 import CoroUtil.forge.CULog;
 import CoroUtil.util.ChunkCoordinatesBlock;
 import CoroUtil.util.CoroUtilBlock;
-import CoroUtil.util.CoroUtilCompatibility;
 import CoroUtil.util.CoroUtilEntOrParticle;
 import CoroUtil.util.CoroUtilMisc;
 import CoroUtil.util.CoroUtilPhysics;
@@ -28,10 +27,8 @@ import net.minecraft.client.particle.ParticleFlame;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -46,6 +43,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WindReader;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
@@ -136,6 +134,7 @@ public class SceneEnhancer implements Runnable {
 	public static float fogEnd = 0;
 	public static float fogMult = 0F;
 	public static float fogMultTarget = 0F;
+	public static float fogDistance = 0.0F;
 	public static float adjustAmountTargetPocketSandOverride = 0F;
 	public static boolean isPlayerOutside = true;
 
@@ -143,8 +142,6 @@ public class SceneEnhancer implements Runnable {
 	public static ParticleTexExtraRender testParticle;
 
 	public static EntityRotFX testParticle2;
-	private int rainSoundCounter;
-
 	private static List<BlockPos> listPosRandom = new ArrayList<>();
 	public static List<EntityRotFX> testParticles = new ArrayList<>();
 
@@ -250,8 +247,8 @@ public class SceneEnhancer implements Runnable {
 	{
 		Minecraft mc = Minecraft.getMinecraft();
 		float sunBrightness = mc.world.getSunBrightness(1F);
-		float fogBoundary = (float) ConfigParticle.render_distance;
-		float fogBoundaryClose = fogBoundary - (fogBoundary * 0.9F);
+		float fogBoundary = fogDistance;
+		float fogBoundaryClose = fogBoundary - (fogBoundary * 0.3F);
 		
 		//make it be full intensity once storm is halfway there
 		fogMultTarget = (float) (1.0D - (distToStorm / distToStormThreshold));
@@ -295,7 +292,8 @@ public class SceneEnhancer implements Runnable {
 	
 	public synchronized void trySoundPlaying()
 	{
-		try {
+		try
+		{
 			if (lastTickAmbient < System.currentTimeMillis())
 			{
 				lastTickAmbient = System.currentTimeMillis() + 500;
@@ -359,85 +357,9 @@ public class SceneEnhancer implements Runnable {
 					}
 				}
 			}
-
-
-			Minecraft mc = Minecraft.getMinecraft();
-
-			float vanillaCutoff = 0.2F;
-			float precipStrength = Math.abs(getRainStrengthAndControlVisuals(mc.player, ClientTickHandler.clientConfigData.overcastMode));
-
-			//if less than vanilla sound playing amount
-			if (precipStrength <= vanillaCutoff) {
-
-				float volAmp = 0.2F + ((precipStrength / vanillaCutoff) * 0.8F);
-
-				Random random = new Random();
-
-				float f = mc.world.getRainStrength(1.0F);
-
-				if (!mc.gameSettings.fancyGraphics) {
-					f /= 2.0F;
-				}
-
-				if (f != 0.0F) {
-					//random.setSeed((long)this.rendererUpdateCount * 312987231L);
-					Entity entity = mc.getRenderViewEntity();
-					World world = mc.world;
-					BlockPos blockpos = new BlockPos(entity);
-					//int i = 10;
-					double d0 = 0.0D;
-					double d1 = 0.0D;
-					double d2 = 0.0D;
-					int j = 0;
-					int k = 3;//(int) (400.0F * f * f);
-
-					if (mc.gameSettings.particleSetting == 1) {
-						k >>= 1;
-					} else if (mc.gameSettings.particleSetting == 2) {
-						k = 0;
-					}
-
-					for (int l = 0; l < k; ++l) {
-						BlockPos blockpos1 = world.getPrecipitationHeight(blockpos.add(random.nextInt(10) - random.nextInt(10), 0, random.nextInt(10) - random.nextInt(10)));
-						Biome biome = world.getBiome(blockpos1);
-						BlockPos blockpos2 = blockpos1.down();
-						IBlockState iblockstate = world.getBlockState(blockpos2);
-
-						if (blockpos1.getY() <= blockpos.getY() + 10 && blockpos1.getY() >= blockpos.getY() - 10 && biome.canRain() && biome.getTemperature(blockpos1) >= 0.15F) {
-							double d3 = random.nextDouble();
-							double d4 = random.nextDouble();
-							AxisAlignedBB axisalignedbb = iblockstate.getBoundingBox(world, blockpos2);
-
-							if (iblockstate.getMaterial() != Material.LAVA && iblockstate.getBlock() != Blocks.MAGMA) {
-								if (iblockstate.getMaterial() != Material.AIR) {
-									++j;
-
-									if (random.nextInt(j) == 0) {
-										d0 = (double) blockpos2.getX() + d3;
-										d1 = (double) ((float) blockpos2.getY() + 0.1F) + axisalignedbb.maxY - 1.0D;
-										d2 = (double) blockpos2.getZ() + d4;
-									}
-
-									mc.world.spawnParticle(EnumParticleTypes.WATER_DROP, (double) blockpos2.getX() + d3, (double) ((float) blockpos2.getY() + 0.1F) + axisalignedbb.maxY, (double) blockpos2.getZ() + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-								}
-							} else {
-								mc.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, (double) blockpos1.getX() + d3, (double) ((float) blockpos1.getY() + 0.1F) - axisalignedbb.minY, (double) blockpos1.getZ() + d4, 0.0D, 0.0D, 0.0D, new int[0]);
-							}
-						}
-					}
-
-					if (j > 0 && random.nextInt(3) < this.rainSoundCounter++) {
-						this.rainSoundCounter = 0;
-
-						if (d1 > (double) (blockpos.getY() + 1) && world.getPrecipitationHeight(blockpos).getY() > MathHelper.floor((float) blockpos.getY())) {
-							mc.world.playSound(d0, d1, d2, SoundEvents.WEATHER_RAIN_ABOVE, SoundCategory.WEATHER, 0.1F * volAmp, 0.5F, false);
-						} else {
-							mc.world.playSound(d0, d1, d2, SoundEvents.WEATHER_RAIN, SoundCategory.WEATHER, 0.2F * volAmp, 1.0F, false);
-						}
-					}
-				}
-			}
-		} catch (Exception ex) {
+		}
+		catch (Exception ex)
+		{
 			System.out.println("Weather2: Error handling sound play queue: ");
 			ex.printStackTrace();
 		}
@@ -567,8 +489,8 @@ public class SceneEnhancer implements Runnable {
 			if (windMan == null) return;
 
 			float curPrecipVal = getRainStrengthAndControlVisuals(entP);
+			boolean shouldSnow = curPrecipVal <= 0.0F;
 			float maxPrecip = 1.0F;
-			int precipitationHeight = entP.world.getPrecipitationHeight(new BlockPos(MathHelper.floor(entP.posX), 0, MathHelper.floor(entP.posZ))).getY();
 			Biome biomegenbase = entP.world.getBiome(new BlockPos(MathHelper.floor(entP.posX), 0, MathHelper.floor(entP.posZ)));
 			World world = entP.world;
 			Random rand = entP.world.rand;
@@ -586,8 +508,6 @@ public class SceneEnhancer implements Runnable {
 			//check rules same way vanilla texture precip does
 			if (biomegenbase != null && (biomegenbase.canRain() || biomegenbase.getEnableSnow()))
 			{
-				float temperature = CoroUtilCompatibility.getAdjustedTemperature(world, biomegenbase, entP.getPosition());
-				
 				//now absolute it for ez math
 				curPrecipVal = Math.min(maxPrecip, Math.abs(curPrecipVal));
 				
@@ -608,7 +528,7 @@ public class SceneEnhancer implements Runnable {
 					}
 
 					//rain
-					if (entP.world.getBiomeProvider().getTemperatureAtHeight(temperature, precipitationHeight) >= 0.15F)
+					if (!shouldSnow)
 					{
 						spawnCount = 0;
 						int spawnAreaSize = 20;
@@ -795,7 +715,9 @@ public class SceneEnhancer implements Runnable {
 							}
 						}
 					//snow
-					} else {
+					}
+					else
+					{
 						//Weather.dbg("rate: " + curPrecipVal * 5F * ConfigMisc.Particle_Precipitation_effect_rate);
 
 						spawnCount = 0;
@@ -906,7 +828,7 @@ public class SceneEnhancer implements Runnable {
 				if (storm.hasDownfall() && sizeToUse > stormDist)
 				{
 					double rainIntensity = ConfigParticle.enable_vanilla_rain ? 0.0D : overcastIntensity * Math.min((storm.stormHumidity - storm.stormRainMin) / 150, 1.0F);
-					 
+					
 					tempAdj = storm.stormTemperature > 0 ? 1F : -1F;
 					
 					//limit plain rain clouds to light intensity
@@ -1003,7 +925,7 @@ public class SceneEnhancer implements Runnable {
 		StormObject storm = getClosestStormCached(entP);
 		if (storm != null)
 		{
-			float tempAdj = storm.stormTemperature > 0 ? 1F : -1F;
+			float tempAdj = storm.stormTemperature > 0.0F ? 1.0F : -1.0F;
 
 			if (forOvercast)
 				return curOvercastStr * tempAdj;
@@ -1861,7 +1783,7 @@ public class SceneEnhancer implements Runnable {
 		Minecraft mc = Minecraft.getMinecraft();
 		IBlockState iblockstate = ActiveRenderInfo.getBlockStateAtEntityViewpoint(mc.world, mc.getRenderViewEntity(), 1F);
 		if (iblockstate.getMaterial().isLiquid()) return false;
-		return WeatherUtilConfig.isWeatherEnabled(ClientTickHandler.weatherManager.getDimension());
+		return ConfigParticle.enable_render_distance && WeatherUtilConfig.isWeatherEnabled(ClientTickHandler.weatherManager.getDimension());
 	}
 	
 	public static void renderWorldLast(RenderWorldLastEvent event) {

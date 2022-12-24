@@ -184,7 +184,14 @@ public class BlockSandLayer extends Block
 	public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos)
 	{
 		IBlockState state = ChunkUtils.getBlockState((World) worldIn, pos);
-		return	state.getPropertyKeys().contains(LAYERS) ? ((Integer)state.getValue(LAYERS)).intValue() == 1 : false;
+		try
+		{
+			return state.getPropertyKeys().contains(LAYERS) ? ((Integer)state.getValue(LAYERS)).intValue() == 1 : false;
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
 	}
 
 	/**

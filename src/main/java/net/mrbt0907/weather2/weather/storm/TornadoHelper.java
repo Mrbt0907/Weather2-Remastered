@@ -309,20 +309,19 @@ public class TornadoHelper
 		boolean perform = false;
 		int flyingBlockCount = 0;
 		int dimID = world.provider.getDimension();
-		if (!flyingBlock_LastCount.containsKey(dimID) || !flyingBlock_LastQueryTime.containsKey(dimID)) {
+		if (!flyingBlock_LastCount.containsKey(dimID) || !flyingBlock_LastQueryTime.containsKey(dimID))
 			perform = true;
-		} else if (flyingBlock_LastQueryTime.get(dimID) + queryRate < world.getTotalWorldTime()) {
+		else if (flyingBlock_LastQueryTime.get(dimID) + queryRate < world.getTotalWorldTime())
 			perform = true;
-		}
 
-		if (perform) {
-
-			//Weather.dbg("getting moving block count");
-
+		if (perform)
+		{
 			List<Entity> entities = world.loadedEntityList;
-			for (int i = 0; i < entities.size(); i++) {
+			for (int i = 0; i < entities.size(); i++)
+			{
 				Entity ent = entities.get(i);
-				if (ent instanceof EntityMovingBlock) {
+				if (ent instanceof EntityMovingBlock)
+				{
 					flyingBlockCount++;
 
 					if (flyingBlockCount > ConfigGrab.Storm_Tornado_maxFlyingEntityBlocks) {

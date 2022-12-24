@@ -393,7 +393,7 @@ public class CommandWeather2 extends CommandBase
 								so.isFirenado = isFirenado;
 								so.shouldConvert = shouldConvert;
 								so.isViolent = isViolent;
-								so.max_revives = revives;
+								so.maxRevives = revives;
 								so.stormName = name;
 								so.shouldBuildHumidity = true;
 								

@@ -31,7 +31,19 @@ import net.mrbt0907.weather2.weather.storm.StormObject;
 public class WeatherUtilBlock
 {
 	public static int layerableHeightPropMax = 8;
-
+	
+	public static boolean safeReplaceCheck(IBlockState state, World world, BlockPos pos)
+	{
+		try
+		{
+			return state.getBlock().isReplaceable(world, pos);
+		}
+		catch (Exception e)
+		{
+			return false;
+		}
+	}
+	
 	public static void fillAgainstWallSmoothly(World world, Vec3 posSource, float directionYaw, float scanDistance, float fillRadius, Block blockLayerable) {
 		fillAgainstWallSmoothly(world, posSource, directionYaw, scanDistance, fillRadius, blockLayerable, 4);
 	}
@@ -58,7 +70,8 @@ public class WeatherUtilBlock
 		
 		//fix for starting on a layerable block
 		IBlockState stateTest = ChunkUtils.getBlockState(world, posSource.toBlockPos());
-		if (stateTest.getBlock() == blockLayerable) {
+		if (stateTest.getBlock() == blockLayerable)
+		{
 			int heightTest = getHeightForAnyBlock(stateTest);
 			if (heightTest < 8) {}
 		}
@@ -100,7 +113,8 @@ public class WeatherUtilBlock
 				state.addCollisionBoxToList(world, pos, aabbCompare, listAABBCollision, null, false);
 
 				//if solid ground we can place on
-	    		if (state.getMaterial() != Material.AIR && state.getMaterial() != Material.PLANTS && (!state.getBlock().isReplaceable(world, pos) && !listAABBCollision.isEmpty())) {
+	    		if (state.getMaterial() != Material.AIR && state.getMaterial() != Material.PLANTS && !safeReplaceCheck(state, world, pos) && !listAABBCollision.isEmpty())
+	    		{
 	    			BlockPos posUp = new BlockPos(x, y + 1, z);
 	    			IBlockState stateUp = ChunkUtils.getBlockState(world, posUp);
 					//if above it is air
@@ -551,7 +565,7 @@ public class WeatherUtilBlock
 			List<AxisAlignedBB> listAABBCollision = new ArrayList<>();
 			stateCheckPlaceable.addCollisionBoxToList(world, posCheckPlaceable, aabbCompare, listAABBCollision, null, false);
 
-			if (stateCheckPlaceable.getBlock() != blockLayerable && stateCheckPlaceable.getBlock().isReplaceable(world, posCheckPlaceable) && listAABBCollision.isEmpty()) {
+			if (stateCheckPlaceable.getBlock() != blockLayerable && safeReplaceCheck(stateCheckPlaceable, world, posCheckPlaceable) && listAABBCollision.isEmpty()) {
 				posCheckPlaceable = posCheckPlaceable.add(0, -1, 0);
 				stateCheckPlaceable = ChunkUtils.getBlockState(world, posCheckPlaceable);
 				distForPlaceableBlocks++;
@@ -684,54 +698,54 @@ public class WeatherUtilBlock
 		return false;
 	}
 	
-	public static int getHeightForAnyBlock(IBlockState state) {
+	public static int getHeightForAnyBlock(IBlockState state)
+	{
 		Block block = state.getBlock();
-		if (block == Blocks.SNOW_LAYER) {
+		if (block == Blocks.SNOW_LAYER)
 			return ((Integer)state.getValue(BlockSnow.LAYERS)).intValue();
-		} else if (block == BlockRegistry.sand_layer) {
+		else if (block == BlockRegistry.sand_layer)
 			return ((Integer)state.getValue(BlockSandLayer.LAYERS)).intValue();
-		} else if (block == Blocks.SAND || block == Blocks.SNOW) {
+		else if (block == Blocks.SAND || block == Blocks.SNOW)
 			return 8;
-		} else if (block instanceof BlockSlab) {
+		else if (block instanceof BlockSlab)
 			return 4;
-		} else if (block == Blocks.AIR) {
+		else if (block == Blocks.AIR)
 			return 0;
-		} else {
+		else
 			return 8;
-		}
 	}
 	
-	public static int getHeightForLayeredBlock(IBlockState state) {
-		if (state.getBlock() == Blocks.SNOW_LAYER) {
+	public static int getHeightForLayeredBlock(IBlockState state)
+	{
+		if (state.getBlock() == Blocks.SNOW_LAYER)
 			return ((Integer)state.getValue(BlockSnow.LAYERS)).intValue();
-		} else if (state.getBlock() == BlockRegistry.sand_layer) {
+		else if (state.getBlock() == BlockRegistry.sand_layer)
 			return ((Integer)state.getValue(BlockSandLayer.LAYERS)).intValue();
-		} else if (state.getBlock() == Blocks.SAND || state.getBlock() == Blocks.SNOW) {
+		else if (state.getBlock() == Blocks.SAND || state.getBlock() == Blocks.SNOW)
 			return 8;
-		} else {
-			//missing implementation
+		else
 			return 0;
-		}
 	}
 	
-	public static IBlockState setBlockWithLayerState(Block block, int height) {
-		boolean solidBlockUnderMode = true;
-		if (block == Blocks.SNOW_LAYER) {
-			if (height == layerableHeightPropMax && solidBlockUnderMode) {
+	public static IBlockState setBlockWithLayerState(Block block, int height)
+	{
+		if (block == Blocks.SNOW_LAYER)
+		{
+			if (height == layerableHeightPropMax)
 				return Blocks.SNOW.getDefaultState();
-			} else {
+			else
 				return block.getDefaultState().withProperty(BlockSnow.LAYERS, height);
-			}
-		} else if (block == BlockRegistry.sand_layer) {
-			if (height == layerableHeightPropMax && solidBlockUnderMode) {
+		}
+		else if (block == BlockRegistry.sand_layer)
+		{
+			if (height == layerableHeightPropMax)
 				return Blocks.SAND.getDefaultState();
-			} else {
+			else
 				return block.getDefaultState().withProperty(BlockSandLayer.LAYERS, height);
-			}
-		} else {
+		}
+		else
 			//means missing implementation
 			return null;
-		}
 	}
 	
 	/**

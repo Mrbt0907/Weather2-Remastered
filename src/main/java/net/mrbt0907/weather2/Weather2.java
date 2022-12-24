@@ -31,7 +31,7 @@ public class Weather2
 {
 	public static final String MOD = "Weather 2 - Remastered";
 	public static final String MODID = "weather2";
-	public static final String VERSION = "2.8.0-indev-b";
+	public static final String VERSION = "2.8.2-indev-b";
 	public static final FMLEventChannel event_channel = NetworkRegistry.INSTANCE.newEventDrivenChannel(MODID);
 	public static final CreativeTabs TAB = new CreativeTabs(MODID) {@Override public ItemStack getTabIconItem() {return new ItemStack(BlockRegistry.tornado_sensor);}};
 	@Mod.Instance( value = Weather2.MODID )
@@ -54,6 +54,7 @@ public class Weather2
 		ConfigMod.addConfigFile(event, addConfig(new ConfigMisc()));
 		ConfigMod.addConfigFile(event, addConfig(new ConfigVolume()));
 		ConfigMod.addConfigFile(event, addConfig(new ConfigParticle()));
+		ConfigMod.addConfigFile(event, addConfig(new ConfigFront()));
 		ConfigMod.addConfigFile(event, addConfig(new ConfigStorm()));
 		ConfigMod.addConfigFile(event, addConfig(new ConfigGrab()));
 		ConfigMod.addConfigFile(event, addConfig(new ConfigSimulation()));

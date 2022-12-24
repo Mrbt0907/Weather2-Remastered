@@ -552,15 +552,24 @@ public class WeatherManagerServer extends WeatherManager
 	protected boolean canSpawnWeather(int type)
 	{
 		if (!WeatherUtilConfig.isWeatherEnabled(world.provider.getDimension())) return false;
+		long ticks;
+		
 		switch(type)
 		{
 			case 0:
+				ticks = ticksFrontFormed - world.getTotalWorldTime();
+				if (ticks > ConfigStorm.storm_spawn_delay)
+					ticksFrontFormed = world.getTotalWorldTime() + ConfigStorm.storm_spawn_delay;
 				return (!ConfigStorm.disable_tornados || !ConfigStorm.disable_cyclones) && ticksFrontFormed < world.getTotalWorldTime() && fronts.size() - 1 < ConfigFront.max_front_objects;
 			case 1:
-				
+				ticks = ticksStormFormed - world.getTotalWorldTime();
+				if (ticks > ConfigStorm.storm_spawn_delay)
+					ticksStormFormed = world.getTotalWorldTime() + ConfigStorm.storm_spawn_delay;
 				return (!ConfigStorm.disable_tornados || !ConfigStorm.disable_cyclones) && ticksStormFormed < world.getTotalWorldTime() && systems.size() < ConfigStorm.max_weather_objects;
 			case 2:
-				
+				ticks = ticksSandstormFormed - world.getTotalWorldTime();
+				if (ticks > ConfigSand.sandstorm_spawn_delay)
+					ticksSandstormFormed = world.getTotalWorldTime() + ConfigSand.sandstorm_spawn_delay;
 				return !ConfigSand.disable_sandstorms && ticksSandstormFormed < world.getTotalWorldTime() && systems.size() < ConfigStorm.max_weather_objects;
 			default:
 				return false;

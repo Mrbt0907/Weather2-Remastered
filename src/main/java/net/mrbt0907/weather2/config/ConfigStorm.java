@@ -20,10 +20,10 @@ public class ConfigStorm implements IConfigCategory
 	public static int max_weather_objects = 40;
 	@ConfigComment("A storm has a 1 in x chance to spawn a lightning bolt.\nHigher numbers means less lightning in storms")
 	public static int lightning_bolt_1_in_x = 200;
-	@ConfigComment("How far can storms expand up to? Allows funnels to grow larger depending on size.")
+	@ConfigComment("How big can storms expand up to? Allows funnels to grow larger depending on size.")
 	public static int max_storm_size = 1000;
-	@ConfigComment("How far can storms expand up to? Allows funnels to grow larger depending on size.")
-	public static int min_storm_size = 500;
+	@ConfigComment("How small can storms expand up to? Allows funnels to grow smaller depending on size.")
+	public static int min_storm_size = 400;
 	@ConfigComment("Tick delay for storms. Higher values means storms have slower development. DO NOT PUT 0")
 	public static int storm_tick_delay = 60;
 	@ConfigComment("How much water builds up in storms. Higher values = heavier rain faster")
@@ -36,10 +36,6 @@ public class ConfigStorm implements IConfigCategory
 	public static double chance_for_violent_storm = 5.0D;
 	@ConfigComment("How much hail falls from the sky in a storm per tick?")
 	public static int hail_stones_per_tick = 2;
-	@ConfigComment("A storm has a 10 in x chance to spawn over water. -1 disables this")
-	public static int storm_developing_above_ocean_10_in_x = 300;
-	@ConfigComment("A storm has a 10 in x chance to spawn in land. -1 disables this")
-	public static int storm_developing_above_land_10_in_x = -1;
 	@ConfigComment("Percent chance for a storm to become a supercell")
 	public static double chance_for_supercell = 35.0D;
 	@ConfigComment("Percent chance for a storm to become a thunderstorm")
@@ -51,14 +47,13 @@ public class ConfigStorm implements IConfigCategory
 	@ConfigComment("See config file for examples. A list of hurricane stages with the chances for a storm to reach the stage. Use commas and/or spaces to separate each entry. Do not use quotation marks. Use = without spaces to indicate the chance. Chance goes from 0 (0% Chance) to 1 (100% Chance). Accepted formats - stage=chance")
 	public static String chances_for_hurricanes = "C5=0.1, C4=2, C3=8.2, C2=10, C1=28, C0=30.5";
 	
-	
 	//per server storm settings
 	@ConfigComment("Use global storm instead of per player rates to spawn storms.\nEnable if you want storms to stay at the same rarity no matter how many players are in the server.")
 	public static boolean enable_spawn_per_player = false;
-	@ConfigComment("Globally a deadly storm has a 1 in x chance to spawn")
+	@ConfigComment("Each storm has a x chance to be a storm instead of a cloud. Goes from 0 to 100")
 	public static int storm_spawn_chance = 30;
-	@ConfigComment("The time in ticks it takes for a severe storm to spawn globally")
-	public static int storm_spawn_delay = 72000;
+	@ConfigComment("The time in ticks it takes for all weather to spawn")
+	public static int storm_spawn_delay = 1000;
 	@ConfigComment("Should Weather2 cancel vanilla rainstorms at all times?")
 	public static boolean prevent_vanilla_thunderstorms = true;
 	//lightning
@@ -108,7 +103,7 @@ public class ConfigStorm implements IConfigCategory
 	@ConfigComment("Accuracy of tornado aimed at player in degrees.\nHigher values means less accuracy up to 360 degrees")
 	public static int storm_aim_accuracy_in_angle = 5;
 
-	@ConfigComment("Accuracy of tornado aimed at player in degrees.\nHigher values means less accuracy up to 360 degrees")
+	@ConfigComment("Tick rate for the storm spawning system")
 	public static int spawningTickRate = 20;
 	@ConfigComment("Make tornados initial heading aimed towards closest player")
 	public static boolean storms_aim_at_player = true;

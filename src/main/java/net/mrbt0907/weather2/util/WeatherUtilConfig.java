@@ -48,83 +48,69 @@ public class WeatherUtilConfig
 						ConfigStorm.disable_cyclones = value == 0;
 						break;
 					case GuiEZConfig.BC_ENABLE_SANDSTORM:
-						ConfigSand.disable_sandstorms = value == 1;
+						ConfigSand.disable_sandstorms = value == 0;
 						break;
 					case GuiEZConfig.BC_FREQUENCY:
 						switch(value)
 						{
 							case 0:
-								ConfigStorm.max_weather_objects = 10;
-								ConfigStorm.storm_spawn_chance = 25;
-								ConfigStorm.storm_spawn_delay = 240000;
-								ConfigStorm.storm_developing_above_land_10_in_x = -1;
-								ConfigStorm.storm_developing_above_ocean_10_in_x = 600;
+								ConfigStorm.max_weather_objects = 30;
+								ConfigStorm.storm_spawn_chance = 5;
+								ConfigStorm.storm_spawn_delay = 6000;
 								ConfigStorm.storms_aim_at_player = false;
 								ConfigStorm.storm_aim_accuracy_in_angle = 180;
-								ConfigSand.sandstorm_spawn_1_in_x = 30;
-								ConfigSand.sandstorm_spawn_delay = 240000;
+								ConfigSand.sandstorm_spawn_1_in_x = 300;
+								ConfigSand.sandstorm_spawn_delay = 8000;
 								break;
 							case 1:
-								ConfigStorm.max_weather_objects = 10;
-								ConfigStorm.storm_spawn_chance = 25;
-								ConfigStorm.storm_spawn_delay = 120000;
-								ConfigStorm.storm_developing_above_land_10_in_x = -1;
-								ConfigStorm.storm_developing_above_ocean_10_in_x = 500;
+								ConfigStorm.max_weather_objects = 30;
+								ConfigStorm.storm_spawn_chance = 10;
+								ConfigStorm.storm_spawn_delay = 4000;
 								ConfigStorm.storms_aim_at_player = false;
 								ConfigStorm.storm_aim_accuracy_in_angle = 180;
-								ConfigSand.sandstorm_spawn_1_in_x = 30;
-								ConfigSand.sandstorm_spawn_delay = 120000;
+								ConfigSand.sandstorm_spawn_1_in_x = 200;
+								ConfigSand.sandstorm_spawn_delay = 8000;
 								break;
 							case 2:
-								ConfigStorm.max_weather_objects = 15;
-								ConfigStorm.storm_spawn_chance = 25;
-								ConfigStorm.storm_spawn_delay = 48000;
-								ConfigStorm.storm_developing_above_land_10_in_x = -1;
-								ConfigStorm.storm_developing_above_ocean_10_in_x = 450;
+								ConfigStorm.max_weather_objects = 30;
+								ConfigStorm.storm_spawn_chance = 15;
+								ConfigStorm.storm_spawn_delay = 2500;
 								ConfigStorm.storms_aim_at_player = false;
 								ConfigStorm.storm_aim_accuracy_in_angle = 180;
-								ConfigSand.sandstorm_spawn_1_in_x = 30;
-								ConfigSand.sandstorm_spawn_delay = 48000;
+								ConfigSand.sandstorm_spawn_1_in_x = 100;
+								ConfigSand.sandstorm_spawn_delay = 4000;
 								break;
 							case 3:
-								ConfigStorm.max_weather_objects = 20;
-								ConfigStorm.storm_spawn_chance = 25;
-								ConfigStorm.storm_spawn_delay = 24000;
-								ConfigStorm.storm_developing_above_land_10_in_x = -1;
-								ConfigStorm.storm_developing_above_ocean_10_in_x = 300;
+								ConfigStorm.max_weather_objects = 40;
+								ConfigStorm.storm_spawn_chance = 20;
+								ConfigStorm.storm_spawn_delay = 2000;
 								ConfigStorm.storms_aim_at_player = false;
 								ConfigStorm.storm_aim_accuracy_in_angle = 180;
-								ConfigSand.sandstorm_spawn_1_in_x = 30;
-								ConfigSand.sandstorm_spawn_delay = 24000;
+								ConfigSand.sandstorm_spawn_1_in_x = 60;
+								ConfigSand.sandstorm_spawn_delay = 2000;
 								break;
 							case 4:
-								ConfigStorm.max_weather_objects = 25;
-								ConfigStorm.storm_spawn_chance = 25;
-								ConfigStorm.storm_spawn_delay = 12000;
-								ConfigStorm.storm_developing_above_land_10_in_x = 600;
-								ConfigStorm.storm_developing_above_ocean_10_in_x = 256;
+								ConfigStorm.max_weather_objects = 50;
+								ConfigStorm.storm_spawn_chance = 30;
+								ConfigStorm.storm_spawn_delay = 1250;
 								ConfigStorm.storms_aim_at_player = true;
 								ConfigStorm.storm_aim_accuracy_in_angle = 90;
-								ConfigSand.sandstorm_spawn_1_in_x = 30;
-								ConfigSand.sandstorm_spawn_delay = 12000;
+								ConfigSand.sandstorm_spawn_1_in_x = 40;
+								ConfigSand.sandstorm_spawn_delay = 1500;
 								break;
 							case 5:
 								ConfigStorm.max_weather_objects = 50;
-								ConfigStorm.storm_spawn_chance = 15;
-								ConfigStorm.storm_spawn_delay = 5000;
-								ConfigStorm.storm_developing_above_land_10_in_x = 256;
-								ConfigStorm.storm_developing_above_ocean_10_in_x = 125;
+								ConfigStorm.storm_spawn_chance = 50;
+								ConfigStorm.storm_spawn_delay = 750;
 								ConfigStorm.storms_aim_at_player = true;
 								ConfigStorm.storm_aim_accuracy_in_angle = 45;
 								ConfigSand.sandstorm_spawn_1_in_x = 25;
-								ConfigSand.sandstorm_spawn_delay = 5000;
+								ConfigSand.sandstorm_spawn_delay = 1200;
 								break;
 							case 6:
 								ConfigStorm.max_weather_objects = 100;
-								ConfigStorm.storm_spawn_chance = 2;
-								ConfigStorm.storm_spawn_delay = 1000;
-								ConfigStorm.storm_developing_above_land_10_in_x = 100;
-								ConfigStorm.storm_developing_above_ocean_10_in_x = 50;
+								ConfigStorm.storm_spawn_chance = 100;
+								ConfigStorm.storm_spawn_delay = 200;
 								ConfigStorm.storms_aim_at_player = true;
 								ConfigStorm.storm_aim_accuracy_in_angle = 0;
 								ConfigSand.sandstorm_spawn_1_in_x = 3;
@@ -295,6 +281,8 @@ public class WeatherUtilConfig
 								ConfigParticle.enable_heavy_precipitation = false;
 								ConfigParticle.use_vanilla_rain_and_thunder = false;
 								ConfigParticle.precipitation_particle_rate = 0.00000000000001D;
+								ConfigParticle.enable_distant_downfall = false;
+								ConfigParticle.distant_downfall_particle_rate = 0.0F;
 								break;
 							case 1:
 								ConfigParticle.enable_precipitation = false;
@@ -302,6 +290,8 @@ public class WeatherUtilConfig
 								ConfigParticle.enable_heavy_precipitation = false;
 								ConfigParticle.use_vanilla_rain_and_thunder = true;
 								ConfigParticle.precipitation_particle_rate = 0.05D;
+								ConfigParticle.enable_distant_downfall = false;
+								ConfigParticle.distant_downfall_particle_rate = 0.4F;
 								break;
 							case 2:
 								ConfigParticle.enable_precipitation = true;
@@ -309,6 +299,8 @@ public class WeatherUtilConfig
 								ConfigParticle.enable_heavy_precipitation = false;
 								ConfigParticle.use_vanilla_rain_and_thunder = false;
 								ConfigParticle.precipitation_particle_rate = 0.2D;
+								ConfigParticle.enable_distant_downfall = false;
+								ConfigParticle.distant_downfall_particle_rate = 0.2F;
 								break;
 							case 3:
 								ConfigParticle.enable_precipitation = true;
@@ -316,6 +308,8 @@ public class WeatherUtilConfig
 								ConfigParticle.enable_heavy_precipitation = false;
 								ConfigParticle.use_vanilla_rain_and_thunder = false;
 								ConfigParticle.precipitation_particle_rate = 0.40D;
+								ConfigParticle.enable_distant_downfall = false;
+								ConfigParticle.distant_downfall_particle_rate = 0.2F;
 								break;
 							case 4:
 								ConfigParticle.enable_precipitation = true;
@@ -323,6 +317,8 @@ public class WeatherUtilConfig
 								ConfigParticle.enable_heavy_precipitation = true;
 								ConfigParticle.use_vanilla_rain_and_thunder = false;
 								ConfigParticle.precipitation_particle_rate = 0.65D;
+								ConfigParticle.enable_distant_downfall = true;
+								ConfigParticle.distant_downfall_particle_rate = 0.4F;
 								break;
 							case 5:
 								ConfigParticle.enable_precipitation = true;
@@ -330,6 +326,8 @@ public class WeatherUtilConfig
 								ConfigParticle.enable_heavy_precipitation = true;
 								ConfigParticle.use_vanilla_rain_and_thunder = false;
 								ConfigParticle.precipitation_particle_rate = 1.0D;
+								ConfigParticle.enable_distant_downfall = true;
+								ConfigParticle.distant_downfall_particle_rate = 0.6F;
 								break;
 							case 6:
 								ConfigParticle.enable_precipitation = true;
@@ -337,6 +335,8 @@ public class WeatherUtilConfig
 								ConfigParticle.enable_heavy_precipitation = true;
 								ConfigParticle.use_vanilla_rain_and_thunder = false;
 								ConfigParticle.precipitation_particle_rate = 1.6D;
+								ConfigParticle.enable_distant_downfall = true;
+								ConfigParticle.distant_downfall_particle_rate = 1.0F;
 								break;
 							case 7:
 								ConfigParticle.enable_precipitation = true;
@@ -344,6 +344,8 @@ public class WeatherUtilConfig
 								ConfigParticle.enable_heavy_precipitation = true;
 								ConfigParticle.use_vanilla_rain_and_thunder = false;
 								ConfigParticle.precipitation_particle_rate = 4.0D;
+								ConfigParticle.enable_distant_downfall = true;
+								ConfigParticle.distant_downfall_particle_rate = 2.0F;
 								break;
 						}
 						break;
@@ -355,48 +357,64 @@ public class WeatherUtilConfig
 								ConfigParticle.enable_falling_leaves = false;
 								ConfigParticle.enable_fire_particle = false;
 								ConfigParticle.enable_waterfall_splash = false;
+								ConfigParticle.enable_wind_particle = false;
+								ConfigParticle.wind_particle_rate = 0.0D;
 								ConfigParticle.ambient_particle_rate = 0.0D;
 								break;
 							case 1:
 								ConfigParticle.enable_falling_leaves = true;
 								ConfigParticle.enable_fire_particle = false;
 								ConfigParticle.enable_waterfall_splash = false;
+								ConfigParticle.enable_wind_particle = false;
+								ConfigParticle.wind_particle_rate = 0.0D;
 								ConfigParticle.ambient_particle_rate = 0.1D;
 								break;
 							case 2:
 								ConfigParticle.enable_falling_leaves = true;
 								ConfigParticle.enable_fire_particle = true;
 								ConfigParticle.enable_waterfall_splash = false;
+								ConfigParticle.enable_wind_particle = false;
+								ConfigParticle.wind_particle_rate = 0.0D;
 								ConfigParticle.ambient_particle_rate = 0.2D;
 								break;
 							case 3:
 								ConfigParticle.enable_falling_leaves = true;
 								ConfigParticle.enable_fire_particle = true;
 								ConfigParticle.enable_waterfall_splash = true;
+								ConfigParticle.enable_wind_particle = true;
+								ConfigParticle.wind_particle_rate = 0.1D;
 								ConfigParticle.ambient_particle_rate = 0.35D;
 								break;
 							case 4:
 								ConfigParticle.enable_falling_leaves = true;
 								ConfigParticle.enable_fire_particle = true;
 								ConfigParticle.enable_waterfall_splash = true;
+								ConfigParticle.enable_wind_particle = true;
+								ConfigParticle.wind_particle_rate = 0.2D;
 								ConfigParticle.ambient_particle_rate = 0.6D;
 								break;
 							case 5:
 								ConfigParticle.enable_falling_leaves = true;
 								ConfigParticle.enable_fire_particle = true;
 								ConfigParticle.enable_waterfall_splash = true;
+								ConfigParticle.enable_wind_particle = true;
+								ConfigParticle.wind_particle_rate = 0.25D;
 								ConfigParticle.ambient_particle_rate = 1.0D;
 								break;
 							case 6:
 								ConfigParticle.enable_falling_leaves = true;
 								ConfigParticle.enable_fire_particle = true;
 								ConfigParticle.enable_waterfall_splash = true;
+								ConfigParticle.enable_wind_particle = true;
+								ConfigParticle.wind_particle_rate = 0.3D;
 								ConfigParticle.ambient_particle_rate = 2.0D;
 								break;
 							case 7:
 								ConfigParticle.enable_falling_leaves = true;
 								ConfigParticle.enable_fire_particle = true;
 								ConfigParticle.enable_waterfall_splash = true;
+								ConfigParticle.enable_wind_particle = true;
+								ConfigParticle.wind_particle_rate = 0.5D;
 								ConfigParticle.ambient_particle_rate = 4.0D;
 								break;
 						}

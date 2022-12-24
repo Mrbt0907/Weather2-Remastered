@@ -60,7 +60,7 @@ public class FrontObject implements IWeatherDetectable
 		this.pos = pos;
 		this.layer = layer;
 		size = Maths.random(ConfigStorm.min_storm_size, ConfigFront.max_front_size);
-		angle = CoroUtilMisc.adjVal(Maths.random(360.0F), manager.windManager.windAngle, 30.0F);
+		angle = manager.windManager.windAngle;
 		float vecX = (float) -Math.sin(Math.toRadians(angle));
 		float vecZ = (float) Math.cos(Math.toRadians(angle));
 		float speed = (manager.windManager.windSpeed * 0.2F) + 0.02F;
@@ -191,7 +191,7 @@ public class FrontObject implements IWeatherDetectable
 				{
 					if (motion.speed() / ConfigWind.windSpeedMax <= 0.05F)
 						type = 0;
-					else if (this.temperature < 0.35)
+					else if (temperature < 0.5)
 						type = 1;
 					else
 						type = 2;
@@ -244,7 +244,7 @@ public class FrontObject implements IWeatherDetectable
 			storm.layer = layer;
 			storm.isNatural = true;
 			storm.pos = new Vec3(pos.posX + Maths.random(-size, size), storm.getLayerHeight(), pos.posZ + Maths.random(-size, size));
-			if (Maths.chance(ConfigStorm.chance_for_supercell * 0.01D))
+			if (Maths.chance(ConfigStorm.storm_spawn_chance * 0.01D))
 				storm.initRealStorm();
 			addWeatherObject(storm);
 			return storm;

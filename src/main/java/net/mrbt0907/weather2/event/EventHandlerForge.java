@@ -340,12 +340,22 @@ public class EventHandlerForge
 				if ((float) ReflectionHelper.get(EntityRenderer.class, event.getRenderer(), "farPlaneDistance", "field_78530_s") != ConfigParticle.render_distance);
 					ReflectionHelper.set(EntityRenderer.class, event.getRenderer(), (float)ConfigParticle.render_distance, "farPlaneDistance", "field_78530_s");
 			}
-			
-			//TODO: make use of this, density only works with EXP or EXP 2 mode
-			GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
-			GlStateManager.setFogStart(SceneEnhancer.fogStart);
-	        GlStateManager.setFogEnd(SceneEnhancer.fogEnd);
         }
+		
+		try
+		{
+			SceneEnhancer.fogDistance = event.getRenderer().farPlaneDistance;
+		}
+		catch (Exception e)
+		{
+			SceneEnhancer.fogDistance = (float) ReflectionHelper.get(EntityRenderer.class, event.getRenderer(), "farPlaneDistance", "field_78530_s");
+		}
+
+		
+		//TODO: make use of this, density only works with EXP or EXP 2 mode
+		GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
+		GlStateManager.setFogStart(SceneEnhancer.fogStart);
+        GlStateManager.setFogEnd(SceneEnhancer.fogEnd);
 	}
 
 	@SubscribeEvent

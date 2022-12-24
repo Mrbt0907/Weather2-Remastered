@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -36,8 +37,10 @@ public class GuiWeather extends WeatherUtilGui
 			{
 				WeatherManagerClient manager = ClientTickHandler.weatherManager;
 				ItemSensor item = (ItemSensor) stack.getItem();
+				NBTTagCompound nbt = stack.getTagCompound();
+				boolean enabled = nbt == null ? false : nbt.getBoolean("enabled");
 				
-				if (item.enabled && manager != null)
+				if (enabled && manager != null)
 				{
 					Maths.Vec3 pos = new Maths.Vec3(mc.player.posX, mc.player.posY, mc.player.posZ);
 					BlockPos bPos = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);

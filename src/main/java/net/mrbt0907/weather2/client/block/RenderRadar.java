@@ -86,7 +86,7 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 						renderLivingLabel("\u00A7" + " Current Funnel Wind Speed: " + (long)WeatherUtil.toMph(system.stormWind) + " MPH", x, y + 2.6F, z, 1, 10, 10, playerViewY, 1.0F);
 						renderLivingLabel("\u00A7" + " Current Funnel Size: " + (long)system.funnel_size + " Blocks", x, y + 2.7F, z, 1, 10, 10, playerViewY, 1.0F);
 						renderLivingLabel("\u00A7" + " Current Stage/MaxStage: " + system.stormStage + "/" + system.stormStageMax, x, y + 2.8F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Growth Percentage: " + (system.stormSizeRate * 100) + "%", x, y + 2.9F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Size Multiplier: " + (system.stormSizeRate * 100) + "%", x, y + 2.9F, z, 1, 10, 10, playerViewY, 1.0F);
 						renderLivingLabel("\u00A7" + " Is Violent: " + system.isViolent, x, y + 3.0F, z, 1, 10, 10, playerViewY, 1.0F);
 						renderLivingLabel("\u00A7" + " UUID: " + system.getUUID(), x, y + 3.1F, z, 1, 10, 10, playerViewY, 1.0F);
 						String stage = radar.system.getName();
