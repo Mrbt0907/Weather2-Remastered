@@ -2,6 +2,7 @@ package net.mrbt0907.weather2.weather.storm;
 
 import java.util.UUID;
 
+import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -27,6 +28,8 @@ public abstract class WeatherObject implements IWeatherDetectable
 	public long ticks = 0L;
 	public int size = ConfigStorm.min_storm_size;
 	
+	protected World world;
+	
 	/**
 	 * used to count up to a threshold to finally remove weather objects,
 	 * solves issue of simbox cutoff removing storms for first few ticks as player is joining in singleplayer
@@ -39,6 +42,7 @@ public abstract class WeatherObject implements IWeatherDetectable
 		this.front = front;
 		manager = front.getWeatherManager();
 		nbt = new CachedNBTTagCompound();
+		world = front.world;
 		init();
 	}
 	
@@ -74,10 +78,9 @@ public abstract class WeatherObject implements IWeatherDetectable
 	
 	@SideOnly(Side.CLIENT)
 	public void cleanupClient(boolean wipe) {}
-	public void readFromNBT() {}
-	public void writeToNBT() {}
-	public void readNBT()
-	{	
+	
+	public void readFromNBT()
+	{
 		id = nbt.getUUID("ID");
 		pos = new Vec3(nbt.getDouble("posX"), nbt.getDouble("posY"), nbt.getDouble("posZ"));
 		motion = new Vec3(nbt.getDouble("vecX"), nbt.getDouble("vecY"), nbt.getDouble("vecZ"));
@@ -87,7 +90,7 @@ public abstract class WeatherObject implements IWeatherDetectable
 		isDead = nbt.getBoolean("isDead");
 	}
 	
-	public CachedNBTTagCompound writeNBT()
+	public CachedNBTTagCompound writeToNBT()
 	{
 		nbt.setDouble("posX", pos.posX);
 		nbt.setDouble("posY", pos.posY);

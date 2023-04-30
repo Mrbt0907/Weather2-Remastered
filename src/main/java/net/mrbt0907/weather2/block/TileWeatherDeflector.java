@@ -25,12 +25,13 @@ public class TileWeatherDeflector extends TileEntity implements ITickable
 
 	//0 = kill storms, 1 = prevent block damage
 	public int mode = 0;
-
-	public static int MODE_KILLSTORMS = 0;
-	public static int MODE_NOBLOCKDAMAGE = 1;
+	
+	public static final int MODE_KILLSTORMS = 0;
+	public static final int MODE_NOBLOCKDAMAGE = 1;
 
 	@Override
-	public void onLoad() {
+	public void onLoad()
+	{
 		super.onLoad();
 		maintainBlockDamageDeflect();
 	}
@@ -40,7 +41,7 @@ public class TileWeatherDeflector extends TileEntity implements ITickable
     {
     	if (!world.isRemote)
     	{
-    		if (world.getTotalWorldTime() % 100 == 0 && mode == MODE_KILLSTORMS)
+    		if (mode == MODE_KILLSTORMS && world.getTotalWorldTime() % 100L == 0L)
     		{
 				WeatherManagerServer wm = ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
 				if (wm != null)
@@ -63,43 +64,45 @@ public class TileWeatherDeflector extends TileEntity implements ITickable
 				maintainBlockDamageDeflect();
     	}
     }
-
-    public void maintainBlockDamageDeflect() {
+	
+    public void maintainBlockDamageDeflect()
+    {
 		WeatherManagerServer wm = ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
-		if (wm != null) {
-			if (mode == MODE_KILLSTORMS) {
-				if (wm.getListWeatherBlockDamageDeflector().contains(getPos().toLong())) {
-					wm.getListWeatherBlockDamageDeflector().remove(getPos().toLong());
-				}
-			} else if (mode == MODE_NOBLOCKDAMAGE) {
-				if (!wm.getListWeatherBlockDamageDeflector().contains(getPos().toLong())) {
-					wm.getListWeatherBlockDamageDeflector().add(getPos().toLong());
-				}
+		
+		if (wm != null)
+		{
+			long pos = getPos().toLong();
+			switch(mode)
+			{
+				case 1:
+					if (wm.getListWeatherBlockDamageDeflector().contains(pos))
+						wm.getListWeatherBlockDamageDeflector().remove(pos);
+					break;
+				default:
+					if (!wm.getListWeatherBlockDamageDeflector().contains(pos))
+						wm.getListWeatherBlockDamageDeflector().add(pos);
 			}
 		}
 	}
 
-	public void rightClicked(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public void rightClicked(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
+	{
 		cycleMode();
 
-		String modeMsg = "";
-
-		if (mode == MODE_KILLSTORMS) {
-			modeMsg = "Kill thunderstorms and deadlier";
-		} else if (mode == MODE_NOBLOCKDAMAGE) {
-			modeMsg = "Prevent block damage only";
-			maintainBlockDamageDeflect();
+		switch (mode)
+		{
+			case MODE_NOBLOCKDAMAGE:
+				playerIn.sendMessage(new TextComponentString("Deflection Mode: Protect Blocks"));
+				maintainBlockDamageDeflect();
+				break;
+			default:
+				playerIn.sendMessage(new TextComponentString("Deflection Mode: Destroy Storms"));
 		}
-
-		playerIn.sendMessage(new TextComponentString("Weather Deflector set to mode: " + modeMsg));
 	}
 
-	public void cycleMode() {
-		mode++;
-
-		if (mode > MODE_NOBLOCKDAMAGE) {
-			mode = 0;
-		}
+	public void cycleMode()
+	{
+		mode = (mode + 1) % 2;
 	}
 
     public NBTTagCompound writeToNBT(NBTTagCompound var1)
@@ -115,14 +118,15 @@ public class TileWeatherDeflector extends TileEntity implements ITickable
     }
 
 	@Override
-	public void invalidate() {
+	public void invalidate()
+	{
 		super.invalidate();
 
-		if (!world.isRemote) {
+		if (!world.isRemote)
+		{
 			//always try to remove, incase they removed the block before the tick code could run after switching mode
 			WeatherManagerServer wm = ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
 			wm.getListWeatherBlockDamageDeflector().remove(getPos().toLong());
 		}
-
 	}
 }

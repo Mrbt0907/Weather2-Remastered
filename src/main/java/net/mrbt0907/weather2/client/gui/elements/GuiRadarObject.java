@@ -46,8 +46,8 @@ public class GuiRadarObject
 		{
 			type = ((StormObject)wo).stormType == 0 ? 1 : 2;
 			isRaining = ((StormObject)wo).isDrizzling();
-			isHailing = ((StormObject)wo).isHailing;
-			size = ((StormObject)wo).funnel_size;
+			isHailing = ((StormObject)wo).isHailing();
+			size = ((StormObject)wo).funnelSize;
 		}
 		else if (wo instanceof SandstormObject)
 		{

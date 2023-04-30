@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.mrbt0907.weather2.ClientProxy;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.client.gui.elements.GuiButtonBoolean;
 import net.mrbt0907.weather2.client.gui.elements.GuiButtonCycle;
@@ -39,7 +39,7 @@ public class GuiEZConfig extends GuiScreen
 	/** The Y size of the inventory window in pixels. */
 	protected int ySize = 287;
 	
-	public ResourceLocation backgroundA = new ResourceLocation(Weather2.MODID + ":textures/gui/ez_gui_2.png");
+	public ResourceLocation backgroundA = new ResourceLocation(Weather2.OLD_MODID + ":textures/gui/ez_gui_2.png");
 	public ResourceLocation[] backgroundB = new ResourceLocation[0];
 	public int page = 0;
 	public int subPage = 0;
@@ -125,10 +125,10 @@ public class GuiEZConfig extends GuiScreen
 	public static final int BA_PRECIPITATION = 10;
 	public static final int BA_EFFECT = 11;
 	public static final int BA_EF = 12;
-	public static final int BA_RADAR = 13;
-	public static final int BA_SHADER = 14;
-	public static final int BA_FOLIAGE = 15;
-	public static final int BB_GLOBAL = 16;
+	public static final int BA_SHADER = 13;
+	public static final int BA_FOLIAGE = 14;
+	public static final int BB_GLOBAL = 15;
+	public static final int BB_RADAR = 16;
 	public static final int BC_ENABLE_TORNADO = 17;
 	public static final int BC_ENABLE_CYCLONE = 18;
 	public static final int BC_ENABLE_SANDSTORM = 19;
@@ -145,14 +145,9 @@ public class GuiEZConfig extends GuiScreen
 	public HashMap<Integer, String> buttons = new HashMap<Integer, String>();
 	public NBTTagCompound nbtSendCache;
 	
-	//Permissions
-	public boolean op = false;
-	
 	public GuiEZConfig()
 	{
 		super();
-		
-		op = FMLCommonHandler.instance().getMinecraftServerInstance() != null && FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer();
 		//only sync request on initial gui open
 		PacketEZGUI.sync();
 		
@@ -162,10 +157,10 @@ public class GuiEZConfig extends GuiScreen
 		TA_List.put(BA_PRECIPITATION, "precipitation");
 		TA_List.put(BA_EFFECT, "effect");
 		TA_List.put(BA_EF, "ef");
-		TA_List.put(BA_RADAR, "radar");
 		TA_List.put(BA_SHADER, "shader");
 		TA_List.put(BA_FOLIAGE, "foliage");
 		TB_List.put(BB_GLOBAL, "global");
+		TB_List.put(BB_RADAR, "radar");
 		TC_List.put(BC_ENABLE_TORNADO, "tornado");
 		TC_List.put(BC_ENABLE_CYCLONE, "cyclone");
 		TC_List.put(BC_ENABLE_SANDSTORM, "sandstorm");
@@ -178,6 +173,7 @@ public class GuiEZConfig extends GuiScreen
 		
 		//Initialize send cache.
 		nbtSendCache = new NBTTagCompound();
+		PacketEZGUI.isOp();
 	}
 	
 	@Override
@@ -317,7 +313,7 @@ public class GuiEZConfig extends GuiScreen
 		yStart = (int) (yCenter - ySize * 0.25F);
 		
 		addButton(new GuiButton(B_EXIT, xStart + 285, yStart + buttonRowCY, buttonWidth, buttonHeight, format(BUTTONL[4])));
-		addButton(new GuiButton(B_ADVANCED, xStart + 180, yStart + buttonRowCY, buttonWidth + 20, buttonHeight, format(BUTTONL[5])));
+		if (ClientProxy.clientTickHandler.op) addButton(new GuiButton(B_ADVANCED, xStart + 180, yStart + buttonRowCY, buttonWidth + 20, buttonHeight, format(BUTTONL[5])));
 		addButton(new GuiButton(B_GRAPHICS, xStart + 7, yStart + buttonRowAY, buttonWidth, buttonHeight, format(BUTTONL[25])));
 		addButton(new GuiButton(B_SYSTEM, xStart + 100, yStart + buttonRowAY, buttonWidth, buttonHeight, format(BUTTONL[26])));
 		addButton(new GuiButton(B_STORM, xStart + 192, yStart + buttonRowAY, buttonWidth, buttonHeight, format(BUTTONL[27])));
@@ -328,10 +324,10 @@ public class GuiEZConfig extends GuiScreen
 		BA_List.put(BA_PRECIPITATION, BL_STR_ALT, WeatherUtilConfig.getConfigValue(BA_PRECIPITATION));
 		BA_List.put(BA_EFFECT, BL_STR_ALT, WeatherUtilConfig.getConfigValue(BA_EFFECT));
 		BA_List.put(BA_EF, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BA_EF));
-		BA_List.put(BA_RADAR, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BA_RADAR));
 		BA_List.put(BA_SHADER, BL_SHADERS, WeatherUtilConfig.getConfigValue(BA_SHADER));
 		BA_List.put(BA_FOLIAGE, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BA_FOLIAGE));
 		BB_List.put(BB_GLOBAL, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BB_GLOBAL));
+		BB_List.put(BB_RADAR, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BB_RADAR));
 		BC_List.put(BC_ENABLE_TORNADO, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BC_ENABLE_TORNADO));
 		BC_List.put(BC_ENABLE_CYCLONE, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BC_ENABLE_CYCLONE));
 		BC_List.put(BC_ENABLE_SANDSTORM, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BC_ENABLE_SANDSTORM));
@@ -362,16 +358,18 @@ public class GuiEZConfig extends GuiScreen
 					maxSubPages = (size / maxEntries);
 					offsetA = (maxEntries * subPage) + BB_GLOBAL; 
 					
-					for(int i = 0; i < size - (maxEntries * subPage) && i < maxEntries; i++)
-						addButton(new GuiButtonCycle(i + offsetA, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BB_List.getA(i + offsetA), BB_List.getB(i + offsetA)), TB_List.get(i + offsetA));
+					if (ClientProxy.clientTickHandler.op)
+						for(int i = 0; i < size - (maxEntries * subPage) && i < maxEntries; i++)
+							addButton(new GuiButtonCycle(i + offsetA, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BB_List.getA(i + offsetA), BB_List.getB(i + offsetA)), TB_List.get(i + offsetA));
 					break;
 				case 2:
 					size = BC_List.size();
 					maxSubPages = (size / maxEntries);
 					offsetA = (maxEntries * subPage) + BC_ENABLE_TORNADO; 
 					
-					for(int i = 0; i < size - (maxEntries * subPage) && i < maxEntries; i++)
-						addButton(new GuiButtonCycle(i + offsetA, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BC_List.getA(i + offsetA), BC_List.getB(i + offsetA)), TC_List.get(i + offsetA));
+					if (ClientProxy.clientTickHandler.op)
+						for(int i = 0; i < size - (maxEntries * subPage) && i < maxEntries; i++)
+							addButton(new GuiButtonCycle(i + offsetA, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BC_List.getA(i + offsetA), BC_List.getB(i + offsetA)), TC_List.get(i + offsetA));
 					break;
 				case 3:
 					size = WeatherUtilConfig.dimNames.size();
@@ -382,12 +380,13 @@ public class GuiEZConfig extends GuiScreen
 					Object[] keys = WeatherUtilConfig.dimNames.keySet().toArray();
 					Object[] values = WeatherUtilConfig.dimNames.values().toArray();
 					int ii = 0;
-					for(int i = 0; i < size - offsetB && i < this.maxEntries; i++)
-					{
-						addButton(new GuiButtonCycle(i + offsetA + ii, xStart + buttonRowBX - (buttonWidth + 5), yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BL_WTOGGLE, WeatherUtilConfig.isWeatherEnabled((int) keys[i + offsetB]) ? 1 : 0), (String) values[i + offsetB]);
-						addButton(new GuiButtonCycle(i + offsetA + 1 + ii, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BL_ETOGGLE, WeatherUtilConfig.isEffectsEnabled((int) keys[i + offsetB]) ? 1 : 0));
-						ii++;
-					}
+					if (ClientProxy.clientTickHandler.op)
+						for(int i = 0; i < size - offsetB && i < this.maxEntries; i++)
+						{
+							addButton(new GuiButtonCycle(i + offsetA + ii, xStart + buttonRowBX - (buttonWidth + 5), yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BL_WTOGGLE, WeatherUtilConfig.isWeatherEnabled((int) keys[i + offsetB]) ? 1 : 0), (String) values[i + offsetB]);
+							addButton(new GuiButtonCycle(i + offsetA + 1 + ii, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, BL_ETOGGLE, WeatherUtilConfig.isEffectsEnabled((int) keys[i + offsetB]) ? 1 : 0));
+							ii++;
+						}
 					break;
 			}
 		}
@@ -470,7 +469,7 @@ public class GuiEZConfig extends GuiScreen
 			case B_ADVANCED:
 				if (send)
 					send();
-				Minecraft.getMinecraft().displayGuiScreen(new GuiConfigEditor());
+				if (ClientProxy.clientTickHandler.op) Minecraft.getMinecraft().displayGuiScreen(new GuiConfigEditor());
 				break;
 			case B_GRAPHICS: case B_SYSTEM: case B_STORM: case B_DIMENSION:
 				page = button.id == B_GRAPHICS ? 0 : button.id == B_SYSTEM ? 1 : button.id == B_STORM ? 2 : 3; 
@@ -529,6 +528,7 @@ public class GuiEZConfig extends GuiScreen
 	private void send()
 	{
 		Weather2.debug("Preparing to send packets... " + nbtSendCache);
+		PacketEZGUI.isOp();
 		if (nbtSendCache.hasKey("client"))
 		{
 			Weather2.debug("Sending config packet to client");
@@ -536,7 +536,7 @@ public class GuiEZConfig extends GuiScreen
 			WeatherUtilConfig.nbtReceiveClient(nbtSendCache.getCompoundTag("client"));
 			nbtSendCache.removeTag("client");
 		}
-		if (nbtSendCache.hasKey("server"))
+		if (nbtSendCache.hasKey("server") && ClientProxy.clientTickHandler.op)
 		{
 			Weather2.debug("Sending config packet to server");
 			PacketEZGUI.apply(nbtSendCache.getCompoundTag("server"));

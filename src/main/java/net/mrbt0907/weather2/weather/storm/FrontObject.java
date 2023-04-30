@@ -18,6 +18,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.weather.IWeatherDetectable;
+import net.mrbt0907.weather2.api.weather.WeatherEnum;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
 import net.mrbt0907.weather2.config.ConfigFront;
 import net.mrbt0907.weather2.config.ConfigSimulation;
@@ -37,6 +38,7 @@ public class FrontObject implements IWeatherDetectable
 	public NBTTagCompound nbt;
 	public Vec3 pos;
 	public Vec3 motion;
+	public boolean overrideAngle;
 	public float angle;
 	public float size;
 	public boolean isDying;
@@ -206,32 +208,33 @@ public class FrontObject implements IWeatherDetectable
 		StormObject storm = new StormObject(this);
 		storm.layer = layer;
 		storm.isNatural = false;
-		storm.stormTemperature = 0.1F;
+		storm.temperature = 0.1F;
 		storm.pos = new Vec3(posX, storm.getLayerHeight(), posZ);
-		storm.stormHumidity = stage * 50.0F;
-		storm.stormIntensity = stage;
-		storm.stormSizeRate = 1.0F;
-		storm.stormStage = stage;
-		storm.stormStageMax = storm.stormStage;
+		storm.rain = stage * 50.0F;
+		storm.intensity = stage;
+		storm.sizeRate = 1.0F;
+		storm.stage = stage;
+		storm.stageMax = storm.stage;
 		
-		for (Entry<String, Boolean> flag : flags.entrySet())
-		{
-			switch(flag.getKey().toLowerCase())
+		if (flags != null)
+			for (Entry<String, Boolean> flag : flags.entrySet())
 			{
-			case "alwaysprogress":
-				storm.alwaysProgresses = flag.getValue();
-			case "neverDissipate":
-				storm.neverDissipate = flag.getValue();
-			case "isFirenado":
-				storm.isFirenado = flag.getValue();
-			case "shouldConvert":
-				storm.shouldConvert = flag.getValue();
-			case "isViolent":
-				storm.isViolent = flag.getValue();
-			case "shouldBuildHumidity":
-				storm.shouldBuildHumidity = flag.getValue();
+				switch(flag.getKey().toLowerCase())
+				{
+				case "alwaysprogress":
+					storm.alwaysProgresses = flag.getValue();
+				case "neverDissipate":
+					storm.neverDissipate = flag.getValue();
+				case "isFirenado":
+					storm.isFirenado = flag.getValue();
+				case "shouldConvert":
+					storm.shouldConvert = flag.getValue();
+				case "isViolent":
+					storm.isViolent = flag.getValue();
+				case "shouldBuildHumidity":
+					storm.shouldBuildHumidity = flag.getValue();
+				}
 			}
-		}
 		addWeatherObject(storm);
 		return storm;
 	}
@@ -244,7 +247,7 @@ public class FrontObject implements IWeatherDetectable
 			storm.layer = layer;
 			storm.isNatural = true;
 			storm.pos = new Vec3(pos.posX + Maths.random(-size, size), storm.getLayerHeight(), pos.posZ + Maths.random(-size, size));
-			if (Maths.chance(ConfigStorm.storm_spawn_chance * 0.01D))
+			if (layer == 0 && Maths.chance(ConfigStorm.storm_spawn_chance * 0.01D))
 				storm.initRealStorm();
 			addWeatherObject(storm);
 			return storm;
@@ -306,6 +309,11 @@ public class FrontObject implements IWeatherDetectable
 	
 	public void aimStormAtPlayer(EntityPlayer entP)
 	{
+		Vec3 pos = this.pos;
+		
+		if (isGlobal)
+			pos = new Vec3(0, 0, 0);
+			
 		if (entP == null)
 			entP = manager.getWorld().getClosestPlayer(pos.posX, pos.posY, pos.posZ, -1, false);
 		
@@ -421,6 +429,9 @@ public class FrontObject implements IWeatherDetectable
 				activeStorms++;
 				
 			systems.put(weather.getUUID(), weather);
+			
+			if (ConfigStorm.storms_aim_at_player && !overrideAngle && weather instanceof StormObject && ((StormObject)weather).stageMax >= WeatherEnum.Stage.SEVERE.getStage())
+				aimStormAtPlayer(null);
 			manager.addWeatherObject(weather);
 		}
 	}

@@ -265,12 +265,12 @@ public class WeatherManager
 	
 	public WeatherObject getWorstWeather(Vec3 pos, double distance)
 	{
-		return getWorstWeather(pos, distance, WeatherEnum.Type.BLIZZARD, WeatherEnum.Type.CLOUD, WeatherEnum.Type.SANDSTORM);
+		return getWorstWeather(pos, distance, 0, Integer.MAX_VALUE, WeatherEnum.Type.BLIZZARD, WeatherEnum.Type.CLOUD, WeatherEnum.Type.SANDSTORM);
 	}
 	
-	public WeatherObject getWorstWeather(Vec3 pos, double distance, WeatherEnum.Type... excludedTypes)
+	public WeatherObject getWorstWeather(Vec3 pos, double distance, int minStage, int maxStage, WeatherEnum.Type... excludedTypes)
 	{
-		Map<WeatherObject, Integer> list = getWeatherSystems(pos, distance, 0, Integer.MAX_VALUE, excludedTypes);
+		Map<WeatherObject, Integer> list = getWeatherSystems(pos, distance, minStage, maxStage, excludedTypes);
 		WeatherObject result = null;
 		int stage = -1, curStage;
 		

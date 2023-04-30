@@ -112,7 +112,7 @@ public class BlockRegistry
 	{
 		if (registry != null)
 		{
-			block.setRegistryName(registry_name);
+			block.setRegistryName(new ResourceLocation(Weather2.OLD_MODID, registry_name));
 			block.setUnlocalizedName(registry_name);
 			
 			if (ore_dict_name != null)

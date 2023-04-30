@@ -377,45 +377,45 @@ public class CommandWeather2 extends CommandBase
 								
 								so.layer = 0;
 								so.isNatural = isNatural;
-								so.stormTemperature = 0.1F;
+								so.temperature = 0.1F;
 								so.pos = new Vec3(pos.x, so.getLayerHeight(), pos.z);
-								so.stormStage = isRandom ? so.rollDiceOnMaxIntensity() : stage;
-								so.stormStageMax = so.stormStage;
-								so.stormIntensity = so.stormStage - 0.99F;
-								so.stormHumidity = isRaining ? (isNatural ? 50.0F : isHailing ? 200.0F : so.stormStage * 50.0F) + 1.0F : 0.0F;
-								so.stormSizeRate = sizeMultiplier;
-								so.overrideAngle = angle >= 0.0F;
-								so.overrideNewAngle = angle;
-								so.overrideMotion = speed >= 0.0F;
-								so.overrideNewMotion = speed;
+								so.stage = isRandom ? so.rollDiceOnMaxIntensity() : stage;
+								so.stageMax = so.stage;
+								so.intensity = so.stage - 0.99F;
+								so.rain = isRaining ? (isNatural ? 50.0F : isHailing ? 200.0F : so.stage * 50.0F) + 1.0F : 0.0F;
+								so.sizeRate = sizeMultiplier;
+								if (angle >= 0.0F)
+									so.setAngle(angle);
+								if (speed >= 0.0F)
+									so.setSpeed(speed);
 								so.alwaysProgresses = alwaysProgress;
 								so.neverDissipate = neverDissipate;
 								so.isFirenado = isFirenado;
 								so.shouldConvert = shouldConvert;
 								so.isViolent = isViolent;
 								so.maxRevives = revives;
-								so.stormName = name;
+								so.name = name;
 								so.shouldBuildHumidity = true;
 								
-								if (isCyclone || isRandom && so.stormStage > 3 && Maths.chance(25))
+								if (isCyclone || isRandom && so.stage > 3 && Maths.chance(25))
 									so.stormType = StormType.WATER.ordinal();
 								
 								so.init();
 									
-								if (so.stormHumidity > 0.0F && so.isNatural)
+								if (so.rain > 0.0F && so.isNatural)
 									so.initRealStorm();
 								else
 								{
 									so.canProgress = true;
 									
-									if (so.stormSizeRate < 0.0F)
-										so.stormSizeRate = (float) Maths.random(ConfigStorm.min_size_growth, ConfigStorm.max_size_growth);
+									if (so.sizeRate < 0.0F)
+										so.sizeRate = (float) Maths.random(ConfigStorm.min_size_growth, ConfigStorm.max_size_growth);
 									
 									if (so.isViolent)
 									{
-										so.stormSizeRate += Maths.random(ConfigStorm.min_violent_size_growth, ConfigStorm.max_violent_size_growth);
-										if (so.stormStageMax < 9)
-											so.stormStageMax += 1;
+										so.sizeRate += Maths.random(ConfigStorm.min_violent_size_growth, ConfigStorm.max_violent_size_growth);
+										if (so.stageMax < 9)
+											so.stageMax += 1;
 									}
 								}
 

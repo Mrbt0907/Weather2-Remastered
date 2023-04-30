@@ -43,8 +43,8 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WindReader;
+import net.mrbt0907.weather2.api.weather.IWeatherRain;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
 import net.mrbt0907.weather2.client.entity.particle.EntityWaterfallFX;
@@ -827,12 +827,12 @@ public class SceneEnhancer implements Runnable {
 				
 				if (storm.hasDownfall() && sizeToUse > stormDist)
 				{
-					double rainIntensity = ConfigParticle.enable_vanilla_rain ? 0.0D : overcastIntensity * Math.min((storm.stormHumidity - storm.stormRainMin) / 150, 1.0F);
+					double rainIntensity = ConfigParticle.enable_vanilla_rain ? 0.0D : overcastIntensity * Math.min((storm.rain - IWeatherRain.MINIMUM_DRIZZLE) / 150, 1.0F);
 					
-					tempAdj = storm.stormTemperature > 0 ? 1F : -1F;
+					tempAdj = storm.temperature > 0 ? 1F : -1F;
 					
 					//limit plain rain clouds to light intensity
-					if (storm.stormStage < Stage.THUNDER.getStage())
+					if (storm.stage < Stage.THUNDER.getStage())
 						if (rainIntensity > 0.35) rainIntensity = 0.35;
 		
 				   if (ConfigMisc.overcast_mode && rainIntensity < overcastModeMinPrecip)
@@ -925,7 +925,7 @@ public class SceneEnhancer implements Runnable {
 		StormObject storm = getClosestStormCached(entP);
 		if (storm != null)
 		{
-			float tempAdj = storm.stormTemperature > 0.0F ? 1.0F : -1.0F;
+			float tempAdj = storm.temperature > 0.0F ? 1.0F : -1.0F;
 
 			if (forOvercast)
 				return curOvercastStr * tempAdj;
@@ -1823,8 +1823,8 @@ public class SceneEnhancer implements Runnable {
 			{
 				if (((StormObject)wo).isDeadly() && ((StormObject)wo).pos_funnel_base.distance(pos) - wo.size + 200.0D <= 0.0D)
 				{
-					WeatherUtilSound.play2DSound(SoundRegistry.windFast, SoundCategory.WEATHER, ((StormObject)wo).pos_funnel_base, 1000 + i, (float) ConfigVolume.cyclone, ((StormObject)wo).isViolent ? 0.7F : 0.8F, ((StormObject)wo).funnel_size + 350.0F, false);
-					WeatherUtilSound.play2DSound(SoundRegistry.debris, SoundCategory.WEATHER, ((StormObject)wo).pos_funnel_base, 2000 + i, (float) ConfigVolume.debris, 1.0F, ((StormObject)wo).funnel_size + 150.0F, false);
+					WeatherUtilSound.play2DSound(SoundRegistry.windFast, SoundCategory.WEATHER, ((StormObject)wo).pos_funnel_base, 1000 + i, (float) ConfigVolume.cyclone, ((StormObject)wo).isViolent ? 0.7F : 0.8F, ((StormObject)wo).funnelSize + 350.0F, false);
+					WeatherUtilSound.play2DSound(SoundRegistry.debris, SoundCategory.WEATHER, ((StormObject)wo).pos_funnel_base, 2000 + i, (float) ConfigVolume.debris, 1.0F, ((StormObject)wo).funnelSize + 150.0F, false);
 					success += 2;
 				}
 			}

@@ -25,4 +25,17 @@ public class PacketEZGUI extends PacketBase
 	{
 		send(10, nbt, player);
 	}
+	
+	public static void isOp()
+	{
+		NBTTagCompound nbt = new NBTTagCompound();
+		send(12, nbt);
+	}
+	
+	public static void isOp(boolean isOp, EntityPlayerMP player)
+	{
+		NBTTagCompound nbt = new NBTTagCompound();
+		nbt.setBoolean("op", isOp);
+		send(16, nbt);
+	}
 }

@@ -19,7 +19,7 @@ import modconfig.ConfigMod;
 
 public class WeatherUtilConfig
 {
-	public static final String version = "2.2";
+	public static final String version = "2.3";
 	public static final Map<Integer, Integer> DEFAULTS = new HashMap<Integer, Integer>();
 	private static List<Integer> weatherList = new ArrayList<Integer>();
 	private static List<Integer> effectList = new ArrayList<Integer>();
@@ -40,6 +40,9 @@ public class WeatherUtilConfig
 				{
 					case GuiEZConfig.BB_GLOBAL:
 						ConfigMisc.overcast_mode = value == 1;
+						break;
+					case GuiEZConfig.BB_RADAR:
+						ConfigMisc.debug_mode_radar = value == 1;
 						break;
 					case GuiEZConfig.BC_ENABLE_TORNADO:
 						ConfigStorm.disable_tornados = value == 0;
@@ -422,9 +425,6 @@ public class WeatherUtilConfig
 					case GuiEZConfig.BA_EF:
 						ConfigStorm.enable_ef_scale = value == 1;
 						break;
-					case GuiEZConfig.BA_RADAR:
-						ConfigMisc.debug_mode_radar = value == 1;
-						break;
 					case GuiEZConfig.BA_SHADER:
 						switch(value)
 						{
@@ -587,10 +587,10 @@ public class WeatherUtilConfig
 		DEFAULTS.put(GuiEZConfig.BA_PRECIPITATION, 3);
 		DEFAULTS.put(GuiEZConfig.BA_EFFECT, 3);
 		DEFAULTS.put(GuiEZConfig.BA_EF, 0);
-		DEFAULTS.put(GuiEZConfig.BA_RADAR, 0);
 		DEFAULTS.put(GuiEZConfig.BA_SHADER, 0);
 		DEFAULTS.put(GuiEZConfig.BA_FOLIAGE, 0);
 		DEFAULTS.put(GuiEZConfig.BB_GLOBAL, 0);
+		DEFAULTS.put(GuiEZConfig.BB_RADAR, 0);
 		DEFAULTS.put(GuiEZConfig.BC_ENABLE_TORNADO, 1);
 		DEFAULTS.put(GuiEZConfig.BC_ENABLE_CYCLONE, 1);
 		DEFAULTS.put(GuiEZConfig.BC_ENABLE_SANDSTORM, 1);

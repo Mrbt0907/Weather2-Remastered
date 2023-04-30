@@ -19,7 +19,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.mrbt0907.weather2.config.ConfigMisc;
+import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.entity.EntityIceBall;
 import net.mrbt0907.weather2.entity.EntityMovingBlock;
 
@@ -112,10 +112,10 @@ public class RenderFlyingBlock extends Render<Entity>
 					}
 				}
 			}
-		} catch (Exception ex) {
-			if (ConfigMisc.debug_mode) {
-				ex.printStackTrace();
-			}
+		}
+		catch (Exception ex)
+		{
+			Weather2.error(ex);
 		}
 
 

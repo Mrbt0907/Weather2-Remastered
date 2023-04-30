@@ -35,7 +35,7 @@ import net.mrbt0907.weather2.entity.EntityLightningBolt;
 import net.mrbt0907.weather2.entity.EntityLightningBoltCustom;
 import net.mrbt0907.weather2.entity.EntityMovingBlock;
 @SideOnly(Side.CLIENT)
-@Mod.EventBusSubscriber(Side.CLIENT)
+@Mod.EventBusSubscriber(value = Side.CLIENT, modid = Weather2.MODID)
 public class ClientProxy extends CommonProxy
 {
 	public static GuiWeather guiWeather;

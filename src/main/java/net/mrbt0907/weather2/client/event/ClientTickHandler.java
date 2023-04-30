@@ -24,6 +24,7 @@ import net.mrbt0907.weather2.config.ClientConfigData;
 import net.mrbt0907.weather2.config.ConfigFoliage;
 import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.network.packets.PacketData;
+import net.mrbt0907.weather2.network.packets.PacketEZGUI;
 import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import net.mrbt0907.weather2.util.WeatherUtilSound;
 import net.mrbt0907.weather2.weather.EntityRendererProxyWeather2Mini;
@@ -47,6 +48,7 @@ public class ClientTickHandler
 	public float smoothAngleAdj = 0.1F;
 	public int prevDir = 0;
 	public boolean extraGrassLast = ConfigFoliage.enable_extra_grass;
+	public boolean op = false;
 	
 	public ClientTickHandler() {
 		//this constructor gets called multiple times when created from proxy, this prevents multiple inits
@@ -122,7 +124,7 @@ public class ClientTickHandler
 
 			weatherManager.tick();
 
-			if (!clientConfigData.Aesthetic_Only_Mode && ConfigMisc.enable_forced_clouds_off && world.provider.getDimension() == 0) {
+			if (!clientConfigData.aestheticMode && ConfigMisc.enable_forced_clouds_off && world.provider.getDimension() == 0) {
 				mc.gameSettings.clouds = 0;
 			}
 
@@ -250,6 +252,7 @@ public class ClientTickHandler
 
     	lastWorld = world;
     	weatherManager = new WeatherManagerClient(world);
+    	PacketEZGUI.isOp();
     	
 		//request a full sync from server
     	PacketData.sync();

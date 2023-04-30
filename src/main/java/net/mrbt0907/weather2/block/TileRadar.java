@@ -6,9 +6,10 @@ import java.util.List;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.api.weather.IWeatherDetectable;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
-import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.gui.elements.GuiRadarObject;
 import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.config.ConfigStorm;
@@ -61,59 +62,7 @@ public class TileRadar extends TileEntity implements ITickable
     public void update()
     {
     	if (world.isRemote)
-    	{
-    		if (world.getTotalWorldTime() % pingRate == 0)
-    		{
-    			if (ConfigMisc.debug_mode_radar)
-    			{
-    				WeatherObject system = ClientTickHandler.weatherManager.getClosestWeather(new Vec3(getPos().getX(), getPos().getY(), getPos().getZ()), pingRange);
-    				this.system = (system == null || system.isDead ? null : system);
-    			}
-    			else
-    				system = null;
-    				
-    			
-    			if (ConfigMisc.debug_mode_radar)
-    			{
-    				systems.clear();
-    				for (FrontObject front : ClientTickHandler.weatherManager.getFronts())
-    					if (!front.isGlobal())
-    					{
-    						if (Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), front.pos.posX, getPos().getY(), front.pos.posZ) <= pingRange)
-    						{
-    							systems.add(new GuiRadarObject(front));
-								front.getWeatherObjects().forEach(so -> {if (Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
-    						}
-    					}
-    					else
-    						front.getWeatherObjects().forEach(so -> {if (Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
-				}
-    			else
-    			{
-    				systems.clear();
-    				for (FrontObject front : ClientTickHandler.weatherManager.getFronts())
-    					if (!front.isGlobal())
-    					{
-    						if (Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), front.pos.posX, getPos().getY(), front.pos.posZ) <= pingRange)
-    						{
-    							systems.add(new GuiRadarObject(front));
-								front.getWeatherObjects().forEach(so -> {if (!so.type.equals(Type.CLOUD) && Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
-    						}
-    					}
-    					else
-    						front.getWeatherObjects().forEach(so -> {if (!so.type.equals(Type.CLOUD) && Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
-				}
-    			
-    			pingLength = pingMaxLength;
-    			renderAlpha = 1.0F;
-    		}
-
-    		if (pingLength == 0 && renderAlpha > 0.1F)
-    			renderAlpha -= fadeRate;
-    		
-    		if (pingLength > 0)
-    			pingLength--;
-    	}
+    		tickClient();
     }
 
 	public int getTier()
@@ -158,6 +107,68 @@ public class TileRadar extends TileEntity implements ITickable
 				showWindSpeed = false;
 				liveRadar = false;
 		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public void tickClient()
+	{
+		if (world.getTotalWorldTime() % pingRate == 0)
+		{
+			if (net.mrbt0907.weather2.client.event.ClientTickHandler.clientConfigData.debug_mode_radar)
+			{
+				WeatherObject system = net.mrbt0907.weather2.client.event.ClientTickHandler.weatherManager.getClosestWeather(new Vec3(getPos().getX(), getPos().getY(), getPos().getZ()), pingRange);
+				this.system = (system == null || system.isDead ? null : system);
+			}
+			else
+				system = null;
+				
+			
+			if (net.mrbt0907.weather2.client.event.ClientTickHandler.clientConfigData.debug_mode_radar)
+			{
+				systems.clear();
+				for (FrontObject front : net.mrbt0907.weather2.client.event.ClientTickHandler.weatherManager.getFronts())
+					if (!front.isGlobal())
+					{
+						if (Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), front.pos.posX, getPos().getY(), front.pos.posZ) <= pingRange)
+						{
+							systems.add(new GuiRadarObject(front));
+							front.getWeatherObjects().forEach(so -> {if (Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
+						}
+					}
+					else
+						front.getWeatherObjects().forEach(so -> {if (Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
+			}
+			else
+			{
+				systems.clear();
+				for (FrontObject front : net.mrbt0907.weather2.client.event.ClientTickHandler.weatherManager.getFronts())
+					if (!front.isGlobal())
+					{
+						if (Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), front.pos.posX, getPos().getY(), front.pos.posZ) <= pingRange)
+						{
+							systems.add(new GuiRadarObject(front));
+							front.getWeatherObjects().forEach(so -> {if (!so.type.equals(Type.CLOUD) && Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
+						}
+					}
+					else
+						front.getWeatherObjects().forEach(so -> {if (!so.type.equals(Type.CLOUD) && Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
+			}
+			
+			pingLength = pingMaxLength;
+			renderAlpha = 1.0F;
+		}
+
+		if (pingLength == 0 && renderAlpha > 0.1F)
+			renderAlpha -= fadeRate;
+		
+		if (pingLength > 0)
+			pingLength--;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public double getPingRange(int tier)
+	{
+		return tier == 1 ? net.mrbt0907.weather2.client.event.ClientTickHandler.clientConfigData.doppler_radar_range : tier == 2 ? net.mrbt0907.weather2.client.event.ClientTickHandler.clientConfigData.pulse_doppler_radar_range : net.mrbt0907.weather2.client.event.ClientTickHandler.clientConfigData.radar_range;
 	}
 	
     public NBTTagCompound writeToNBT(NBTTagCompound tag)

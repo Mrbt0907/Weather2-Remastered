@@ -2,12 +2,16 @@ package net.mrbt0907.weather2.event;
 
 import CoroUtil.forge.CULog;
 import extendedrenderer.EventHandler;
+import modconfig.gui.GuiConfigEditor;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.*;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.ClientProxy;
 import net.mrbt0907.weather2.client.foliage.FoliageEnhancerShader;
 import net.mrbt0907.weather2.config.ConfigFoliage;
@@ -99,5 +103,13 @@ public class EventHandlerFML {
 	{
 		if (event.player instanceof EntityPlayerMP)
 			ServerTickHandler.syncServerConfigToClientPlayer((EntityPlayerMP) event.player);
+	}
+	
+	@SubscribeEvent
+    @SideOnly(Side.CLIENT)
+	public void OnGuiOpen(GuiOpenEvent event)
+	{
+		if (ClientProxy.clientTickHandler != null && event.getGui() instanceof GuiConfigEditor && !ClientProxy.clientTickHandler.op)
+			event.setCanceled(true);
 	}
 }

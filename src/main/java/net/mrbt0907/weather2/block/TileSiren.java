@@ -10,6 +10,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.sound.MovingSoundEX;
 import net.mrbt0907.weather2.config.ConfigMisc;
@@ -58,8 +59,8 @@ public class TileSiren extends TileEntity implements ITickable
     	if (sound == null || sound.isDonePlaying())
         {
             Vec3 pos = new Vec3(getPos().getX(), getPos().getY(), getPos().getZ());
-    		WeatherObject so = ClientTickHandler.weatherManager.getWorstWeather(pos, ConfigMisc.siren_scan_range);
-    		
+    		WeatherObject so = ClientTickHandler.weatherManager.getWorstWeather(pos, ConfigMisc.siren_scan_range, Stage.TORNADO.getStage(), Integer.MAX_VALUE);
+
             if (so != null)
             	sound = WeatherUtilSound.playForcedSound(SoundRegistry.siren, SoundCategory.RECORDS, pos, (float) ConfigVolume.sirens, 1.0F, 120.0F, true, false);
             else

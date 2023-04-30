@@ -45,24 +45,27 @@ public class BlockNewWeatherConstructor extends BlockMachine
 	    		constructor.cycleWeatherType(player.isSneaking());
 	    		String msg = "Off";
 	    		
-	    		switch (constructor.weatherType)
+	    		switch (constructor.stage)
 	    		{
 	    			case 1:
-	    				msg = "Rainstorm";
+	    				msg = "Cloud";
 	    				break;
 	    			case 2:
-	    				msg = "Thunderstorm";
+	    				msg = "Rainstorm";
 	    				break;
 	    			case 3:
-	    				msg = "Supercell";
+	    				msg = "Thunderstorm";
 	    				break;
 	    			case 4:
-	    				msg = "Hailing Supercell";
+	    				msg = "Supercell";
 	    				break;
 	    			case 5:
-	    				msg = "EF1 Tornado";
+	    				msg = "Hailing Supercell";
 	    				break;
 	    			case 6:
+	    				msg = "EF1 Tornado";
+	    				break;
+	    			case 7:
 	    				msg = "Category 1 Hurricane";
 	    				break;
 	    		}

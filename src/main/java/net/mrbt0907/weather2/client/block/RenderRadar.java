@@ -18,7 +18,6 @@ import net.mrbt0907.weather2.block.TileRadar;
 import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
-import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.config.ConfigSimulation;
 import net.mrbt0907.weather2.registry.ParticleRegistry;
 import net.mrbt0907.weather2.util.Maths.Vec3;
@@ -59,7 +58,7 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 		float playerViewY = Minecraft.getMinecraft().getRenderManager().playerViewY;
 		renderLivingLabel("\u00A7" + '6' + "|", x, y + 1.2F, z, 1, 10, 10, playerViewY, 1.0F);
 
-		if (ConfigMisc.debug_mode_radar)
+		if (ClientTickHandler.clientConfigData.debug_mode_radar)
 		{
 			EntityPlayer player = Minecraft.getMinecraft().player;
 			if (player != null)
@@ -82,11 +81,11 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 					if (radar.system != null && radar.system instanceof StormObject)
 					{
 						StormObject system = (StormObject) radar.system;
-						renderLivingLabel("\u00A7" + " Stage Complete: " + (((system.stormIntensity - system.stormStage + 1)) * 100.0F) + "%", x, y + 2.5F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Current Funnel Wind Speed: " + (long)WeatherUtil.toMph(system.stormWind) + " MPH", x, y + 2.6F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Current Funnel Size: " + (long)system.funnel_size + " Blocks", x, y + 2.7F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Current Stage/MaxStage: " + system.stormStage + "/" + system.stormStageMax, x, y + 2.8F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Size Multiplier: " + (system.stormSizeRate * 100) + "%", x, y + 2.9F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Stage Complete: " + (((system.intensity - system.stage + 1)) * 100.0F) + "%", x, y + 2.5F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Current Funnel Wind Speed: " + (long)WeatherUtil.toMph(system.windSpeed) + " MPH", x, y + 2.6F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Current Funnel Size: " + (long)system.funnelSize + " Blocks", x, y + 2.7F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Current Stage/MaxStage: " + system.stage + "/" + system.stageMax, x, y + 2.8F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Size Multiplier: " + (system.sizeRate * 100) + "%", x, y + 2.9F, z, 1, 10, 10, playerViewY, 1.0F);
 						renderLivingLabel("\u00A7" + " Is Violent: " + system.isViolent, x, y + 3.0F, z, 1, 10, 10, playerViewY, 1.0F);
 						renderLivingLabel("\u00A7" + " UUID: " + system.getUUID(), x, y + 3.1F, z, 1, 10, 10, playerViewY, 1.0F);
 						String stage = radar.system.getName();
@@ -166,7 +165,7 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 				if (so.isHailing)
 					renderIconNew(x, y + 1.4F, z, 16, 16, 0.0F, playerViewY, 0.0F, radar.renderAlpha, ParticleRegistry.radarIconHail);
 				
-				if (ConfigMisc.debug_mode_radar && radar.system != null && so.uuid.equals(radar.system.getUUID()))
+				if (ClientTickHandler.clientConfigData.debug_mode_radar && radar.system != null && so.uuid.equals(radar.system.getUUID()))
 					renderLivingLabel(TextFormatting.GOLD + "" +  TextFormatting.BOLD + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY, radar.renderAlpha);
 				else
 				{

@@ -16,6 +16,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.mrbt0907.weather2.Weather2;
+import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.server.event.ServerTickHandler;
 import net.mrbt0907.weather2.server.weather.WeatherManagerServer;
@@ -51,51 +52,19 @@ public class BlockNewSensor extends BlockMachine
     	
     	if (manager != null) 
     	{
-    		WeatherObject so = manager.getWorstWeather(new Maths.Vec3(pos.getX(), pos.getY(), pos.getZ()), ConfigMisc.sensor_scan_range);
+    		WeatherObject so = manager.getWorstWeather(new Maths.Vec3(pos.getX(), pos.getY(), pos.getZ()), ConfigMisc.sensor_scan_range, Stage.RAIN.getStage(), Integer.MAX_VALUE);
     		
     		switch(scanType)
 			{
 				case 0:
 					if (so != null) 
 		    		{
-		    			int stage = 0;
 		    			if (so instanceof StormObject)
-		    				stage = ((StormObject)so).stormStage;
+		    				power = MathHelper.clamp(((StormObject)so).stage, 0, 15);
 		    			else if (so instanceof SandstormObject)
-		    				stage = 5;
+		    				power = 5;
 		    			
-		    			switch(stage)
-		    			{
-		    				case 0:
-		    					power = 0;
-		    					break;
-		    				case 1:
-		    					power = 4;
-		    					break;
-		    				case 2:
-		    					power = 5;
-		    					break;
-		    				case 3:
-		    					power = 6;
-		    					break;
-		    				case 4:
-		    					power = 7;
-		    					break;
-		    				case 5:
-		    					power = 8;
-		    					break;
-		    				case 6:
-		    					power = 9;
-		    					break;
-		    				case 7:
-		    					power = 10;
-		    					break;
-		    				case 8:
-		    					power = 12;
-		    					break;
-		    				default:
-		    					power = 15;
-		    			}
+		    			
 		    		}
 	    			break;
 				case 1:

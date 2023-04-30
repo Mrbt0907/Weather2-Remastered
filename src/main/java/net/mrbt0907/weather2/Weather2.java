@@ -5,12 +5,15 @@ import modconfig.IConfigCategory;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.network.FMLEventChannel;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 import net.mrbt0907.weather2.api.WeatherAPI;
+import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.config.*;
 import net.mrbt0907.weather2.event.EventHandlerFML;
 import net.mrbt0907.weather2.event.EventHandlerForge;
@@ -30,8 +33,9 @@ import org.apache.logging.log4j.Logger;
 public class Weather2
 {
 	public static final String MOD = "Weather 2 - Remastered";
-	public static final String MODID = "weather2";
-	public static final String VERSION = "2.8.2-indev-b";
+	public static final String MODID = "weather2remaster";
+	public static final String OLD_MODID = "weather2";
+	public static final String VERSION = "2.8.5-indev-c";
 	public static final FMLEventChannel event_channel = NetworkRegistry.INSTANCE.newEventDrivenChannel(MODID);
 	public static final CreativeTabs TAB = new CreativeTabs(MODID) {@Override public ItemStack getTabIconItem() {return new ItemStack(BlockRegistry.tornado_sensor);}};
 	@Mod.Instance( value = Weather2.MODID )
@@ -41,7 +45,7 @@ public class Weather2
 	public static boolean initProperNeededForWorld = true;
 	
 	
-	@SidedProxy(clientSide = "net.mrbt0907.weather2.ClientProxy", serverSide = "net.mrbt0907.weather2.CommonProxy")
+	@SidedProxy(modId = Weather2.MODID, clientSide = "net.mrbt0907.weather2.ClientProxy", serverSide = "net.mrbt0907.weather2.CommonProxy")
 	public static CommonProxy proxy;
 
 	@Mod.EventHandler
@@ -99,29 +103,22 @@ public class Weather2
 	public void serverStart(FMLServerStartedEvent event) {}
 	
 	@Mod.EventHandler
-	public void serverStop(FMLServerStoppedEvent event) {
+	public void serverStop(FMLServerStoppedEvent event)
+	{
 		writeOutData(true);
-		resetStates();
-		
+		ServerTickHandler.reset();
 		initProperNeededForWorld = true;
 	}
 	
-	
-	
 	/**
 	 * To work around the need to force a configmod refresh on these when EZ GUI changes values
-	 *
 	 * @param config
 	 * @return
 	 */
-	public static IConfigCategory addConfig(IConfigCategory config) {
+	public static IConfigCategory addConfig(IConfigCategory config)
+	{
 		configs.add(config);
 		return config;
-	}
-	
-	public static void resetStates()
-	{
-		ServerTickHandler.reset();
 	}
 	
 	public static void writeOutData(boolean unloadInstances)
@@ -142,13 +139,6 @@ public class Weather2
 		}
 	}
 
-	/**
-	 * Triggered when communicating with other mods
-	 * @param event
-	 */
-	@Mod.EventHandler
-	public void handleIMCMessages(FMLInterModComms.IMCEvent event) {}
-	
 	public static void info(Object message)
 	{
 		log.info(message);
@@ -156,19 +146,22 @@ public class Weather2
 	
 	public static void debug(Object message)
 	{
-		if (ConfigMisc.debug_mode)
+		boolean isDebug = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? ClientTickHandler.clientConfigData.debug_mode : ConfigMisc.debug_mode;
+		if (isDebug)
 			log.info("[DEBUG] " + message);
 	}
 	
 	public static void warn(Object message)
 	{
-		if (ConfigMisc.debug_mode)
+		boolean isDebug = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? ClientTickHandler.clientConfigData.debug_mode : ConfigMisc.debug_mode;
+		if (isDebug)
 			log.warn(message);
 	}
 
 	public static void error(Object message)
 	{
-		if (ConfigMisc.debug_mode)
+		boolean isDebug = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? ClientTickHandler.clientConfigData.debug_mode : ConfigMisc.debug_mode;
+		if (isDebug)
 			log.error(new Exception(message.toString()));
 	}
 	

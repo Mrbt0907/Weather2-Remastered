@@ -9,6 +9,8 @@ import java.io.File;
 
 public class ConfigGrab implements IConfigCategory
 {
+	@ConfigComment("Should weather2 use the old getters and setters for blocks?")
+	public static boolean disableGrabOptimizations = false;
 	@ConfigComment("Should storms grab players?")
 	public static boolean grab_players = true;
 	@ConfigComment("Should storms grab mobs?")
@@ -49,8 +51,10 @@ public class ConfigGrab implements IConfigCategory
 	public static String wind_resistance_entries = "obsidian=512, iron_bar=200";
 	@ConfigComment("Experimental idea, places the WIP repairing block where a tornado\ndoes damage instead of removing the block, causes tornado damage to self repair, recommend setting Storm_Tornado_rarityOfBreakOnFall to 0 to avoid duplicated blocks")
 	public static boolean enable_repair_block_mode = false;
-	@ConfigComment("Max amount of flying entity blocks allowed active,\nif it goes over this, it stops turning destroyed blocks into entities")
-	public static int Storm_Tornado_maxFlyingEntityBlocks = 100;
+	@ConfigComment("How many flying blocks can all tornados have at a time?")
+	public static int max_flying_blocks = 120;
+	@ConfigComment("How many blocks can all tornados replace at a time?")
+	public static int max_replaced_blocks = 1280;
 	@ConfigComment("Should blocks picked up by storms damage other entities and players?")
 	public static boolean grabbed_blocks_hurt = true;
 	@ConfigComment("Used if Storm_Tornado_grabbedBlocksRepairOverTime is true,\nminimum of 600 ticks (30 seconds) required")
@@ -62,7 +66,7 @@ public class ConfigGrab implements IConfigCategory
 	@ConfigComment("How many blocks can be grabbed per tick")
 	public static int max_grabbed_blocks_per_tick = 12;
 	@ConfigComment("How many blocks can be grabbed per tick")
-	public static int max_replaced_blocks_per_tick = 125;
+	public static int max_replaced_blocks_per_tick = 256;
 	@ConfigComment("How often do storms process grabbed blocks in ticks?")
 	public static int grab_process_delay = 10;
 	

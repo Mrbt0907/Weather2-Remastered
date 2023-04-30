@@ -22,7 +22,7 @@ public class EntityRegistry
 	
 	public static void addMapping(Class<? extends Entity> entity, String name, int entityId, int distSync, int tickRateSync, boolean syncMotion)
 	{
-		net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(Weather2.MODID, name), entity, name, entityId, Weather2.instance, distSync, tickRateSync, syncMotion);
-		Weather2.debug("Registered entity " + Weather2.MODID + ":" + name);
+		net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new ResourceLocation(Weather2.OLD_MODID, name), entity, name, entityId, Weather2.instance, distSync, tickRateSync, syncMotion);
+		Weather2.debug("Registered entity " + Weather2.OLD_MODID + ":" + name);
 	}
 }

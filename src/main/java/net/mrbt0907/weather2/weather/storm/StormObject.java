@@ -58,43 +58,33 @@ import extendedrenderer.particle.entity.EntityRotFX;
 
 public class StormObject extends WeatherObject implements IWeatherRain, IWeatherLayered
 {
-	//Rendering
+	//-----Rendering-----\\
+	//List of particles that make up the clouds above
 	@SideOnly(Side.CLIENT)
 	public List<EntityRotFX> listParticlesCloud;
+	//List of ground particles that a storm generates
 	@SideOnly(Side.CLIENT)
 	public List<EntityRotFX> listParticlesGround;
+	//List of custom rain particles that a storm generates
 	@SideOnly(Side.CLIENT)
 	public List<EntityRotFX> listParticlesRain;
+	//List of funnel particles that a tornado makes
 	@SideOnly(Side.CLIENT)
 	public List<EntityRotFX> listParticlesFunnel;
 	@SideOnly(Side.CLIENT)
 	public ParticleBehaviorFog particleBehaviorFog;
-	public int sizeMaxFunnelParticles = 600;
+	public int particleLimit = 600;
 	public float angle = 0.0F;
 	
-	//Basic Info
+	//-----Storm-----\\
+	/***/
 	public int layer = 0;
-	
-	//Storm Info
 	/**If true, the direction of the storm should be overridden by overrideNewAngle*/
 	public boolean overrideAngle = false;
-	/**The new value that the storm's direction should be*/
-	public float overrideNewAngle = 0;
 	/**If true, the movement speed of the storm should be overridden by overrideNewMotion*/
 	public boolean overrideMotion = false;
-	/**The new value that the storm's movement speed should be. Can go beyond the maximum movement speed*/
-	public float overrideNewMotion = 0;
-	/**If true, the spin speed of the storm should be overridden by overrideNewSpin*/
-	public boolean overrideSpin = false;
-	/**The new value that the storm spin speed should be. Can go beyond the maximum spin speed*/
-	public float overrideNewSpin = 0;
 	/**If true, the storm was spawned naturally on its own*/
 	public boolean isNatural = true;
-	//to prevent things like it progressing to next stage before weather machine undoes it
-	/**If true, the storm was spawned from a weather machine or something else*/
-	public boolean isMachineControlled = false;
-	/**If true, the storm can snow based on the temperature*/
-	public boolean canSnowFromCloudTemperature = false;
 	/**If true, the storm will guarantee to progress to the highest stage possible*/
 	public boolean alwaysProgresses = false;
 	/**If true, the storm will never decay after it hits the max lifetime*/
@@ -103,92 +93,74 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	public boolean isViolent = false;
 	/**If true, the storm is a tornado or a hurricane*/
 	public boolean canProgress;
-	//Populate sky with stormless/cloudless storm objects in order to allow clear skies with current design
-	/**Unknown*/
-  	public boolean isCloudless = false;
   	/**If true, the storm will produce a firenado*/
 	public boolean isFirenado = false;
 	/**If true, the storm will produce a water spout in the water below*/
 	public boolean isSpout = false;
 	/**If true, the storm will convert to a hurricane when over water*/
-	public boolean shouldConvert = false;
-	//cloud formation data, helps storms
+	public boolean shouldConvert = true;
 	/**Determines how much water is built up in the storm
-	 * <br> - 50 to 100 = Drizzle
-	 * <br> - 100 to 150 = Rain
-	 * <br> - 150 and beyond = Heavy Rain*/
-	public float stormHumidity = 0;
-	public float stormHumidityRate = 1.0F;
-	/**Determines how much rain can build up before it starts to rain*/
-	public float stormRainMin = 50.0F;
+	 * <br> - 100 to 199 = Drizzle
+	 * <br> - 100 to 299 = Rain
+	 * <br> - 300 and beyond = Heavy Rain*/
+	public float rain = 0;
+	/***/
+	public float rainRate = 1.0F;
+	/***/
+	public float hail = 0.0F;
+	/***/
+	public float hailRate = 0.0F;
+	/***/
 	public boolean shouldBuildHumidity = false;
-	public boolean isHailing;
-	/**Unknown*/
-	public float stormWind = 0; //high elevation builds this, plains areas lowers it, 0 = no additional speed ontop of global speed
-	/**Unknown*/
-	public float stormTemperature = 0; //negative for cold, positive for warm, we subtract 0.7 from vanilla values to make forest = 0, plains 0.1, ocean -0.5, etc
-	
-	/**Determines which entities get extinguished when under the storm*/
-	public List<EntityLivingBase> stormCloseEntities = new ArrayList<>();
-	//storm data, used when its determined a storm will happen from cloud front collisions
+	/**The ambient wind speed that the storm creates.*/
+	public float windSpeed = 0;
+	/**The temperature of the storm. Used to determine whether it snows or rains*/
+	public float temperature = 0;
 	/**Determines how strong this storm will be*/
-	public int stormStageMax = Stage.NORMAL.getStage(); //calculated from colliding warm and cold fronts, used to determine how crazy a storm _will_ get
-	//used to mark difference between land and water based storms
+	public int stageMax = Stage.NORMAL.getStage(); //calculated from colliding warm and cold fronts, used to determine how crazy a storm _will_ get
 	/**Determines where the storm intensified at. Creates a hurricane with WATER and creates a tornado with LAND*/
 	public int stormType = StormType.LAND.ordinal();
-	//revision, ints for each stage of intensity, and a float for the intensity of THAT current stage
 	/**Determines how strong a storm currently is*/
-	public int stormStage = Stage.NORMAL.getStage();
+	public int stage = Stage.NORMAL.getStage();
 	/**Determines how much progression a storm reached in its current stage*/
-	public float stormIntensity = 0;
+	public float intensity = 0;
+	/***/
 	public int revives = 0;
+	/***/
 	public int maxRevives = 0;
+	/***/
+	public float lightning = 1.0F;
 	/**Determines how much the storm needs to reach before it can increase stages. Unused in new progression system*/
-	public float maxIntensity = 0;
+	public float intensityMax = 0;
 	/**Determines the size of a storm; not the tornado size*/
-	public float funnel_size = 0;
+	public float funnelSize = 0;
 	/**Determines how fast a storm grows in size*/
-	public float stormSizeRate = 3.5F;
+	public float sizeRate = 3.5F;
 	//spin speed for potential tornado formations, should go up with intensity increase;
 	/**Determines how fast a storm is spinning. Visual only in old progression system*/
-	public double stormSpin = 0.02D;
+	public double spin = 0.02D;
 	/**Determines whether the storm has touched the ground*/
-	public float stormFormingStrength = 0; //for transition from 0 (in clouds) to 1 (touch down)
+	public float formingStrength = 0; //for transition from 0 (in clouds) to 1 (touch down)
 	/**How strong the winds are in a tornado. Determines how strong and fast a storm can pick up entities*/
 	public float strength = 100;
 	/**Unknown*/
 	public int maxHeight = 60;
-	public boolean canBeDeadly = true;
-	public String stormName = "";
+	/***/
+	public String name = "";
 	
 	//Enums
-
 	/**Enumerations for detecting what kind of storm it will become
 	 * @value LAND = Tornado
 	 * @value WATER = Hurricane*/
 	public enum StormType {LAND, WATER;}
 
-	/**Unknown value*/
-	public float scale = 1F;
 	/**Where the top block under the storm is at*/
 	public int currentTopYBlock = -1;
 	
 	public TornadoHelper tornadoHelper = new TornadoHelper(this);
 	
-	//public Set<ChunkCoordIntPair> doneChunks = new HashSet<ChunkCoordIntPair>();
 	public int updateLCG = (new Random()).nextInt();
-	
-	
-	
-	public Vec3 pos_funnel_base = new Vec3(pos.posX, pos.posY, pos.posZ); //for formation / touchdown progress, where all the ripping methods scan from
-	
-	//there is an issue with rainstorms sometimes never going away, this is a patch to mend the underlying issue i cant find yet
-	public long ticksSinceLastPacketReceived = 0;
-	
-	//Others
-	//used to cache a scan for blocks ahead of storm, to move around
-	public float cachedAngleAvoidance = 0;
-	
+	public Vec3 pos_funnel_base = new Vec3(pos.posX, pos.posY, pos.posZ);
 	
 	public StormObject(FrontObject front)
 	{
@@ -196,41 +168,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		
 		pos = new Vec3(0, getLayerHeight(), 0);
 		size = Maths.random(250,350) + size;
-		overrideAngle = false;
-		overrideNewAngle = 0;
-		overrideMotion = false;
-		overrideNewMotion = 0;
-		overrideSpin = false;
-		overrideNewSpin = 0;
-		isNatural = true;
-		isMachineControlled = false;
-		canSnowFromCloudTemperature = false;
-		alwaysProgresses = false;
-		neverDissipate = false;
-		isDying = false;
-		isViolent = false;
-		canProgress = false;
-		isCloudless = false;
-	  	isFirenado = false;
-		isSpout = false;
-		stormHumidity = 0;
-		stormWind = 0;
-		stormTemperature = 0;
-		stormStageMax = Stage.NORMAL.getStage();
-		stormType = StormType.LAND.ordinal();
-		stormStage = Stage.NORMAL.getStage();
-		stormIntensity = 0;
-		maxIntensity = 0;
-		funnel_size = 0;
-		stormSizeRate = 1.0F;
-		stormSpin = 0.02D;
-		stormFormingStrength = 0;
-		strength = 100;
-		maxHeight = 60;
-		canBeDeadly = true;
-		isHailing = false;
 		
-		if (front.getWeatherManager().getWorld().isRemote)
+		if (world.isRemote)
 		{
 			listParticlesCloud = new ArrayList<EntityRotFX>();
 			listParticlesFunnel = new ArrayList<EntityRotFX>();
@@ -244,13 +183,13 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		super.init();
 		
 		if (isNatural)
-			stormTemperature = 0.0F;
-		stormWind = 0.0F;
+			temperature = 0.0F;
+		windSpeed = 0.0F;
 	}
 	
 	public boolean isStorm() {return canProgress;}
-	public boolean isSevere() {return stormStage > Stage.THUNDER.getStage();}
-	public boolean isDeadly() {return stormType == StormType.LAND.ordinal() ? stormStage > Stage.SEVERE.getStage() : stormStage > Stage.TROPICAL_DISTURBANCE.getStage();}
+	public boolean isSevere() {return stage > Stage.THUNDER.getStage();}
+	public boolean isDeadly() {return stormType == StormType.LAND.ordinal() ? stage > Stage.SEVERE.getStage() : stage > Stage.TROPICAL_DISTURBANCE.getStage();}
 	public boolean isTornado() {return stormType == StormType.LAND.ordinal();}
 	public boolean isCyclone() {return stormType == StormType.WATER.ordinal();}
 
@@ -258,85 +197,59 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	public void readFromNBT()
 	{
 		super.readFromNBT();
-		readNBT();
-	}
-
-	@Override
-	public void writeToNBT()
-	{
-		super.writeToNBT();
-		writeNBT();
-	}
-	
-	//receiver method
-	@Override
-	public void readNBT()
-	{
-		CachedNBTTagCompound nbt = this.nbt;
-		super.readNBT();
 		stormType = nbt.getInteger("stormType");
-		stormStage = nbt.getInteger("levelCurIntensityStage");
+		stage = nbt.getInteger("levelCurIntensityStage");
 		isSpout = nbt.getBoolean("attrib_waterSpout");
 		currentTopYBlock = nbt.getInteger("currentTopYBlock");
-		stormTemperature = nbt.getFloat("levelTemperature");
-		stormHumidity = nbt.getInteger("levelWater");
+		temperature = nbt.getFloat("levelTemperature");
+		rain = nbt.getInteger("levelWater");
 		layer = nbt.getInteger("layer");
-		stormStageMax = nbt.getInteger("levelStormIntensityMax");
-		stormIntensity = nbt.getFloat("levelCurStagesIntensity");
-		funnel_size = nbt.getFloat("levelCurStageSize");
-		stormWind = nbt.getFloat("levelCurStageWind");
-		stormSizeRate = nbt.getFloat("levelCurStageSizeRate");
+		stageMax = nbt.getInteger("levelStormIntensityMax");
+		intensity = nbt.getFloat("levelCurStagesIntensity");
+		funnelSize = nbt.getFloat("levelCurStageSize");
+		windSpeed = nbt.getFloat("levelCurStageWind");
+		sizeRate = nbt.getFloat("levelCurStageSizeRate");
 		isViolent = nbt.getBoolean("isViolent");
-		isCloudless = nbt.getBoolean("cloudlessStorm");
 		isFirenado = nbt.getBoolean("isFirenado");
-		stormName = nbt.getString("stormName");
+		name = nbt.getString("stormName");
 		shouldConvert = nbt.getBoolean("shouldConvert");
 		shouldBuildHumidity = nbt.getBoolean("shouldBuildHumidity");
-		ticksSinceLastPacketReceived = 0;
-		isMachineControlled = nbt.getBoolean("weatherMachineControlled");
-		isHailing = nbt.getBoolean("isHailing");
 		canProgress = nbt.getBoolean("canProgress");
 		neverDissipate = nbt.getBoolean("neverDissipate");
 		alwaysProgresses = nbt.getBoolean("alwaysProgresses");
 		overrideAngle = nbt.getBoolean("overrideAngle");
-		overrideNewAngle = nbt.getFloat("overrideNewAngle");
 		overrideMotion = nbt.getBoolean("overrideMotion");
-		overrideNewMotion = nbt.getFloat("overrideNewMotion");
 		maxRevives = nbt.getInteger("maxRevives");
 	}
-	
-	//compose nbt data for packet (and serialization in future)
+
 	@Override
-	public CachedNBTTagCompound writeNBT() {
+	public CachedNBTTagCompound writeToNBT()
+	{
+		super.writeToNBT();
 		nbt.setBoolean("attrib_waterSpout", isSpout);
 		nbt.setInteger("currentTopYBlock", currentTopYBlock);
-		nbt.setFloat("levelTemperature", stormTemperature);
-		nbt.setFloat("levelWater", stormHumidity);
+		nbt.setFloat("levelTemperature", temperature);
+		nbt.setFloat("levelWater", rain);
 		nbt.setInteger("layer", layer);
-		nbt.setInteger("levelCurIntensityStage", stormStage);
-		nbt.setFloat("levelCurStagesIntensity", stormIntensity);
-		nbt.setFloat("levelStormIntensityMax", stormStageMax);
-		nbt.setFloat("levelCurStageSize", funnel_size);
-		nbt.setFloat("levelCurStageWind", stormWind);
-		nbt.setFloat("levelCurStageSizeRate", stormSizeRate);
+		nbt.setInteger("levelCurIntensityStage", stage);
+		nbt.setFloat("levelCurStagesIntensity", intensity);
+		nbt.setFloat("levelStormIntensityMax", stageMax);
+		nbt.setFloat("levelCurStageSize", funnelSize);
+		nbt.setFloat("levelCurStageWind", windSpeed);
+		nbt.setFloat("levelCurStageSizeRate", sizeRate);
 		nbt.setInteger("stormType", stormType);
-		nbt.setString("stormName", stormName);
+		nbt.setString("stormName", name);
 		nbt.setBoolean("isViolent", isViolent);
 		nbt.setBoolean("shouldConvert", shouldConvert);
-		nbt.setBoolean("cloudlessStorm", isCloudless);
 		nbt.setBoolean("shouldBuildHumidity", shouldBuildHumidity);
 		nbt.setBoolean("isFirenado", isFirenado);
-		nbt.setBoolean("weatherMachineControlled", isMachineControlled);
-		nbt.setBoolean("isHailing", isHailing);
 		nbt.setBoolean("canProgress", canProgress);
 		nbt.setBoolean("neverDissipate", neverDissipate);
 		nbt.setBoolean("alwaysProgresses", alwaysProgresses);
 		nbt.setBoolean("overrideAngle", overrideAngle);
-		nbt.setFloat("overrideNewAngle", overrideNewAngle);
 		nbt.setBoolean("overrideMotion", overrideMotion);
-		nbt.setFloat("overrideNewMotion", overrideNewMotion);
 		nbt.setInteger("maxRevives", maxRevives);
-		return super.writeNBT();
+		return nbt;
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -345,7 +258,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		super.tickRender(partialTick);
 	}
 	
-	public void tick() {
+	public void tick()
+	{
 		super.tick();
 		manager.getWorld().profiler.startSection("stormObjectTick");
 		//adjust posGround to be pos with the ground Y pos for convinient usage
@@ -356,7 +270,6 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			manager.getWorld().profiler.startSection("clientTick");
 			if (!WeatherUtil.isPaused())
 			{
-				ticksSinceLastPacketReceived++;
 				tickClient();
 				
 				if (isDeadly())
@@ -372,64 +285,53 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			
 			if (isDeadly())
 				tornadoHelper.tick(manager.getWorld());
-			if (isCloudless)
-				if (ConfigMisc.overcast_mode && manager.getWorld().isRaining()) 
-					isCloudless = false;
 
 			manager.getWorld().profiler.startSection("tickMovement");
-			if (!isMachineControlled)
-				tickMovement();
-			manager.getWorld().profiler.endSection();
-			
-			if (!isCloudless)
-			{
-				manager.getWorld().profiler.startSection("tickWeather");
-				tickWeatherEvents();
-				manager.getWorld().profiler.endStartSection("tickProgression");
-				if (ConfigSimulation.simulation_enable)
-					tickProgressionSimulation();
-				else
-					tickProgressionNormal();
-				manager.getWorld().profiler.endStartSection("tickSnowFall");
-				tickSnowFall();
-				manager.getWorld().profiler.endSection();
-			}
+			tickMovement();
+			manager.getWorld().profiler.endStartSection("tickWeather");
+			tickWeatherEvents();
+			manager.getWorld().profiler.endStartSection("tickProgression");
+			if (ConfigSimulation.simulation_enable)
+				tickProgressionSimulation();
 			else
-				size = ConfigStorm.min_storm_size;		
+				tickProgressionNormal();
+			manager.getWorld().profiler.endStartSection("tickSnowFall");
+			tickSnowFall();
 			manager.getWorld().profiler.endSection();
 		}
 		
-		if (layer == 0) {
+		if (layer == 0)
+		{
 			//sync X Y Z, Y gets changed below
 			pos_funnel_base = new Vec3(pos.posX, pos.posY, pos.posZ);
 	
-			if (stormStage >= Stage.TORNADO.getStage()) 
+			if (stage >= Stage.TORNADO.getStage()) 
 			{
-				if (stormStage > Stage.TORNADO.getStage())
+				if (stage > Stage.TORNADO.getStage())
 				{
-					stormFormingStrength = 1;
+					formingStrength = 1;
 					pos_funnel_base.posY = posGround.posY;
 				}
 				else
 				{
 					//make it so storms touchdown at 0.5F intensity instead of 1 then instantly start going back up, keeps them down for a full 1F worth of intensity val
-					float intensityAdj = Math.min(1F, (stormIntensity % 1.0F) * 2F);
+					float intensityAdj = Math.min(1F, (intensity % 1.0F) * 2F);
 					//shouldnt this just be intensityAdj?
-					float val = (stormStage + intensityAdj) - Stage.TORNADO.getStage();
-					stormFormingStrength = val;
+					float val = (stage + intensityAdj) - Stage.TORNADO.getStage();
+					formingStrength = val;
 					double yDiff = pos.posY - posGround.posY;
-					pos_funnel_base.posY = pos.posY - (yDiff * stormFormingStrength);
+					pos_funnel_base.posY = pos.posY - (yDiff * formingStrength);
 				}
 			}
 			else
-				if (stormStage == Stage.SEVERE.getStage())
+				if (stage == Stage.SEVERE.getStage())
 				{
-					stormFormingStrength = 0;
+					formingStrength = 0;
 					pos_funnel_base.posY = posGround.posY;
 				}
 				else
 				{
-					stormFormingStrength = 0;
+					formingStrength = 0;
 					pos_funnel_base.posY = pos.posY;
 				}
 		}
@@ -440,86 +342,80 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	{
 		if (front.equals(manager.getGlobalFront()))
 		{
-			//storm movement via wind
-			angle = getAdjustedAngle();
-	
-			if (overrideAngle)
-				angle = overrideNewAngle;
-	
-			//despite overridden angle, still avoid obstacles
-			//slight randomness to angle
-			Random rand = new Random();
-			angle += (rand.nextFloat() - rand.nextFloat()) * 0.15F;
-	
-			//avoid large obstacles
-			double scanDist = 50;
-			double scanX = this.pos.posX + (-Math.sin(Math.toRadians(angle)) * scanDist);
-			double scanZ = this.pos.posZ + (Math.cos(Math.toRadians(angle)) * scanDist);
-			int height = WeatherUtilBlock.getPrecipitationHeightSafe(this.manager.getWorld(), new BlockPos(scanX, 0, scanZ)).getY();
-	
-			if (this.pos.posY < height)
+			if (!overrideAngle)
 			{
-				float angleAdj = 45;
-				angle += angleAdj;
+				//despite overridden angle, still avoid obstacles
+				//slight randomness to angle
+				Random rand = new Random();
+				angle += (rand.nextFloat() - rand.nextFloat()) * 0.15F;
+		
+				//avoid large obstacles
+				double scanDist = 50;
+				double scanX = this.pos.posX + (-Math.sin(Math.toRadians(angle)) * scanDist);
+				double scanZ = this.pos.posZ + (Math.cos(Math.toRadians(angle)) * scanDist);
+				int height = WeatherUtilBlock.getPrecipitationHeightSafe(this.manager.getWorld(), new BlockPos(scanX, 0, scanZ)).getY();
+		
+				if (this.pos.posY < height)
+				{
+					float angleAdj = 45;
+					angle += angleAdj;
+				}
 			}
 			
-			double vecX = -Math.sin(Math.toRadians(angle));
-			double vecZ = Math.cos(Math.toRadians(angle));
-			float cloudSpeedAmp = 0.2F;
-			float finalSpeed = getAdjustedSpeed() * cloudSpeedAmp;
-			
-			if (stormStage > Stage.SEVERE.getStage() + 1)
-				finalSpeed = 0.2F;
-			else if (stormStage > Stage.NORMAL.getStage())
-				finalSpeed = 0.05F;
-			
-			if (stormStage > Stage.SEVERE.getStage() + 1)
-				finalSpeed /= ((float)(stormStage-Stage.TORNADO.getStage()+1F));
-			
-			if (overrideMotion) finalSpeed = overrideNewMotion;
-			
-			if (!isMachineControlled)
+			if (!overrideMotion)
 			{
+				float finalSpeed;
+				double vecX = -Math.sin(Math.toRadians(angle));
+				double vecZ = Math.cos(Math.toRadians(angle));
+				float cloudSpeedAmp = 0.2F;
+				
+				if (stage > Stage.SEVERE.getStage() + 1)
+					finalSpeed = 0.2F;
+				else if (stage > Stage.NORMAL.getStage())
+					finalSpeed = 0.05F;
+				else
+					finalSpeed = getSpeed() * cloudSpeedAmp;
+				
+				if (stage > Stage.SEVERE.getStage() + 1)
+					finalSpeed /= ((float)(stage-Stage.TORNADO.getStage()+1F));
+				
+				
+				
 				motion.posX = vecX * finalSpeed;
 				motion.posZ = vecZ * finalSpeed;
-	
-				pos.posX += motion.posX;
-				pos.posZ += motion.posZ;
 			}
+			
+			pos.posX += motion.posX;
+			pos.posZ += motion.posZ;
 		}
 		else
 		{
-			if (!isMachineControlled)
-			{
+			if (!overrideMotion)
 				motion = front.motion;
-				pos.posX += motion.posX;
-				pos.posZ += motion.posZ;
-			}
+			
+			pos.posX += motion.posX;
+			pos.posZ += motion.posZ;
 		}
 	}
 
 	public void tickMovementClient()
 	{
-		if (!isMachineControlled)
-		{
-			pos.posX += motion.posX;
-			pos.posZ += motion.posZ;
-		}
+		pos.posX += motion.posX;
+		pos.posZ += motion.posZ;
 	}
 	
 	public void tickWeatherEvents()
 	{
-		Random rand = new Random();
 		World world = manager.getWorld();
 		
 		currentTopYBlock = WeatherUtilBlock.getPrecipitationHeightSafe(world, new BlockPos(MathHelper.floor(pos.posX), 0, MathHelper.floor(pos.posZ))).getY();
 		
-		if (stormStage > Stage.RAIN.getStage())
+		if (stage > Stage.RAIN.getStage())
 		{
-			if (rand.nextInt((int)Math.max(1, ConfigStorm.lightning_bolt_1_in_x - (stormStage * 10))) == 0)
+			if (Maths.random(0, ConfigStorm.lightning_bolt_1_in_x + (int) (Math.max(ConfigStorm.lightning_bolt_1_in_x * lightning, 0.0F))) == 0)
 			{
-				int x = (int) (pos.posX + rand.nextInt(size) - rand.nextInt(size));
-				int z = (int) (pos.posZ + rand.nextInt(size) - rand.nextInt(size));
+				int x = (int) (pos.posX + Maths.random(-size, size));
+				int z = (int) (pos.posZ + Maths.random(-size, size));
 				
 				if (world.isBlockLoaded(new BlockPos(x, 0, z)))
 				{
@@ -529,22 +425,17 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			}
 		}
 		
-		if (stormHumidity >= 200.0F)
-			isHailing = true;
-		else
-			isHailing = false;
-		
-		if (isHailing)
+		if (isHailing())
 		{
-			int amount = (int)MathHelper.clamp(ConfigStorm.hail_stones_per_tick * stormHumidity * 0.0001F, 1.0F, ConfigStorm.hail_stones_per_tick);
+			int amount = (int)MathHelper.clamp(ConfigStorm.hail_stones_per_tick * hail * 0.0001F, 1.0F, ConfigStorm.hail_stones_per_tick);
 			EntityPlayer player;
 			for (int i = 0; i < amount && world.playerEntities.size() > 0; i++)
 			{
 				player = world.playerEntities.get(Maths.random(0, world.playerEntities.size()));
 				if(pos.distance(player.posX, pos.posY, player.posZ) < size)
 				{
-					int x = (int) (player.posX + rand.nextInt(64) - rand.nextInt(64));
-					int z = (int) (player.posZ + rand.nextInt(64) - rand.nextInt(64));
+					int x = (int) (player.posX + Maths.random(-64, 64));
+					int z = (int) (player.posZ + Maths.random(-64, 64));
 					
 					if (world.isBlockLoaded(new BlockPos(x, getLayerHeight(), z)))
 					{
@@ -563,22 +454,14 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	{
 		if (ConfigStorm.storm_rain_extinguish_delay <= 0) return;
 
-		if (isRaining())
+		if (isRaining() && manager.getWorld().getTotalWorldTime() % ConfigStorm.storm_rain_extinguish_delay == 0)
 		{
-			//efficient caching
-			if ((manager.getWorld().getTotalWorldTime()/* + (id * 20)*/) % ConfigStorm.storm_rain_extinguish_delay == 0)
-			{
-				stormCloseEntities.clear();
-				BlockPos posBP = new BlockPos(posGround.posX, posGround.posY, posGround.posZ);
-				List<EntityLivingBase> listEnts = manager.getWorld().getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(posBP).grow(size));
-				
-				for (EntityLivingBase ent : listEnts)
-					if (ent.world.canBlockSeeSky(ent.getPosition()))
-						stormCloseEntities.add(ent);
-			}
+			BlockPos posBP = new BlockPos(posGround.posX, posGround.posY, posGround.posZ);
+			List<EntityLivingBase> listEnts = manager.getWorld().getEntitiesWithinAABB(EntityLivingBase.class, new AxisAlignedBB(posBP).grow(size));
 
-			for (EntityLivingBase ent : stormCloseEntities)
-				ent.extinguish();
+			for (EntityLivingBase ent : listEnts)
+				if (ent.world.canBlockSeeSky(ent.getPosition()))
+					ent.extinguish();
 		}
 	}
 	
@@ -652,23 +535,26 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	}
 	
 	//questionably efficient code, but really there isnt much better options
-	public ChunkCoordinatesBlock getSnowfallEvenOutAdjustCheck(int x, int y, int z, int sourceMeta) {
+	public ChunkCoordinatesBlock getSnowfallEvenOutAdjustCheck(int x, int y, int z, int sourceMeta)
+	{
 		//filter out diagonals
 		ChunkCoordinatesBlock attempt;
 		attempt = getSnowfallEvenOutAdjust(x-1, y, z, sourceMeta);
 		
 		if (attempt.posX != 0 || attempt.posZ != 0) return attempt;
-		attempt = getSnowfallEvenOutAdjust(x+1, y, z, sourceMeta);
+			attempt = getSnowfallEvenOutAdjust(x+1, y, z, sourceMeta);
 		if (attempt.posX != 0 || attempt.posZ != 0) return attempt;
-		attempt = getSnowfallEvenOutAdjust(x, y, z-1, sourceMeta);
+			attempt = getSnowfallEvenOutAdjust(x, y, z-1, sourceMeta);
 		if (attempt.posX != 0 || attempt.posZ != 0) return attempt;
-		attempt = getSnowfallEvenOutAdjust(x, y, z+1, sourceMeta);
+			attempt = getSnowfallEvenOutAdjust(x, y, z+1, sourceMeta);
 		if (attempt.posX != 0 || attempt.posZ != 0) return attempt;
+		
 		return new ChunkCoordinatesBlock(0, 0, 0, Blocks.AIR, 0);
 	}
 	
 	//return relative values, id 0 (to mark its ok to start snow here) or id snow (to mark check meta), and meta of detected snow if snow (dont increment it, thats handled after this)
-	public ChunkCoordinatesBlock getSnowfallEvenOutAdjust(int x, int y, int z, int sourceMeta) {
+	public ChunkCoordinatesBlock getSnowfallEvenOutAdjust(int x, int y, int z, int sourceMeta)
+	{
 		
 		//only check down once, if air, check down one more time, if THAT is air, we dont allow spread out, because we dont want to loop all the way down to bottom of some cliff
 		//could use getHeight but then we'd have to difference check the height and that might complicate things...
@@ -713,7 +599,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		if (biomegenbase == null) return false;
 		float temperature = WeatherUtil.getTemperature(world, pos);
 
-		if ((canSnowFromCloudTemperature && stormTemperature > 0) || (!canSnowFromCloudTemperature && temperature > 0.15F))
+		if (temperature > 0.15F)
 			return false;
 		else
 		{
@@ -753,23 +639,23 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			float tempAdjustRate = (float)ConfigStorm.temperature_adjust_rate;
 			boolean hasWater, hasOcean = false;
 			
-			if (stormStage > Stage.TORNADO.getStage() || stormType == StormType.WATER.ordinal() && stormStage > Stage.TROPICAL_DEPRESSION.getStage())
-				funnel_size = (float) Math.min(Math.pow((stormIntensity - 3.0F) * 14, ConfigStorm.storm_size_curve_mult) * (stormType == StormType.LAND.ordinal() ? stormSizeRate : stormSizeRate * 1.5F), ConfigStorm.max_storm_size);
-			else if(funnel_size != 14.0F)
-				funnel_size = 14.0F;
+			if (stage > Stage.TORNADO.getStage() || stormType == StormType.WATER.ordinal() && stage > Stage.TROPICAL_DEPRESSION.getStage())
+				funnelSize = (float) Math.min(Math.pow((intensity - 3.0F) * 14, ConfigStorm.storm_size_curve_mult) * (stormType == StormType.LAND.ordinal() ? sizeRate : sizeRate * 1.5F), ConfigStorm.max_storm_size);
+			else if(funnelSize != 14.0F)
+				funnelSize = 14.0F;
 			
-			size = (int) MathHelper.clamp((funnel_size + ConfigStorm.min_storm_size) * (stormType == StormType.LAND.ordinal() ? 1.5F : 3.0F), ConfigStorm.min_storm_size, ConfigStorm.max_storm_size);
-			stormWind = Math.max(6.73F + 2.8F * (stormIntensity - 3.0F), 0.0F);
+			size = (int) MathHelper.clamp((funnelSize + ConfigStorm.min_storm_size) * (stormType == StormType.LAND.ordinal() ? 1.5F : 3.0F), ConfigStorm.min_storm_size, ConfigStorm.max_storm_size);
+			windSpeed = Math.max(6.73F + (stormType == StormType.WATER.ordinal() ? 1.7F : 2.8F) * (intensity - 3.0F), 0.0F);
 			
 			//temperature scan
 			if (biome != null)
 			{
 				hasOcean = biome.biomeName.toLowerCase().contains("ocean");
 				float biomeTempAdj = getTemperatureMCToWeatherSys(CoroUtilCompatibility.getAdjustedTemperature(manager.getWorld(), biome, new BlockPos(MathHelper.floor(pos.posX), 64, MathHelper.floor(pos.posZ))));
-				if (stormTemperature > biomeTempAdj)
-					stormTemperature -= tempAdjustRate; 
-				else if (stormTemperature < biomeTempAdj)
-					stormTemperature += tempAdjustRate;
+				if (temperature > biomeTempAdj)
+					temperature -= tempAdjustRate; 
+				else if (temperature < biomeTempAdj)
+					temperature += tempAdjustRate;
 			}
 			IBlockState blockID = world.getBlockState(new BlockPos(MathHelper.floor(pos.posX), currentTopYBlock-1, MathHelper.floor(pos.posZ)));
 			hasWater = blockID.getMaterial() instanceof MaterialLiquid;
@@ -779,28 +665,28 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 				if (shouldBuildHumidity)
 				{
 					if (!isDying || revives < maxRevives)
-						stormHumidity += ConfigStorm.humidity_buildup_rate * WeatherUtil.getHumidity(world, pos.toBlockPos());
-					else if (stormHumidity > 0.0F)
-						stormHumidity -= ConfigStorm.humidity_spend_rate * WeatherUtil.getHumidity(world, pos.toBlockPos());
+						rain += ConfigStorm.humidity_buildup_rate * WeatherUtil.getHumidity(world, pos.toBlockPos());
+					else if (rain > 0.0F)
+						rain -= ConfigStorm.humidity_spend_rate * WeatherUtil.getHumidity(world, pos.toBlockPos());
 					
-					if (stormHumidity < 0.0F)
+					if (rain < 0.0F)
 					{
-						stormHumidity = 0.0F;
+						rain = 0.0F;
 						shouldBuildHumidity = false;
 					}
 				}
-				if (stormHumidity < 50.0F && stormStage > 0)
-					stormHumidity = 60.0F;
+				if (rain < 50.0F && stage > 0)
+					rain = 60.0F;
 				
 				//force storms to die if its no longer raining while overcast mode is active
 				if (ConfigMisc.overcast_mode && !neverDissipate && !manager.getWorld().isRaining())
 					isDying = true;
 				
 				//force rain on while real storm and not dying
-				if (!isDying && stormHumidity < stormRainMin)
-					stormHumidity = stormRainMin;
+				if (!isDying && rain < MINIMUM_DRIZZLE)
+					rain = MINIMUM_DRIZZLE;
 				
-				if (stormStage == Stage.SEVERE.getStage() && hasWater)
+				if (stage == Stage.SEVERE.getStage() && hasWater)
 				{
 					if (ConfigStorm.high_wind_waterspout_10_in_x != 0 && Maths.random(ConfigStorm.high_wind_waterspout_10_in_x) == 0)
 						isSpout = true;
@@ -809,24 +695,23 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 					isSpout = false;
 				
 				float intensityRate = 0.03F;
-				boolean intensify = stormIntensity - (stormStage - 1) > 1.0F;
+				boolean intensify = intensity - (stage - 1) > 1.0F;
 				
 				//speed up forming and greater progression when past forming state
-				if (stormStage >= Stage.TORNADO.getStage())
+				if (stage >= Stage.TORNADO.getStage())
 					intensityRate *= 3;
 
 				if (!isDying)
 				{
-					if (neverDissipate && (!intensify && stormStage <= stormStageMax || alwaysProgresses) || !neverDissipate)
-						stormIntensity += intensityRate;
+					if (neverDissipate && (!intensify && stage <= stageMax || alwaysProgresses) || !neverDissipate)
+						intensity += intensityRate;
 					
-					if (intensify && (stormStage < stormStageMax || alwaysProgresses))
+					if (intensify && (stage < stageMax || alwaysProgresses))
 					{
 						stageNext();
-						Weather2.debug("storm ID: " + getUUID().toString() + " - growing, stage: " + stormStage);
-								
-						//mark is tropical cyclone if needed! and never unmark it!
-						if (shouldConvert && stormStage <= WeatherEnum.Stage.THUNDER.getStage() && hasOcean)
+						Weather2.debug("storm ID: " + getUUID().toString() + " - growing, stage: " + stage);
+						
+						if (shouldConvert && !ConfigStorm.disable_cyclones && (stage < WeatherEnum.Stage.SEVERE.getStage() && hasOcean || ConfigStorm.disable_tornados))
 						{
 							Weather2.debug("storm ID: " + getUUID().toString() + " marked as tropical cyclone!");
 							stormType = StormType.WATER.ordinal();
@@ -834,30 +719,30 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 						}
 					}
 					
-					if (!(neverDissipate || alwaysProgresses) && stormStage >= stormStageMax)
+					if (!(neverDissipate || alwaysProgresses) && stage >= stageMax && intensify)
 					{
-						Weather2.debug("storm peaked at: " + stormStage);
+						Weather2.debug("storm peaked at: " + stage);
 						isDying = true;
 					}
 				}
 				else
 				{
 					if (ConfigMisc.overcast_mode && manager.getWorld().isRaining())
-						stormIntensity -= intensityRate * 0.5F;
+						intensity -= intensityRate * 0.5F;
 					else
-						stormIntensity -= intensityRate * 0.2F;
+						intensity -= intensityRate * 0.2F;
 						
-					if (stormIntensity - (stormStage - 1) <= 0)
+					if (intensity - (stage - 1) <= 0)
 					{
 						stagePrev();
-						Weather2.debug("storm ID: " + this.getUUID().toString() + " - dying, stage: " + stormStage);
-						if (stormStage == 2 && revives < maxRevives)
+						Weather2.debug("storm ID: " + this.getUUID().toString() + " - dying, stage: " + stage);
+						if (stage == 2 && revives < maxRevives)
 						{
 							isDying = false;
 							revives++;
 							resetStorm();
 						}
-						else if (stormStage <= 0)
+						else if (stage <= 0)
 							setNoStorm();
 					}
 				}
@@ -867,12 +752,12 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	
 	public WeatherEntityConfig getWeatherEntityConfigForStorm()
 	{
-		return WeatherTypes.weatherEntTypes.get(MathHelper.clamp(stormStage - Stage.TORNADO.getStage(), 0, 6));
+		return WeatherTypes.weatherEntTypes.get(MathHelper.clamp(stage - Stage.TORNADO.getStage(), 0, 6));
 	}
 	
 	public void updateType()
 	{
-		switch(stormStage)
+		switch(stage)
 		{
 			case 0:
 				type = WeatherEnum.Type.CLOUD;
@@ -894,76 +779,76 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 				break;
 			default:
 				if (stormType == 1)
-					type = stormStage == Stage.TROPICAL_STORM.getStage() ? WeatherEnum.Type.TROPICAL_STORM : WeatherEnum.Type.HURRICANE;
+					type = stage == Stage.TROPICAL_STORM.getStage() ? WeatherEnum.Type.TROPICAL_STORM : WeatherEnum.Type.HURRICANE;
 				else
 					type = WeatherEnum.Type.TORNADO;
 		}
 		
-		if (stormType == 1 && stormName.length() == 0)
-			stormName = StormNames.get();
+		if (stormType == 1 && name.length() == 0)
+			name = StormNames.get();
 	}
 	
 	public void stageNext() {
-		stormStage += 1;
+		stage += 1;
 		updateType();
 	}
 	
 	public void stagePrev() {
-		stormStage -= 1;
+		stage -= 1;
 		updateType();
 	}
 	
 	public void resetStorm()
 	{
 		shouldBuildHumidity = true;
-		stormSizeRate = Maths.random(0.75F, 1.35F);
+		sizeRate = Maths.random(0.75F, 1.35F);
 		isViolent = Maths.chance(ConfigStorm.chance_for_violent_storm * 0.01D * 0.25D);
 		
-		stormStageMax = Math.max(rollDiceOnMaxIntensity(), WeatherEnum.Stage.TORNADO.getStage());
+		stageMax = Math.max(rollDiceOnMaxIntensity(), WeatherEnum.Stage.TORNADO.getStage());
 		
 		if (isViolent)
 		{
-			stormSizeRate += Maths.random(0.25F, 1.65F);
+			sizeRate += Maths.random(0.25F, 1.65F);
 			
-			if (stormStageMax < 9)
-				stormStageMax += 1;
+			if (stageMax < 9)
+				stageMax += 1;
 		}
 		
 		updateType();
-		Weather2.debug("Revived Into Deadly Storm: \nIs Violent: " + isViolent + "\nMax Stage: " + stormStageMax + " (EF" + (stormStageMax - 4) + ")\nSize Multiplier: " + stormSizeRate * 100 + "%");
+		Weather2.debug("Revived Into Deadly Storm: \nIs Violent: " + isViolent + "\nMax Stage: " + stageMax + " (EF" + (stageMax - 4) + ")\nSize Multiplier: " + sizeRate * 100 + "%");
 	}
 	
 	public void initRealStorm()
 	{
 		shouldBuildHumidity = true;
 		//new way of storm progression
-		if (stormStage != Stage.RAIN.getStage())
+		if (stage != Stage.RAIN.getStage())
 		{
-			stormStage = Stage.RAIN.getStage();
-			stormIntensity = 0.0F;
+			stage = Stage.RAIN.getStage();
+			intensity = 0.0F;
 		}
 		
-		if (stormStageMax < 1)
-			stormStageMax = rollDiceOnMaxIntensity();
+		if (stageMax < 1)
+			stageMax = rollDiceOnMaxIntensity();
 		
-		if (stormSizeRate < 0.0F)
-			stormSizeRate = (float) Maths.random(ConfigStorm.min_size_growth, ConfigStorm.max_size_growth);
+		if (sizeRate < 0.0F)
+			sizeRate = (float) Maths.random(ConfigStorm.min_size_growth, ConfigStorm.max_size_growth);
 		
 		if (isViolent || Maths.chance(ConfigStorm.chance_for_violent_storm / 100.0D))
 		{
 			isViolent = true;
-			stormSizeRate += Maths.random(ConfigStorm.min_violent_size_growth, ConfigStorm.max_violent_size_growth);
-			if (stormStageMax < Stage.TORNADO.getStage() + 4)
-				stormStageMax += 1;
+			sizeRate += Maths.random(ConfigStorm.min_violent_size_growth, ConfigStorm.max_violent_size_growth);
+			if (stageMax < Stage.TORNADO.getStage() + 4)
+				stageMax += 1;
 		}
 		
 		while(Maths.chance(ConfigStorm.chance_for_storm_revival * 0.01D) && revives < ConfigStorm.max_storm_revives)
 			revives++;
 			
-		if (stormStageMax > Stage.SEVERE.getStage())
-			Weather2.debug("New Deadly Storm: \nIs Violent: " + isViolent + "\nMax Stage: " + stormStageMax + " (EF" + (stormStageMax - 4) + ")\nSize Multiplier: " + stormSizeRate * 100 + "%");
+		if (stageMax > Stage.SEVERE.getStage())
+			Weather2.debug("New Deadly Storm: \nIs Violent: " + isViolent + "\nMax Stage: " + stageMax + " (EF" + (stageMax - 4) + ")\nSize Multiplier: " + sizeRate * 100 + "%");
 		else
-			Weather2.debug("New Normal Storm: \nIs Violent: " + isViolent + "\nMax Stage: " + stormStageMax + "\nSize Multiplier: " + stormSizeRate * 100 + "%");
+			Weather2.debug("New Normal Storm: \nIs Violent: " + isViolent + "\nMax Stage: " + stageMax + "\nSize Multiplier: " + sizeRate * 100 + "%");
 		canProgress = true;
 		updateType();
 	}
@@ -974,11 +859,17 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		else if (!Maths.chance(ConfigStorm.chance_for_supercell * 0.01D)) return Stage.THUNDER.getStage();
 		 
 			
-		ConfigList list;
+		ConfigList list = new ConfigList();
 		if (stormType == StormType.LAND.ordinal())
-			list = WeatherAPI.getTornadoStageList();
+		{
+			if (!ConfigStorm.disable_tornados)
+				list = WeatherAPI.getTornadoStageList();
+		}
 		else
-			list = WeatherAPI.getHurricaneStageList();
+		{
+			if (!ConfigStorm.disable_cyclones)
+				list = WeatherAPI.getHurricaneStageList();
+		}
 		
 		for (Entry<String, Object[]> entry : list.toMap().entrySet())
 		{
@@ -999,15 +890,14 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	//FYI rain doesnt count as storm
 	public void setNoStorm() {
 		Weather2.debug("storm ID: " + this.getUUID().toString() + " - ended storm event");
-		stormStage = Stage.NORMAL.getStage();
-		stormIntensity = 0;
+		stage = Stage.NORMAL.getStage();
+		intensity = 0;
 		isDead = true;
 	}
 	
 	@SideOnly(Side.CLIENT)
 	public void tickClient()
 	{
-		if (isCloudless) return;
 		if (particleBehaviorFog == null)
 			particleBehaviorFog = new ParticleBehaviorFog(pos.toVec3Coro());
 		else if (!Minecraft.getMinecraft().isSingleplayer() || !(Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu))
@@ -1019,7 +909,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		double maxRenderDistance = SceneEnhancer.fogDistance;
 		double spinSpeedMax = 0.4D;
 		float sizeCloudMult = Math.min(Math.max(size * 0.0015F, 1.0F), getLayerHeight() * 0.02F);
-		float sizeFunnelMult = Math.min(Math.max(funnel_size * (isViolent ? 0.016F : 0.008F), 1.0F), getLayerHeight() * 0.02F);
+		float sizeFunnelMult = Math.min(Math.max(funnelSize * (isViolent ? 0.016F : 0.008F), 1.0F), getLayerHeight() * 0.02F);
 		float sizeOtherMult = Math.min(Math.max(size * 0.003F, 1.0F), getLayerHeight() * 0.035F);
 		float heightMult = getLayerHeight() * 0.00290625F;
 		float rotationMult = Math.max(heightMult * 0.45F, 1.0F);
@@ -1052,13 +942,13 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		}
 		
 		if (ConfigSimulation.simulation_enable)
-			stormSpin = Math.min(spinSpeedMax, Math.max(stormIntensity * 0.0001F * sizeCloudMult, 0.03F));
+			spin = Math.min(spinSpeedMax, Math.max(intensity * 0.0001F * sizeCloudMult, 0.03F));
 		else
-			stormSpin = Math.min(spinSpeedMax, Math.max(0.007D * stormStage * sizeCloudMult, 0.03D));
+			spin = Math.min(spinSpeedMax, Math.max(0.007D * stage * sizeCloudMult, 0.03D));
 		
 		//bonus!
 		if (stormType == StormType.WATER.ordinal())
-			stormSpin += 0.025D;
+			spin += 0.025D;
 		
 		if (size == 0) size = 1;
 		int delay = Math.max(1, (int)(100F / size));
@@ -1068,7 +958,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		if (isSevere())
 		{
 			loopSize += 4;
-			extraSpawning = (int) Math.min(funnel_size * 2.375F, 1000.0F);
+			extraSpawning = (int) Math.min(funnelSize * 2.375F, 1000.0F);
 		}
 		
 		Random rand = new Random();
@@ -1140,7 +1030,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 						double spawnRad = size * 1.2D;
 						Vec3 tryPos = new Vec3(pos.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), getLayerHeight() + (rand.nextDouble() * 40.0F), pos.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
 						if (tryPos.distance(playerAdjPos) < maxRenderDistance) {
-							if (getAvoidAngleIfTerrainAtOrAheadOfPosition(getAdjustedAngle(), tryPos) == 0) {
+							if (getAvoidAngleIfTerrainAtOrAheadOfPosition(getAngle(), tryPos) == 0) {
 								ExtendedEntityRotFX particle;
 								if (WeatherUtil.isAprilFoolsDay()) {
 									particle = spawnFogParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 0, ParticleRegistry.chicken);
@@ -1148,7 +1038,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 								}
 								else
 								{
-									float finalBright = Math.min(0.7F, 0.5F + (rand.nextFloat() * 0.2F)) + (stormStage >= Stage.RAIN.getStage() ? -0.2F : 0.0F );
+									float finalBright = Math.min(0.7F, 0.5F + (rand.nextFloat() * 0.2F)) + (stage >= Stage.RAIN.getStage() ? -0.2F : 0.0F );
 									particle = spawnFogParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 0);
 									particle.setColor(finalBright, finalBright, finalBright);
 									
@@ -1170,13 +1060,13 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		}
 		
 		//ground effects
-		if (!ConfigCoroUtil.optimizedCloudRendering && stormType == StormType.LAND.ordinal() && stormStage > Stage.SEVERE.getStage() && r >= 0.0F && !material.isLiquid())
+		if (!ConfigCoroUtil.optimizedCloudRendering && stormType == StormType.LAND.ordinal() && stage > Stage.SEVERE.getStage() && r >= 0.0F && !material.isLiquid())
 		{
 			for (int i = 0; i < 4 && canSpawnParticle(); i++)
 			{
 				if (listParticlesGround.size() < 300)
 				{
-					double spawnRad = funnel_size + 150.0D;
+					double spawnRad = funnelSize + 150.0D;
 					
 					Vec3 tryPos = new Vec3(pos_funnel_base.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), posGround.posY, pos_funnel_base.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
 					if (tryPos.distance(playerAdjPos) < maxRenderDistance)
@@ -1203,13 +1093,13 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		}
 		
 		delay = 1;
-		loopSize = 3 + (int)(funnel_size / 80);
-		double spawnRad = funnel_size * 0.02F;
+		loopSize = 3 + (int)(funnelSize / 80);
+		double spawnRad = funnelSize * 0.02F;
 		
-		if (stormStage >= Stage.TORNADO.getStage() + 1) 
+		if (stage >= Stage.TORNADO.getStage() + 1) 
 		{
 			spawnRad *= 48.25D;
-			sizeMaxFunnelParticles = 2000;
+			particleLimit = 2000;
 		}
 		
 		//spawn funnel
@@ -1217,9 +1107,9 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		{
 			if (this.manager.getWorld().getTotalWorldTime() % (delay + ConfigParticle.funnel_particle_delay) == 0)
 			{
-				for (int i = 0; i < loopSize && listParticlesFunnel.size() <= sizeMaxFunnelParticles && canSpawnParticle(); i++)
+				for (int i = 0; i < loopSize && listParticlesFunnel.size() <= particleLimit && canSpawnParticle(); i++)
 				{
-					if (listParticlesFunnel.size() < sizeMaxFunnelParticles)
+					if (listParticlesFunnel.size() < particleLimit)
 					{
 						Vec3 tryPos = new Vec3(pos_funnel_base.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), pos.posY, pos_funnel_base.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
 						
@@ -1236,13 +1126,13 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 
 							
 							//move these to a damn profile damnit!
-							particle.setMaxAge(150 + ((stormStage-1) * 10) + rand.nextInt(100));
+							particle.setMaxAge(150 + ((stage-1) * 10) + rand.nextInt(100));
 							particle.rotationYaw = rand.nextInt(360);
 							
 							float finalBright = Math.min(0.7F, 0.35F + (rand.nextFloat() * 0.2F));
 							
 							//highwind aka spout in this current code location
-							if (stormStage == Stage.SEVERE.getStage())
+							if (stage == Stage.SEVERE.getStage())
 							{
 								particle.setScale(250.0F * sizeFunnelMult);
 								particle.setColor(finalBright, finalBright, finalBright);
@@ -1253,7 +1143,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 								if (r >= 0.0F)
 								{
 									particle.setColor(r, g, b);
-									particle.setFinalColor(1.0F - stormFormingStrength, finalBright, finalBright, finalBright);
+									particle.setFinalColor(1.0F - formingStrength, finalBright, finalBright, finalBright);
 									particle.setColorFade(0.75F);
 								}
 								else
@@ -1273,9 +1163,9 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			}
 		}
 		
-		if (ConfigParticle.enable_distant_downfall && ticks % 20 == 0 && ConfigParticle.distant_downfall_particle_rate > 0.0F && listParticlesRain.size() < 1000 && stormStage > Stage.THUNDER.getStage() && isRaining())
+		if (ConfigParticle.enable_distant_downfall && ticks % 20 == 0 && ConfigParticle.distant_downfall_particle_rate > 0.0F && listParticlesRain.size() < 1000 && stage > Stage.THUNDER.getStage() && isRaining())
 		{
-			int particleCount = (int)Math.ceil(stormHumidity * stormStage * ConfigParticle.distant_downfall_particle_rate * 0.005F);
+			int particleCount = (int)Math.ceil(rain * stage * ConfigParticle.distant_downfall_particle_rate * 0.005F);
 			
 			for (int i = 0; i < particleCount && listParticlesRain.size() < 1000 && canSpawnParticle(); i++)
 			{
@@ -1284,7 +1174,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 				if (tryPos.distance(playerAdjPos) < maxRenderDistance)
 				{
 					ExtendedEntityRotFX particle;
-					float finalBright = Math.min(0.7F, 0.5F + (rand.nextFloat() * 0.2F)) + (stormStage >= Stage.RAIN.getStage() ? -0.2F : 0.0F );
+					float finalBright = Math.min(0.7F, 0.5F + (rand.nextFloat() * 0.2F)) + (stage >= Stage.RAIN.getStage() ? -0.2F : 0.0F );
 					particle = spawnFogParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 2);
 					particle.setMaxAge(200 + rand.nextInt(100));
 					particle.setScale(550.0F * sizeOtherMult);
@@ -1319,7 +1209,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		for (int i = 0; i < listParticlesCloud.size(); i++)
 		{
 			EntityRotFX ent = listParticlesCloud.get(i);
-			if (!ent.isAlive() || stormType == StormType.WATER.ordinal() && ent.getDistance(pos.posX, ent.posY, pos.posZ) < funnel_size)
+			if (!ent.isAlive() || stormType == StormType.WATER.ordinal() && ent.getDistance(pos.posX, ent.posY, pos.posZ) < funnelSize)
 			{
 				ent.setExpired();
 				listParticlesCloud.remove(ent);
@@ -1331,8 +1221,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 				
 				if (isSevere())
 				{
-					double speed = stormSpin + (rand.nextDouble() * 0.04D) * rotationMult;
-					double distt = Math.max(ConfigStorm.max_storm_size, funnel_size + 20.0D);//300D;
+					double speed = spin + (rand.nextDouble() * 0.04D) * rotationMult;
+					double distt = Math.max(ConfigStorm.max_storm_size, funnelSize + 20.0D);//300D;
 					
 					if (stormType == 1)
 					{
@@ -1359,10 +1249,10 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 					
 					//keep some near always - this is the lower formation part
 					if (ent.getEntityId() % 40 < 5) {
-						if (stormStage >= Stage.TORNADO.getStage()) {
+						if (stage >= Stage.TORNADO.getStage()) {
 							if (stormType == StormType.WATER.ordinal()) {
 								angle += 40 + ((ent.getEntityId() % 5) * 4);
-								if (curDist > 150 + ((stormStage-Stage.TORNADO.getStage()+1) * 30)) {
+								if (curDist > 150 + ((stage-Stage.TORNADO.getStage()+1) * 30)) {
 									angle += 10;
 								}
 							} else {
@@ -1396,8 +1286,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 				{
 					float cloudMoveAmp = 0.2F * (1 + layer);
 					
-					float speed = getAdjustedSpeed() * cloudMoveAmp;
-					float angle = getAdjustedAngle();
+					float speed = getSpeed() * cloudMoveAmp;
+					float angle = getAngle();
 
 					//TODO: prevent new particles spawning inside or near solid blocks
 
@@ -1421,7 +1311,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 				
 				float dropDownSpeedMax = 0.5F;
 				
-				if (stormType == 1 || stormStage > 8)
+				if (stormType == 1 || stage > 8)
 					dropDownSpeedMax = 1.9F;
 				
 				if (ent.getMotionY() < -dropDownSpeedMax)
@@ -1446,7 +1336,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 				ent.motionY = ent.motionY - (0.1D);
 			
 			double speed = Math.sqrt(ent.getMotionX() * ent.getMotionX() + ent.getMotionY() * ent.getMotionY() + ent.getMotionZ() * ent.getMotionZ());
-			double spin = stormSpin + 0.04F;
+			double spin = this.spin + 0.04F;
 			double vecX = ent.getPosX() - pos.posX;
 			double vecZ = ent.getPosZ() - pos.posZ;
 			float angle = (float)(Math.atan2(vecZ, vecX) * 180.0D / Math.PI);
@@ -1473,18 +1363,24 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		}
 	}
 	
-	public float getAdjustedSpeed() {
-		return manager.windManager.windSpeed;
+	@Override
+	public float getSpeed()
+	{
+		return overrideMotion ? (float) motion.speed() : manager.windManager.windSpeed;
 	}
 	
-	public float getAdjustedAngle() {
+	@Override
+	public float getAngle()
+	{
+		if (overrideAngle) return angle;
+		
 		float angle = manager.windManager.windAngle;
 		
-		float angleAdjust = Math.max(10, Math.min(45, 45F * stormTemperature * 0.2F));
+		float angleAdjust = Math.max(10, Math.min(45, 45F * temperature * 0.2F));
 		float targetYaw = 0;
 		
 		//coldfronts go south to 0, warmfronts go north to 180
-		if (stormTemperature > 0)
+		if (temperature > 0)
 			targetYaw = 180;
 		else
 			targetYaw = 0;
@@ -1523,12 +1419,11 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	
 	public void spinEntity(Object obj)
 	{
-		StormObject entT = this;
 		StormObject entity = this;
 		WeatherEntityConfig conf = getWeatherEntityConfigForStorm();
 		
 		float heightMult = getLayerHeight() * 0.00490625F;
-		float rotationMult = heightMult * 0.5F * ((isViolent ? 3.1F : 1.55F) + Math.min((stormStage - 5.0F) / 3.0F, 2.0F));
+		float rotationMult = heightMult * 0.5F * ((isViolent ? 3.1F : 1.55F) + Math.min((stage - 5.0F) / 3.0F, 2.0F));
 		
 		World world = CoroUtilEntOrParticle.getWorld(obj);
 		long worldTime = world.getTotalWorldTime();
@@ -1606,13 +1501,13 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		
 		f = (float)((double)f + profileAngle);
 
-		if (entT != null && entT.scale != 1F) f += 20 - (20 * entT.scale);
+		//if (entT != null && entT.scale != 1F) f += 20 - (20 * entT.scale);
 		
 		float f3 = (float)Math.cos(-f * 0.01745329F - (float)Math.PI);
 		float f4 = (float)Math.sin(-f * 0.01745329F - (float)Math.PI);
 		float f5 = conf.tornadoPullRate * 1.5F;
 		
-		if (entT != null && entT.scale != 1F) f5 *= entT.scale * 1.2F;
+		//if (entT != null && entT.scale != 1F) f5 *= entT.scale * 1.2F;
 
 		if (obj instanceof EntityLivingBase)
 			f5 /= (WeatherUtilEntity.getWeight(obj, true) * ((distXZ + 1D) / radius));
@@ -1637,11 +1532,11 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		if (stormType == StormType.WATER.ordinal()) str *= 0.25F;
 		pullY *= str / 100F;
 		
-		if (entT != null && entT.scale != 1F)
+		/*if (entT != null && entT.scale != 1F)
 		{
 			pullY *= entT.scale * 1.0F;
 			pullY += 0.002F;
-		}
+		}*/
 		
 		//prevent double+ pull on entities
 		if (obj instanceof Entity)
@@ -1684,7 +1579,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		entityfx.setCanCollide(false);
 		entityfx.callUpdatePB = false;
 		
-		if (stormStage == Stage.NORMAL.getStage())
+		if (stage == Stage.NORMAL.getStage())
 			entityfx.setMaxAge(300 + rand.nextInt(100));
 		else
 			entityfx.setMaxAge((size/2) + rand.nextInt(100));
@@ -1751,56 +1646,53 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	
 	@Override
 	public int getNetRate() {
-		if (stormStage >= Stage.SEVERE.getStage()) {
+		if (stage >= Stage.SEVERE.getStage()) {
 			return 2;
 		} else {
 			return super.getNetRate();
 		}
 	}
 	
-	public void setAngle(float Angle)
+	//TODO: Force storm to utilize angle value
+	public void setAngle(float angle)
 	{
 		overrideAngle = true;
-		overrideNewAngle = Math.max(Math.min(Angle, 360.0F), 0.0F);
+		this.angle = angle % 360.0F;
 	}
 	
-	public void setSpeed(float Speed)
+	//TODO: Force storm to utilize speed value
+	public void setSpeed(float speed)
 	{
 		overrideMotion = true;
-		overrideNewMotion = Math.max(Speed, 0.0F); 
-	}
-	
-	public void setSpin(float Speed)
-	{
-		overrideSpin = true;
-		overrideNewSpin = Math.max(Speed, 0.0F);
+		motion.posX = -Math.sin(Math.toRadians(angle)) * speed;
+		motion.posZ = Math.cos(Math.toRadians(angle)) * speed;
 	}
 
 	public void setStage(int stage)
 	{
-		stormStage = stage;
+		this.stage = stage;
 		updateType();
 	}
 
 	public boolean isDrizzling()
 	{
-		return stormHumidity >= 50.0F && stormHumidity < 100.0F;
+		return rain >= 50.0F && rain < 100.0F;
 	}
 	
 	public boolean isRaining()
 	{
-		return stormHumidity >= 100.0F;
+		return rain >= 100.0F;
 	}
 
 	public boolean hasDownfall()
 	{
-		return stormHumidity >= 50.0F;
+		return rain >= 50.0F;
 	}
 	
 	@Override
 	public int getStage()
 	{
-		return stormStage;
+		return stage;
 	}
 
 	@Override
@@ -1812,30 +1704,36 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	@Override
 	public int getLayerHeight()
 	{
+		boolean isClient = world.isRemote;
 		switch (layer)
 		{
-			case 1: return ConfigStorm.cloud_layer_1_height;
-			case 2: return ConfigStorm.cloud_layer_2_height;
-			default: return ConfigStorm.cloud_layer_0_height;
+			case 1: return isClient ? ClientTickHandler.clientConfigData.stormCloudHeight1 : ConfigStorm.cloud_layer_1_height;
+			case 2: return isClient ? ClientTickHandler.clientConfigData.stormCloudHeight2 : ConfigStorm.cloud_layer_2_height;
+			default: return isClient ? ClientTickHandler.clientConfigData.stormCloudHeight0 : ConfigStorm.cloud_layer_0_height;
 		}
 	}
 
+	public boolean isHailing()
+	{
+		return hail > 100.0F;
+	}
+	
 	@Override
 	public float getDownfall()
 	{
-		return stormHumidity;
+		return rain;
 	}
 
 	@Override
 	public float getDownfall(Vec3 pos)
 	{
-		return stormHumidity ;
+		return rain ;
 	}
 
 	@Override
 	public float getDownfall(BlockPos pos)
 	{
-		return stormHumidity;
+		return rain;
 	}
 
 	@Override
@@ -1853,33 +1751,34 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	@Override
 	public float getWindSpeed()
 	{
-		return stormWind;
+		return windSpeed;
 	}
 	
 	@Override
 	public String getName()
 	{
-		boolean truth = stormName.length() == 0;
+		boolean truth = name.length() == 0, isHailing = isHailing();
+		
 		switch(type)
 		{
 			case CLOUD:
-				return (truth ? "" : stormName + " ") + (isHailing ? "Hailing " : "") + "Cloud";
+				return (truth ? "" : name + " ") + (isHailing ? "Hailing " : "") + "Cloud";
 			case RAIN:
-				return (truth ? "" : stormName + " ") + (isHailing ? "Hailing " : "") + (hasDownfall() ? stormTemperature <= 0.0F ? "Snowstorm": "Rainstorm" : "Cloud");
+				return (truth ? "" : name + " ") + (isHailing ? "Hailing " : "") + (hasDownfall() ? temperature <= 0.0F ? "Snowstorm": "Rainstorm" : "Cloud");
 			case THUNDER:
-				return (truth ? "" : stormName + " ") + (isHailing ? "Hailing " : "") + "Thunderstorm";
+				return (truth ? "" : name + " ") + (isHailing ? "Hailing " : "") + "Thunderstorm";
 			case SUPERCELL:
-				return (truth ? "" : stormName + " ") + (isHailing ? "Hailing " : "") + "Supercell";
+				return (truth ? "" : name + " ") + (isHailing ? "Hailing " : "") + "Supercell";
 			case TROPICAL_DISTURBANCE:
-				return  (isHailing ? "Hailing " : "") + "Tropical Disturbance" + (truth ? "" : " " + stormName);
+				return  (isHailing ? "Hailing " : "") + "Tropical Disturbance" + (truth ? "" : " " + name);
 			case TROPICAL_DEPRESSION:
-				return (isHailing ? "Hailing " : "") + "Tropical Depression" + (truth ? "" : " " + stormName);
+				return (isHailing ? "Hailing " : "") + "Tropical Depression" + (truth ? "" : " " + name);
 			case TROPICAL_STORM:
-				return (isHailing ? "Hailing " : "") + "Tropical Storm " + stormName;
+				return (isHailing ? "Hailing " : "") + "Tropical Storm " + name;
 			case TORNADO:
-				return (truth ? "" : stormName + " ") + (ConfigStorm.enable_ef_scale ? "EF" + (stormStage - Stage.TORNADO.getStage()) : "F" + (int)MathHelper.clamp(Math.floor(funnel_size * 0.0206611570247933884297520661157F), 0, stormStageMax - 4)) + " " + (isHailing ? "Hailing " : "") + "Tornado";
+				return (truth ? "" : name + " ") + (ConfigStorm.enable_ef_scale ? "EF" + (stage - Stage.TORNADO.getStage()) : "F" + (int)MathHelper.clamp(Math.floor(funnelSize * 0.0206611570247933884297520661157F), 0, stageMax - 4)) + " " + (isHailing ? "Hailing " : "") + "Tornado";
 			case HURRICANE:
-				return (isHailing ? "Hailing " : "") + "Hurricane " + stormName + " - Category " + (stormStage - Stage.TORNADO.getStage());
+				return (isHailing ? "Hailing " : "") + "Hurricane " + name + " - Category " + (stage - Stage.TORNADO.getStage());
 			default:
 				return (isHailing ? "Hailing " : "") + "Unknown Storm";
 		}
@@ -1888,14 +1787,14 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	@Override
 	public String getTypeName()
 	{
-		boolean truth = stormName.length() == 0;
+		boolean truth = name.length() == 0;
 		
 		switch(type)
 		{
 			case TORNADO:
-				return (truth ? "" : stormName + " ") + (ConfigStorm.enable_ef_scale ? "EF" + (stormStage - Stage.TORNADO.getStage()) : "F" + (int)MathHelper.clamp(Math.floor(funnel_size * 0.0206611570247933884297520661157F), 0, stormStageMax - Stage.TORNADO.getStage()));
+				return (truth ? "" : name + " ") + (ConfigStorm.enable_ef_scale ? "EF" + (stage - Stage.TORNADO.getStage()) : "F" + (int)MathHelper.clamp(Math.floor(funnelSize * 0.0206611570247933884297520661157F), 0, stageMax - Stage.TORNADO.getStage()));
 			case HURRICANE:
-				return stormName + " C" + (stormStage - Stage.TORNADO.getStage());
+				return name + " C" + (stage - Stage.TORNADO.getStage());
 			case TROPICAL_DISTURBANCE:
 				return "TD1";
 			case TROPICAL_DEPRESSION:
@@ -1908,26 +1807,14 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	}
 
 	@Override
-	public float getAngle()
-	{
-		return angle;
-	}
-
-	@Override
-	public float getSpeed()
-	{
-		return (float) motion.speed();
-	}
-
-	@Override
 	public int getParticleCount()
 	{
-		return particleBehaviorFog == null ? 0 : particleBehaviorFog.particles.size();
+		return listParticlesCloud.size() + listParticlesFunnel.size() + listParticlesGround.size() + listParticlesRain.size();
 	}
 
 	@Override
 	public boolean canSpawnParticle()
 	{
-		return ConfigParticle.max_particles < 0 || particleBehaviorFog.particles.size() < ConfigParticle.max_particles;
+		return ConfigParticle.max_particles < 0 || ClientTickHandler.weatherManager.getParticleCount() < ConfigParticle.max_particles;
 	}
 }

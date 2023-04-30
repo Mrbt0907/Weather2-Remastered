@@ -14,6 +14,7 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.server.event.ServerTickHandler;
 import net.mrbt0907.weather2.server.weather.WeatherManagerServer;
@@ -42,7 +43,7 @@ public class BlockSensor extends Block
     	
     	if (wms != null)
     	{
-    		WeatherObject wo = wms.getWorstWeather(new Vec3(pos.getX(), pos.getY(), pos.getZ()), ConfigMisc.sensor_scan_range);
+    		WeatherObject wo = wms.getWorstWeather(new Vec3(pos.getX(), pos.getY(), pos.getZ()), ConfigMisc.sensor_scan_range, Stage.TORNADO.getStage(), Integer.MAX_VALUE);
     		if (wo != null)
     			world.setBlockState(pos, state.withProperty(POWER, 15), 3);
     		else

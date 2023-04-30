@@ -656,12 +656,6 @@ public class SandstormObject extends WeatherObject
 			particle.setMotionX(particle.getMotionX() + maxSpeed);
 		}
 		
-		/*if (particle.getPosY() > y) {
-			particle.setMotionY(particle.getMotionY() + -maxSpeed);
-		} else {
-			particle.setMotionY(particle.getMotionY() + maxSpeed);
-		}*/
-		
 		if (particle.getPosZ() > z) {
 			particle.setMotionZ(particle.getMotionZ() + -maxSpeed);
 		} else {
@@ -677,13 +671,34 @@ public class SandstormObject extends WeatherObject
 	}
 	
 	@Override
-	public int getNetRate() {
+	public int getNetRate()
+	{
 		return 1;
 	}
-	
+		
+
 	@Override
-	public CachedNBTTagCompound writeNBT()
+	public void readFromNBT()
 	{
+		super.readFromNBT();
+		posSpawn = new Vec3(nbt.getDouble("posSpawnX"), nbt.getDouble("posSpawnY"), nbt.getDouble("posSpawnZ"));
+				
+				this.ageFadeout = nbt.getInteger("ageFadeout");
+				this.ageFadeoutMax = nbt.getInteger("ageFadeoutMax");
+				
+				this.sizePeak = nbt.getInteger("sizePeak");
+				this.age = nbt.getInteger("age");
+				
+				this.isFrontGrowing = nbt.getBoolean("isFrontGrowing");
+			
+
+		motion = new Vec3(nbt.getDouble("vecX"), nbt.getDouble("vecY"), nbt.getDouble("vecZ"));
+	}
+
+	@Override
+	public CachedNBTTagCompound writeToNBT()
+	{
+		super.writeToNBT();
 		nbt.setDouble("posSpawnX", posSpawn.posX);
 		nbt.setDouble("posSpawnY", posSpawn.posY);
 		nbt.setDouble("posSpawnZ", posSpawn.posZ);
@@ -692,50 +707,10 @@ public class SandstormObject extends WeatherObject
 		nbt.setInteger("sizePeak", sizePeak);
 		nbt.setInteger("age", age);
 		nbt.setBoolean("isFrontGrowing", isFrontGrowing);
-		
-		return super.writeNBT();
-	}
-	
-	@Override
-	public void readNBT() {
-		super.readNBT();
-
-		CachedNBTTagCompound parNBT = this.nbt;
-		
-		posSpawn = new Vec3(parNBT.getDouble("posSpawnX"), parNBT.getDouble("posSpawnY"), parNBT.getDouble("posSpawnZ"));
-		
-		this.ageFadeout = parNBT.getInteger("ageFadeout");
-		this.ageFadeoutMax = parNBT.getInteger("ageFadeoutMax");
-		
-		this.sizePeak = parNBT.getInteger("sizePeak");
-		this.age = parNBT.getInteger("age");
-		
-		this.isFrontGrowing = parNBT.getBoolean("isFrontGrowing");
-	}
-
-	@Override
-	public void readFromNBT()
-	{
-		super.readFromNBT();
-		readNBT();
-
-		CachedNBTTagCompound var1 = this.nbt;
-
-		motion = new Vec3(var1.getDouble("vecX"), var1.getDouble("vecY"), var1.getDouble("vecZ"));
-	}
-
-	@Override
-	public void writeToNBT()
-	{
-		super.writeToNBT();
-		writeNBT();
-
-		CachedNBTTagCompound nbt = this.nbt;
-
 		nbt.setDouble("vecX", motion.posX);
 		nbt.setDouble("vecY", motion.posY);
 		nbt.setDouble("vecZ", motion.posZ);
-
+		return nbt;
 	}
 
 	@Override

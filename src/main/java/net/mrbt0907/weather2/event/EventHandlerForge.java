@@ -166,8 +166,6 @@ public class EventHandlerForge
 		event.windResistanceList.add("minecraft:stone", WeatherAPI.getEFWindSpeed(6));
 		
 		event.grabList.add("minecraft:glass");
-		event.grabList.add("minecraft:grass_path");
-		event.grabList.add("minecraft:farm_land");
 		event.grabList.add("minecraft:stained_glass");
 		event.grabList.add("minecraft:glass_pane");
 		event.grabList.add("minecraft:stained_glass_pane");
@@ -262,6 +260,7 @@ public class EventHandlerForge
 		event.grabList.add("minecraft:gold_block");
 		
 		event.replaceList.add("minecraft:farmland", "minecraft:dirt");
+		event.grabList.add("minecraft:grass_path", "minecraft:dirt");
 		event.replaceList.add("minecraft:torch", "minecraft:air");
 		event.replaceList.add("minecraft:redstone_torch", "minecraft:air");
 		event.replaceList.add("minecraft:glowstone", "minecraft:air");

@@ -58,7 +58,7 @@ public class SoundRegistry
 
 	private static SoundEvent register(String path)
 	{
-		ResourceLocation id = new ResourceLocation(Weather2.MODID, path);
+		ResourceLocation id = new ResourceLocation(Weather2.OLD_MODID, path);
 		SoundEvent sound = new SoundEvent(id).setRegistryName(id);
 		ForgeRegistries.SOUND_EVENTS.register(sound);
 		return sound;

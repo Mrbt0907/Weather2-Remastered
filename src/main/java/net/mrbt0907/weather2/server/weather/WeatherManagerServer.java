@@ -40,6 +40,7 @@ import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import net.mrbt0907.weather2.util.WeatherUtilEntity;
 import net.mrbt0907.weather2.weather.WeatherManager;
 import net.mrbt0907.weather2.weather.storm.StormObject;
+import net.mrbt0907.weather2.weather.storm.TornadoHelper;
 import net.mrbt0907.weather2.weather.storm.WeatherObject;
 import net.mrbt0907.weather2.weather.storm.FrontObject;
 import net.mrbt0907.weather2.weather.storm.SandstormObject;
@@ -179,6 +180,11 @@ public class WeatherManagerServer extends WeatherManager
 					}
 				}
 			}
+			
+
+			world.profiler.startSection("tickProcess");
+			TornadoHelper.tickProcess(world);
+			world.profiler.endSection();
 		}
 	}
 
@@ -228,7 +234,7 @@ public class WeatherManagerServer extends WeatherManager
 			{
 				weatherObject.nbt.setUpdateForced(true);
 				weatherObject.nbt.setUUID("frontUUID", globalFront.getUUID());
-				weatherNBT.setTag("storm_" + weatherObject.getUUID().toString(), weatherObject.writeNBT().getNewNBT());
+				weatherNBT.setTag("storm_" + weatherObject.getUUID().toString(), weatherObject.writeToNBT().getNewNBT());
 				weatherObject.nbt.setUpdateForced(false);
 				Weather2.debug("Saved storm_" + weatherObject.getUUID().toString());
 			}
@@ -244,7 +250,7 @@ public class WeatherManagerServer extends WeatherManager
 						{
 							weatherObject.nbt.setUpdateForced(true);
 							weatherObject.nbt.setUUID("frontUUID", uuid);
-							weatherNBT.setTag("storm_" + weatherObject.getUUID().toString(), weatherObject.writeNBT().getNewNBT());
+							weatherNBT.setTag("storm_" + weatherObject.getUUID().toString(), weatherObject.writeToNBT().getNewNBT());
 							weatherObject.nbt.setUpdateForced(false);
 							Weather2.debug("Saved storm_" + weatherObject.getUUID().toString());
 						}
@@ -541,7 +547,7 @@ public class WeatherManagerServer extends WeatherManager
 		for (WeatherObject wo : list)
 			if (wo instanceof IWeatherRain && ((IWeatherRain)wo).hasDownfall() || wo instanceof IWeatherStaged && ((IWeatherStaged)wo).getStage() > 0)
 			{
-				wo.writeNBT();
+				wo.writeToNBT();
 				nbt.setTag("storm_" + wo.getUUID().toString(), wo.nbt.getNewNBT());
 			}
 		

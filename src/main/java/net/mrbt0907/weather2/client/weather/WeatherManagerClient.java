@@ -109,7 +109,7 @@ public class WeatherManagerClient extends WeatherManager
 				//StormObject so
 				wo.nbt.setNewNBT(nbt);
 				wo.nbt.updateCacheFromNew();
-				wo.readNBT();
+				wo.readFromNBT();
 				
 				front.addWeatherObject(wo);
 				break;
@@ -124,7 +124,7 @@ public class WeatherManagerClient extends WeatherManager
 				if (wo != null)
 				{
 					wo.nbt.setNewNBT(nbt);
-					wo.readNBT();
+					wo.readFromNBT();
 					wo.nbt.updateCacheFromNew();
 				}
 				break;

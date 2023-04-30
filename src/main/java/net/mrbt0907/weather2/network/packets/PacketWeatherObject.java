@@ -10,7 +10,7 @@ public class PacketWeatherObject extends PacketBase
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
 		wo.nbt.setUpdateForced(true);
-		wo.writeNBT();
+		wo.writeToNBT();
 		wo.nbt.setUpdateForced(false);
 		nbt.setTag("weatherObject", wo.nbt.getNewNBT());
 		send(1, nbt, target);
@@ -20,7 +20,7 @@ public class PacketWeatherObject extends PacketBase
 	{
 		NBTTagCompound nbt = new NBTTagCompound();
 		wo.nbt.setNewNBT(new NBTTagCompound());
-		wo.writeNBT();
+		wo.writeToNBT();
 		nbt.setTag("weatherObject", wo.nbt.getNewNBT());
 		send(2, nbt, target);
 	}
