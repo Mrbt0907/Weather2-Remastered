@@ -10,7 +10,7 @@ import java.io.File;
 public class ConfigGrab implements IConfigCategory
 {
 	@ConfigComment("Should weather2 use the old getters and setters for blocks?")
-	public static boolean disableGrabOptimizations = false;
+	public static boolean disableGrabOptimizations = true;
 	@ConfigComment("Should storms grab players?")
 	public static boolean grab_players = true;
 	@ConfigComment("Should storms grab mobs?")
