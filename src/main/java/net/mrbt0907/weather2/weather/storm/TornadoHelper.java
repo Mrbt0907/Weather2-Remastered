@@ -4,8 +4,6 @@ import java.util.*;
 
 import CoroUtil.block.TileEntityRepairingBlock;
 import CoroUtil.util.UtilMining;
-import com.mrcrayfish.vehicle.entity.EntityVehicle;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
@@ -19,7 +17,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Loader;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WeatherAPI;
 import net.mrbt0907.weather2.api.weather.IWeatherStaged;
@@ -80,7 +77,6 @@ public class TornadoHelper
 					if (ConfigGrab.enable_repair_block_mode)
 					{
 						placeDamageBlock(world, snapshot.pos, snapshot.oldState);
-						putToCache(world, -1, false);
 					}
 					else
 					{
@@ -91,6 +87,7 @@ public class TornadoHelper
 						entity.motionY = 1.0D;
 						world.spawnEntity(entity);
 					}
+					putToCache(world, -1, false);
 				}
 				else
 				{
@@ -350,8 +347,6 @@ public class TornadoHelper
 			return isClient ? ClientTickHandler.clientConfigData.stormGrabMobs : ConfigGrab.grab_mobs;
 		if (ent instanceof EntityAnimal)
 			return isClient ? ClientTickHandler.clientConfigData.stormGrabAnimals : ConfigGrab.grab_animals;
-		if (Loader.isModLoaded("vehicle") && ent instanceof EntityVehicle)
-			return true;
 				
 		//for moving blocks, other non livings
 		return true;

@@ -181,15 +181,15 @@ public class SceneEnhancer implements Runnable {
 		if (!WeatherUtil.isPaused() && !ConfigMisc.toaster_pc_mode)
 		{
 			Minecraft mc = FMLClientHandler.instance().getClient();
-			mc.mcProfiler.startSection("particleSpawning");
+			mc.profiler.startSection("particleSpawning");
 			tryParticleSpawning();
-			mc.mcProfiler.endStartSection("tickRain");
+			mc.profiler.endStartSection("tickRain");
 			tickRainRates();
-			mc.mcProfiler.endStartSection("tickPrecipitation");
+			mc.profiler.endStartSection("tickPrecipitation");
 			tickParticlePrecipitation();
-			mc.mcProfiler.endStartSection("tickSoundA");
+			mc.profiler.endStartSection("tickSoundA");
 			trySoundPlaying();
-			mc.mcProfiler.endStartSection("tickSoundB");
+			mc.profiler.endStartSection("tickSoundB");
 			tickSounds();
 
 			if (mc.world != null && lastWorldDetected != mc.world)
@@ -198,16 +198,16 @@ public class SceneEnhancer implements Runnable {
 				reset();
 			}
 
-			mc.mcProfiler.endStartSection("tickWind");
+			mc.profiler.endStartSection("tickWind");
 			tryWind(mc.world);
 
-			mc.mcProfiler.endStartSection("tickFog");
+			mc.profiler.endStartSection("tickFog");
 			tickFog();
 
-			mc.mcProfiler.endStartSection("tickStormFog");
+			mc.profiler.endStartSection("tickStormFog");
 			tickStormFog();
 
-			mc.mcProfiler.endStartSection("tickParticle");
+			mc.profiler.endStartSection("tickParticle");
 			if (particleBehavior == null) {
 				particleBehavior = new ParticleBehaviorSandstorm(null);
 			}
@@ -225,7 +225,7 @@ public class SceneEnhancer implements Runnable {
 				}
 			}
 
-			mc.mcProfiler.endSection();
+			mc.profiler.endSection();
 		}
 	}
 	
@@ -1295,7 +1295,7 @@ public class SceneEnhancer implements Runnable {
 
 		Random rand = new Random();
 		int handleCount = 0;
-		mc.mcProfiler.startSection("effectWeather");
+		mc.profiler.startSection("effectWeather");
 		//Weather Effects
 		for (int i = 0; i < ClientTickHandler.weatherManager.effectedParticles.size(); i++)
 		{
@@ -1343,7 +1343,7 @@ public class SceneEnhancer implements Runnable {
 				}
 			}
 		}
-		mc.mcProfiler.endStartSection("effectParticle");
+		mc.profiler.endStartSection("effectParticle");
 		//Particles
 		if (WeatherUtilParticle.fxLayers != null && windMan.windSpeed >= 0.10)
 		{
@@ -1395,7 +1395,7 @@ public class SceneEnhancer implements Runnable {
 				}
 			}
 		}
-		mc.mcProfiler.endSection();
+		mc.profiler.endSection();
 	}
 	
 	//Thread safe functions

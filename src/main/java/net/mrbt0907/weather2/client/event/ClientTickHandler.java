@@ -98,8 +98,8 @@ public class ClientTickHandler
 		
         Minecraft mc = FMLClientHandler.instance().getClient();
         World world = mc.world;
-        mc.mcProfiler.startSection("weather2Client");
-        mc.mcProfiler.startSection("renderOverride");
+        mc.profiler.startSection("weather2Client");
+        mc.profiler.startSection("renderOverride");
         if (ConfigMisc.proxy_render_override) {
         	if (!(mc.entityRenderer instanceof EntityRendererProxyWeather2Mini)) {
 				oldRenderer = mc.entityRenderer;
@@ -117,7 +117,7 @@ public class ClientTickHandler
     		}
     	}
 
-        mc.mcProfiler.endStartSection("tick");
+        mc.profiler.endStartSection("tick");
 		if (world != null)
 		{
 			checkClientWeather();
@@ -131,14 +131,14 @@ public class ClientTickHandler
 			//TODO: split logic up a bit better for this, if this is set to false mid sandstorm, fog is stuck on,
 			// with sandstorms and other things it might not represent the EZ config option
 
-	        mc.mcProfiler.startSection("tickRainRates");
+	        mc.profiler.startSection("tickRainRates");
 			SceneEnhancer.tickRainRates();
-			mc.mcProfiler.endStartSection("tickSceneEnhancer");
+			mc.profiler.endStartSection("tickSceneEnhancer");
 			if (WeatherUtilConfig.isEffectsEnabled(world.provider.getDimension()))
 			{
 				sceneEnhancer.tickClient();
 			}
-			mc.mcProfiler.endStartSection("tickWind");
+			mc.profiler.endStartSection("tickWind");
 			//TODO: evaluate if best here
 			float windDir = WindReader.getWindAngle(world, null);
 			float windSpeed = WindReader.getWindSpeed(world, null);
@@ -181,7 +181,7 @@ public class ClientTickHandler
 					smoothAngleRotationalVelAccel *= 0.80F;
 				}
 			}
-			mc.mcProfiler.endStartSection("tickFoliage");
+			mc.profiler.endStartSection("tickFoliage");
 			if (!Minecraft.getMinecraft().isGamePaused()) {
 
 				ExtendedRenderer.foliageRenderer.windDir = smoothAngle;
@@ -210,13 +210,13 @@ public class ClientTickHandler
 				FoliageRenderer.windTime += 0 + (baseTimeChangeRate * ExtendedRenderer.foliageRenderer.windSpeedSmooth);
 			}
 
-			mc.mcProfiler.endSection();
+			mc.profiler.endSection();
 		}
 		else
 			resetClientWeather();
 
-        mc.mcProfiler.endSection();
-		mc.mcProfiler.endSection();
+        mc.profiler.endSection();
+		mc.profiler.endSection();
     }
 
     public static void resetClientWeather() {

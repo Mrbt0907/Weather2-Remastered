@@ -197,7 +197,7 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 							int var12 = MathHelper.floor(this.posZ);
 							BlockPos pos = new BlockPos(var9, var11, var12);
 							IBlockState state = world.getBlockState(pos);
-							block.onEntityCollidedWithBlock(this.world, pos, state, var10);
+							block.onEntityCollision(this.world, pos, state, var10);
 						}
 					}
 

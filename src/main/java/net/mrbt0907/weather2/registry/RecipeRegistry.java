@@ -70,7 +70,7 @@ public class RecipeRegistry
 		{
 			if (disabled)
 			{
-				Weather2.debug("Recipe " + output.getItem().getRegistryName().getResourceDomain() + ":" + output.getItem().getRegistryName().getResourcePath() + " is disabled. Skipping...");
+				Weather2.debug("Recipe " + output.getItem().getRegistryName().getNamespace() + ":" + output.getItem().getRegistryName().getPath() + " is disabled. Skipping...");
 				return;
 			}
 			
@@ -99,7 +99,7 @@ public class RecipeRegistry
 			
 			if (count.size() <= 0)
 			{
-				Weather2.error("Pattern returned null for recipe " + output.getItem().getRegistryName().getResourceDomain() + ":" + output.getItem().getRegistryName().getResourcePath() + ".  Skipping recipe...");
+				Weather2.error("Pattern returned null for recipe " + output.getItem().getRegistryName().getNamespace() + ":" + output.getItem().getRegistryName().getPath() + ".  Skipping recipe...");
 				return;
 			}
 			
@@ -123,7 +123,7 @@ public class RecipeRegistry
 				in += 2;
 			}
 			
-			Weather2.debug("Adding shaped recipe for "  + output.getItem().getRegistryName().getResourceDomain() + ":" + output.getItem().getRegistryName().getResourcePath());
+			Weather2.debug("Adding shaped recipe for "  + output.getItem().getRegistryName().getNamespace() + ":" + output.getItem().getRegistryName().getPath());
 			GameRegistry.addShapedRecipe(output.getItem().getRegistryName(), GROUP, output, args);
 		}
 		else

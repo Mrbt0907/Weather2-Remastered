@@ -120,7 +120,7 @@ public class WindManager
 	public void tickClient()
 	{
 		Minecraft mc = Minecraft.getMinecraft();
-		mc.mcProfiler.startSection("tickWindClient");
+		mc.profiler.startSection("tickWindClient");
 		tickWindChangeClient();
 		
 		if (manager.world.getTotalWorldTime() % 200L == 0L)
@@ -131,7 +131,7 @@ public class WindManager
 			Vec3 a = getWindVectors(new Vec3(mc.player.posX, mc.player.posY, mc.player.posZ), new Vec3(mc.player.motionX, mc.player.motionY, mc.player.motionZ), (float) (WeatherUtilEntity.getWeight(mc.player) * 8.0F * ClientTickHandler.clientConfigData.windPlayerWeightMult * (mc.player.isInWater() ? ClientTickHandler.clientConfigData.windSwimmingWeightMult : 1.0F)), 0.05F, 5.0F);
 			mc.player.setVelocity(a.posX, a.posY, a.posZ);
 		}
-		mc.mcProfiler.endSection();
+		mc.profiler.endSection();
 	}
 	
 	public void tickWindChange()

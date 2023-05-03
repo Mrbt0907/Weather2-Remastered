@@ -135,7 +135,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	/**Determines the size of a storm; not the tornado size*/
 	public float funnelSize = 0;
 	/**Determines how fast a storm grows in size*/
-	public float sizeRate = 3.5F;
+	public float sizeRate = -1.0F;
 	//spin speed for potential tornado formations, should go up with intensity increase;
 	/**Determines how fast a storm is spinning. Visual only in old progression system*/
 	public double spin = 0.02D;
@@ -486,7 +486,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 				if (!world.isBlockLoaded(new BlockPos(x, 128, z)))
 					continue;
 				
-				Chunk chunk = world.getChunkFromChunkCoords(chunkX, chunkZ);
+				Chunk chunk = world.getChunk(chunkX, chunkZ);
 				int i1;
 				int xxx;
 				int zzz;
@@ -719,7 +719,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 						}
 					}
 					
-					if (!(neverDissipate || alwaysProgresses) && stage >= stageMax && intensify)
+					else if (!(neverDissipate || alwaysProgresses) && stage >= stageMax && intensify)
 					{
 						Weather2.debug("storm peaked at: " + stage);
 						isDying = true;

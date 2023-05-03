@@ -113,7 +113,7 @@ public class BlockRegistry
 		if (registry != null)
 		{
 			block.setRegistryName(new ResourceLocation(Weather2.OLD_MODID, registry_name));
-			block.setUnlocalizedName(registry_name);
+			block.setTranslationKey(registry_name);
 			
 			if (ore_dict_name != null)
 				OreDictionary.registerOre(ore_dict_name, block);
@@ -123,7 +123,7 @@ public class BlockRegistry
 			registry.getRegistry().register(block);			
 			
 			ItemRegistry.add(block);
-			Weather2.debug("Registered block " + block.getRegistryName().getResourceDomain() +  ":" + block.getRegistryName().getResourcePath());
+			Weather2.debug("Registered block " + block.getRegistryName().getNamespace() +  ":" + block.getRegistryName().getPath());
 			return;
 		}
 		

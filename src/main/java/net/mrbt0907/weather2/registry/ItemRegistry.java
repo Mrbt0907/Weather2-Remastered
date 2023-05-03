@@ -81,7 +81,7 @@ public class ItemRegistry
 		add("lcd_1", itemLCD1);
 		
 		for (Block block : item_blocks)
-			add(block.getRegistryName().getResourcePath(), new ItemBlock(block));
+			add(block.getRegistryName().getPath(), new ItemBlock(block));
 		
 		registry = null;
 		Weather2.debug("Finished registering items");
@@ -97,7 +97,7 @@ public class ItemRegistry
 		if (registry != null)
 		{
 			item.setRegistryName(new ResourceLocation(Weather2.OLD_MODID, name));
-			item.setUnlocalizedName(name);
+			item.setTranslationKey(name);
 			
 			if (ore_dict_name != null)
 				OreDictionary.registerOre(ore_dict_name, item);
@@ -107,7 +107,7 @@ public class ItemRegistry
 			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 				ModelLoader.setCustomModelResourceLocation(item, 0, new ModelResourceLocation(item.getRegistryName(), "inventory"));
 			
-			Weather2.debug("Registered item " + item.getRegistryName().getResourceDomain() +  ":" + item.getRegistryName().getResourcePath());
+			Weather2.debug("Registered item " + item.getRegistryName().getNamespace() +  ":" + item.getRegistryName().getPath());
 			return;
 		}
 		Weather2.error("Registry event returned null");

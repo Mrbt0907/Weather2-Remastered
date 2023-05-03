@@ -35,9 +35,9 @@ public class ItemBlockBetter extends Item
      * Sets the unlocalized name of this item to the string passed as the parameter, prefixed by "item."
      */
     @Override
-    public ItemBlockBetter setUnlocalizedName(String unlocalizedName)
+    public ItemBlockBetter setTranslationKey(String unlocalizedName)
     {
-        super.setUnlocalizedName(unlocalizedName);
+        super.setTranslationKey(unlocalizedName);
         return this;
     }
 

@@ -551,7 +551,7 @@ public class WeatherManagerServer extends WeatherManager
 				nbt.setTag("storm_" + wo.getUUID().toString(), wo.nbt.getNewNBT());
 			}
 		
-		if (!nbt.hasNoTags())
+		if (!nbt.isEmpty())
 			FMLInterModComms.sendRuntimeMessage(Weather2.instance, Weather2.MODID, "weather.storms", nbt);
 	}
 	

@@ -187,16 +187,16 @@ public class WeatherUtilEntity {
 		
 		if (cheapCheck) return false;
 		
-		Vec3 vecTry = new Vec3(parPos.posX + EnumFacing.NORTH.getFrontOffsetX()*rangeCheck, parPos.posY+yOffset, parPos.posZ + EnumFacing.NORTH.getFrontOffsetZ()*rangeCheck);
+		Vec3 vecTry = new Vec3(parPos.posX + EnumFacing.NORTH.getXOffset()*rangeCheck, parPos.posY+yOffset, parPos.posZ + EnumFacing.NORTH.getZOffset()*rangeCheck);
 		if (checkVecOutside(parWorld, parPos, vecTry)) return true;
 		
-		vecTry = new Vec3(parPos.posX + EnumFacing.SOUTH.getFrontOffsetX()*rangeCheck, parPos.posY+yOffset, parPos.posZ + EnumFacing.SOUTH.getFrontOffsetZ()*rangeCheck);
+		vecTry = new Vec3(parPos.posX + EnumFacing.SOUTH.getXOffset()*rangeCheck, parPos.posY+yOffset, parPos.posZ + EnumFacing.SOUTH.getZOffset()*rangeCheck);
 		if (checkVecOutside(parWorld, parPos, vecTry)) return true;
 		
-		vecTry = new Vec3(parPos.posX + EnumFacing.EAST.getFrontOffsetX()*rangeCheck, parPos.posY+yOffset, parPos.posZ + EnumFacing.EAST.getFrontOffsetZ()*rangeCheck);
+		vecTry = new Vec3(parPos.posX + EnumFacing.EAST.getXOffset()*rangeCheck, parPos.posY+yOffset, parPos.posZ + EnumFacing.EAST.getZOffset()*rangeCheck);
 		if (checkVecOutside(parWorld, parPos, vecTry)) return true;
 		
-		vecTry = new Vec3(parPos.posX + EnumFacing.WEST.getFrontOffsetX()*rangeCheck, parPos.posY+yOffset, parPos.posZ + EnumFacing.WEST.getFrontOffsetZ()*rangeCheck);
+		vecTry = new Vec3(parPos.posX + EnumFacing.WEST.getXOffset()*rangeCheck, parPos.posY+yOffset, parPos.posZ + EnumFacing.WEST.getZOffset()*rangeCheck);
 		if (checkVecOutside(parWorld, parPos, vecTry)) return true;
 		
 		return false;

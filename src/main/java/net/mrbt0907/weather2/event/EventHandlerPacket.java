@@ -89,7 +89,7 @@ public class EventHandlerPacket {
 			NBTTagCompound nbt = PacketHelper.readNBTTagCompound(event.getPacket().payload());
 			int command = nbt.getInteger("command");
 
-			entP.mcServer.addScheduledTask(() -> {
+			entP.server.addScheduledTask(() -> {
 				switch(command)
 				{
 					case 8:
