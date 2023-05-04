@@ -12,13 +12,13 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.block.TileRadar;
 import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
-import net.mrbt0907.weather2.config.ConfigSimulation;
 import net.mrbt0907.weather2.registry.ParticleRegistry;
 import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.util.WeatherUtil;
@@ -64,7 +64,7 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 			if (player != null)
 			{
 				WeatherManagerClient wm = ClientTickHandler.weatherManager;
-				if (ConfigSimulation.simulation_enable)
+				if (/*ConfigSimulation.simulation_enable*/ false)
 				{
 					
 				}
@@ -81,21 +81,22 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 					if (radar.system != null && radar.system instanceof StormObject)
 					{
 						StormObject system = (StormObject) radar.system;
-						renderLivingLabel("\u00A7" + " Stage Complete: " + (((system.intensity - system.stage + 1)) * 100.0F) + "%", x, y + 2.5F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Current Funnel Wind Speed: " + (long)WeatherUtil.toMph(system.windSpeed) + " MPH", x, y + 2.6F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Current Funnel Size: " + (long)system.funnelSize + " Blocks", x, y + 2.7F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Current Stage/MaxStage: " + system.stage + "/" + system.stageMax, x, y + 2.8F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Size Multiplier: " + (system.sizeRate * 100) + "%", x, y + 2.9F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Is Violent: " + system.isViolent, x, y + 3.0F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " UUID: " + system.getUUID(), x, y + 3.1F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Hail: " + MathHelper.clamp(system.hail - 100.0F, 0.0F, 100.0F) + "%", x, y + 2.5F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Stage Complete: " + (((system.intensity - system.stage + 1)) * 100.0F) + "%", x, y + 2.6F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Current Funnel Wind Speed: " + (long)WeatherUtil.toMph(system.windSpeed) + " MPH", x, y + 2.7F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Current Funnel Size: " + (long)system.funnelSize + " Blocks", x, y + 2.8F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Current Stage/MaxStage: " + system.stage + "/" + system.stageMax, x, y + 2.9F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Size Multiplier: " + (system.sizeRate * 100) + "%", x, y + 3.0F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " Is Violent: " + system.isViolent, x, y + 3.1F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " UUID: " + system.getUUID(), x, y + 3.2F, z, 1, 10, 10, playerViewY, 1.0F);
 						String stage = radar.system.getName();
 						
 						if (system.isDying)
 							stage += "  (Dying)";
-						renderLivingLabel("\u00A7" + " " + TextFormatting.BOLD + stage, x, y + 3.2F, z, 1, 10, 10, playerViewY, 1.0F);
+						renderLivingLabel("\u00A7" + " " + TextFormatting.BOLD + stage, x, y + 3.3F, z, 1, 10, 10, playerViewY, 1.0F);
 					}
 
-					renderLivingLabel("\u00A7" + " Radar Tier " + radar.getTier() + " (R:" + radar.pingRange + ")", x, y + 3.3F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Radar Tier " + radar.getTier() + " (R:" + radar.pingRange + ")", x, y + 3.4F, z, 1, 10, 10, playerViewY, 1.0F);
 				}
 			}
 		}

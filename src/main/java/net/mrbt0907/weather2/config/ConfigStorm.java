@@ -122,7 +122,11 @@ public class ConfigStorm implements IConfigCategory
 	@ConfigComment("How many times can any storm revive?")
 	public static int max_storm_revives = 2;
 	@ConfigComment("Percent chance for a storm to revive after it is nearly dead")
-	public static double chance_for_storm_revival = 0.25D;
+	public static double chance_for_storm_revival = 38D;
+	@ConfigComment("How much hail builds up in storms. Higher values = more hail faster")
+	public static double chance_for_hail = 42.0D;
+	@ConfigComment("How much hail builds up in storms. Higher values = more hail faster")
+	public static double hail_max_buildup_rate = 1;
 	
     @Override
     public String getName() {

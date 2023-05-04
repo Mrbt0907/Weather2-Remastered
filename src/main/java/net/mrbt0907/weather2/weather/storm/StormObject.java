@@ -42,7 +42,6 @@ import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.weather.StormNames;
 import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.config.ConfigParticle;
-import net.mrbt0907.weather2.config.ConfigSimulation;
 import net.mrbt0907.weather2.config.ConfigSnow;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.entity.EntityIceBall;
@@ -105,7 +104,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	 * <br> - 300 and beyond = Heavy Rain*/
 	public float rain = 0;
 	/***/
-	public float rainRate = 1.0F;
+	public float rainRate = 0.0F;
 	/***/
 	public float hail = 0.0F;
 	/***/
@@ -203,6 +202,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		currentTopYBlock = nbt.getInteger("currentTopYBlock");
 		temperature = nbt.getFloat("levelTemperature");
 		rain = nbt.getInteger("levelWater");
+		hail = nbt.getInteger("hail");
+		hailRate = nbt.getInteger("hailRate");
 		layer = nbt.getInteger("layer");
 		stageMax = nbt.getInteger("levelStormIntensityMax");
 		intensity = nbt.getFloat("levelCurStagesIntensity");
@@ -230,6 +231,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		nbt.setInteger("currentTopYBlock", currentTopYBlock);
 		nbt.setFloat("levelTemperature", temperature);
 		nbt.setFloat("levelWater", rain);
+		nbt.setFloat("hail", hail);
+		nbt.setFloat("hailRate", hailRate);
 		nbt.setInteger("layer", layer);
 		nbt.setInteger("levelCurIntensityStage", stage);
 		nbt.setFloat("levelCurStagesIntensity", intensity);
@@ -291,7 +294,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			manager.getWorld().profiler.endStartSection("tickWeather");
 			tickWeatherEvents();
 			manager.getWorld().profiler.endStartSection("tickProgression");
-			if (ConfigSimulation.simulation_enable)
+			if (/*ConfigSimulation.simulation_enable*/false)
 				tickProgressionSimulation();
 			else
 				tickProgressionNormal();
@@ -664,11 +667,22 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			{
 				if (shouldBuildHumidity)
 				{
-					if (!isDying || revives < maxRevives)
-						rain += ConfigStorm.humidity_buildup_rate * WeatherUtil.getHumidity(world, pos.toBlockPos());
-					else if (rain > 0.0F)
-						rain -= ConfigStorm.humidity_spend_rate * WeatherUtil.getHumidity(world, pos.toBlockPos());
-					
+					if (!isDying)
+					{
+						if (revives < maxRevives)
+							rain += ConfigStorm.humidity_buildup_rate * WeatherUtil.getHumidity(world, pos.toBlockPos());
+						if (hailRate > 0.0F && hailRate < 200.0F)
+							hail += hailRate * WeatherUtil.getHumidity(world, pos.toBlockPos()) * 2.5F;
+					}
+					else
+					{
+						if (rain > 0.0F)
+							rain -= ConfigStorm.humidity_spend_rate * WeatherUtil.getHumidity(world, pos.toBlockPos());
+						if (hailRate > 0.0F)
+							hail -= hailRate * WeatherUtil.getHumidity(world, pos.toBlockPos()) * 2.0F;
+					}
+					if (stage < WeatherEnum.Stage.SEVERE.getStage() && hail > 125.0F)
+						hail = 125.0F;
 					if (rain < 0.0F)
 					{
 						rain = 0.0F;
@@ -844,7 +858,10 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		
 		while(Maths.chance(ConfigStorm.chance_for_storm_revival * 0.01D) && revives < ConfigStorm.max_storm_revives)
 			revives++;
-			
+		
+		if (Maths.chance(ConfigStorm.chance_for_hail * 0.01D))
+			hailRate = (float) Maths.random(ConfigStorm.hail_max_buildup_rate);
+		
 		if (stageMax > Stage.SEVERE.getStage())
 			Weather2.debug("New Deadly Storm: \nIs Violent: " + isViolent + "\nMax Stage: " + stageMax + " (EF" + (stageMax - 4) + ")\nSize Multiplier: " + sizeRate * 100 + "%");
 		else
@@ -941,7 +958,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			r = 1.0F; g = 0.45F; b = 0.35F;
 		}
 		
-		if (ConfigSimulation.simulation_enable)
+		if (/*ConfigSimulation.simulation_enable*/false)
 			spin = Math.min(spinSpeedMax, Math.max(intensity * 0.0001F * sizeCloudMult, 0.03F));
 		else
 			spin = Math.min(spinSpeedMax, Math.max(0.007D * stage * sizeCloudMult, 0.03D));

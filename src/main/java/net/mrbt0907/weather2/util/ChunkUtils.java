@@ -4,12 +4,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
-import net.minecraft.world.gen.ChunkGeneratorDebug;
-import net.mrbt0907.weather2.config.ConfigGrab;
 
 public class ChunkUtils
 {
@@ -23,13 +18,15 @@ public class ChunkUtils
 	
 	public static IBlockState getBlockState(World world, BlockPos pos)
 	{
-		return ConfigGrab.disableGrabOptimizations ? world.getBlockState(pos) : getBlockState(world, pos.getX(), pos.getY(), pos.getZ());
+		//return ConfigGrab.disableGrabOptimizations ? world.getBlockState(pos) : getBlockState(world, pos.getX(), pos.getY(), pos.getZ());
+		return world.getBlockState(pos);
 	}
 	
 	public static IBlockState getBlockState(World world, int x, int y, int z)
 	{
-		if (ConfigGrab.disableGrabOptimizations) return world.getBlockState(new BlockPos(x, y ,z));
-		
+		//if (ConfigGrab.disableGrabOptimizations) return world.getBlockState(new BlockPos(x, y ,z));
+		return world.getBlockState(new BlockPos(x, y ,z));
+		/*
 		IChunkProvider provider = world.getChunkProvider();
 		int cX = x >> 4, cZ = z >> 4;
 		
@@ -68,22 +65,24 @@ public class ChunkUtils
 			catch (Throwable throwable) {}
 			
 			return AIR;
-		}
+		}*/
 	}
 	
 	public static boolean setBlockState(World world, BlockPos pos, IBlockState state)
 	{
-		return ConfigGrab.disableGrabOptimizations ? world.setBlockState(pos, state, 3) : setBlockState(world, pos.getX(), pos.getY(), pos.getZ(), state, getBlockState(world, pos.getX(), pos.getY(), pos.getZ()));
+		//return ConfigGrab.disableGrabOptimizations ? world.setBlockState(pos, state, 3) : setBlockState(world, pos.getX(), pos.getY(), pos.getZ(), state, getBlockState(world, pos.getX(), pos.getY(), pos.getZ()));
+		return world.setBlockState(pos, state, 3);
 	}
 	
 	public static boolean setBlockState(World world, int x, int y, int z, IBlockState state)
 	{
-		return ConfigGrab.disableGrabOptimizations ? world.setBlockState(new BlockPos(x, y, z), state, 3) : setBlockState(world, x, y, z, state, getBlockState(world, x, y, z));
+		//return ConfigGrab.disableGrabOptimizations ? world.setBlockState(new BlockPos(x, y, z), state, 3) : setBlockState(world, x, y, z, state, getBlockState(world, x, y, z));
+		return world.setBlockState(new BlockPos(x, y, z), state, 3);
 	}
 	
 	public static boolean setBlockState(World world, int x, int y, int z, IBlockState state, IBlockState oldState)
 	{
-		if (ConfigGrab.disableGrabOptimizations)
+		if (true)
 		{
 			world.setBlockState(new BlockPos(x, y ,z), state, 3);
 			return true;

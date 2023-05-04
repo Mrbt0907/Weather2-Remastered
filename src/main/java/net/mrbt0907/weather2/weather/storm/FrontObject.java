@@ -21,7 +21,6 @@ import net.mrbt0907.weather2.api.weather.IWeatherDetectable;
 import net.mrbt0907.weather2.api.weather.WeatherEnum;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
 import net.mrbt0907.weather2.config.ConfigFront;
-import net.mrbt0907.weather2.config.ConfigSimulation;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.config.ConfigWind;
 import net.mrbt0907.weather2.util.Maths;
@@ -111,7 +110,7 @@ public class FrontObject implements IWeatherDetectable
 		else
 		{
 			
-			if (ConfigSimulation.simulation_enable)
+			if (/*ConfigSimulation.simulation_enable*/false)
 				tickProgressionSimulation();
 			else
 				tickProgressionNormal();
