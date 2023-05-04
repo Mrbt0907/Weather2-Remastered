@@ -101,7 +101,7 @@ public class TornadoHelper
 		
 		if (world.getTotalWorldTime() % 200 == 0L)
 		{
-			WeatherManager manager = WeatherAPI.getManager();
+			WeatherManager manager = WeatherAPI.getManager(world);
 			
 			if (manager != null)
 			{
