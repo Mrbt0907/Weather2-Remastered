@@ -10,6 +10,8 @@ import CoroUtil.util.CoroUtilEntity;
 import CoroUtil.util.CoroUtilMisc;
 
 import java.util.UUID;
+
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
@@ -21,6 +23,7 @@ import net.mrbt0907.weather2.api.weather.IWeatherDetectable;
 import net.mrbt0907.weather2.api.weather.WeatherEnum;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
 import net.mrbt0907.weather2.config.ConfigFront;
+import net.mrbt0907.weather2.config.ConfigSimulation;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.config.ConfigWind;
 import net.mrbt0907.weather2.util.Maths;
@@ -103,19 +106,8 @@ public class FrontObject implements IWeatherDetectable
 		
 		tickMovement();
 		
-		if (manager.getWorld().isRemote)
-		{
-			
-		}
-		else
-		{
-			
-			if (/*ConfigSimulation.simulation_enable*/false)
-				tickProgressionSimulation();
-			else
-				tickProgressionNormal();
-			
-		}
+		if (!manager.getWorld().isRemote)
+			tickProgressionNormal();
 		
 		systems.forEach((uuid, system) -> {if (!system.isDead) {system.tick();}});
 	}
@@ -240,14 +232,30 @@ public class FrontObject implements IWeatherDetectable
 	
 	public StormObject createNaturalStorm()
 	{
+		return createNaturalStorm(null);
+	}
+	
+	public StormObject createNaturalStorm(Entity target)
+	{
 		if (ConfigStorm.isLayerValid(layer) && !isDying)
 		{
 			StormObject storm = new StormObject(this);
 			storm.layer = layer;
 			storm.isNatural = true;
-			storm.pos = new Vec3(pos.posX + Maths.random(-size, size), storm.getLayerHeight(), pos.posZ + Maths.random(-size, size));
+			
+			if (isGlobal)
+			{
+				if (target == null)
+					return null;
+				else
+					storm.pos = new Vec3(target.posX + Maths.random(-ConfigSimulation.max_storm_spawning_distance, ConfigSimulation.max_storm_spawning_distance), storm.getLayerHeight(), target.posZ + Maths.random(-ConfigSimulation.max_storm_spawning_distance, ConfigSimulation.max_storm_spawning_distance));
+			}
+			else
+				storm.pos = new Vec3(pos.posX + Maths.random(-size, size), storm.getLayerHeight(), pos.posZ + Maths.random(-size, size));
+			
 			if (layer == 0 && Maths.chance(ConfigStorm.storm_spawn_chance * 0.01D))
 				storm.initRealStorm();
+			
 			addWeatherObject(storm);
 			return storm;
 		}

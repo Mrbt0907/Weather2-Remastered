@@ -1,14 +1,13 @@
 package net.mrbt0907.weather2.util;
 
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 
 public class ChunkUtils
 {
-	private static final IBlockState AIR = Blocks.AIR.getDefaultState();
+	//private static final IBlockState AIR = Blocks.AIR.getDefaultState();
 	private static Chunk cachedChunk;
 	
 	public static boolean isValidPos(World world, int y)
@@ -82,17 +81,17 @@ public class ChunkUtils
 	
 	public static boolean setBlockState(World world, int x, int y, int z, IBlockState state, IBlockState oldState)
 	{
-		if (true)
-		{
-			world.setBlockState(new BlockPos(x, y ,z), state, 3);
-			return true;
-		}
+		world.setBlockState(new BlockPos(x, y ,z), state, 3);
+		return true;
+		/*
 		if (!isValidPos(world, y) || state == null) return false;
 		
 		BlockPos pos = new BlockPos(x, y, z);
 		return updateBlockState(world, pos, state, oldState);
+		*/
 	}
 	
+	@SuppressWarnings("unused")
 	private static boolean updateBlockState(World world, BlockPos pos, IBlockState state, IBlockState oldState)
 	{
 		if (cachedChunk.setBlockState(pos, state) != null)

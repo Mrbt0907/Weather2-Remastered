@@ -113,13 +113,6 @@ public abstract class WeatherObject implements IWeatherDetectable
 	public boolean isDangerous() {return type.isDangerous();}
 	public UUID getUUID() {return id;}
 	
-
-	@SideOnly(Side.CLIENT)
-	public abstract int getParticleCount();
-	
-	@SideOnly(Side.CLIENT)
-	public abstract boolean canSpawnParticle();
-
 	@Override
 	public Vec3 getPos()
 	{

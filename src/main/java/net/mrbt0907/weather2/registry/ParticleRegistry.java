@@ -10,11 +10,13 @@ import net.mrbt0907.weather2.Weather2;
 public class ParticleRegistry
 {
 	public static TextureAtlasSprite cloud;
+	public static TextureAtlasSprite cloud_legacy;
 	public static TextureAtlasSprite cloud256;
 	public static TextureAtlasSprite cloud256_fire;
-	public static TextureAtlasSprite cloud256_test;
 	public static TextureAtlasSprite cloud256_2;
 	public static TextureAtlasSprite cloud256_6;
+	public static TextureAtlasSprite cloud32;
+	public static TextureAtlasSprite distant_downfall;
 
 	public static TextureAtlasSprite radarIconReflectivityF;
 	public static TextureAtlasSprite radarIconReflectivityE;
@@ -42,9 +44,11 @@ public class ParticleRegistry
 		MeshBufferManagerFoliage.cleanup();
 
 		cloud256 = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":particles/cloud256"));
+		cloud_legacy = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":particles/cloud_legacy"));
 		cloud256_fire = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":particles/cloud256_fire"));
-		cloud256_test = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID  + ":particles/cloud256_test"));
 		cloud256_6 = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID  + ":particles/cloud256_6"));
+		cloud32 = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID  + ":particles/cloud32"));
+		distant_downfall = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID  + ":particles/distant_downfall"));
 		radarIconCloud = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":radar/radar_icon_cloud"));
 		radarIconRain = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":radar/radar_icon_rain"));
 		radarIconSnow = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":radar/radar_icon_snow"));

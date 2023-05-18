@@ -21,7 +21,8 @@ public class ConfigFront implements IConfigCategory
 	public static double angle_change_mult = 1.0D;
 	@ConfigComment("How fast fronts update their internal varaiables like temperature. Higher numbers make fronts change faster.")
 	public static double environment_change_mult = 1.0D;
-	
+	@ConfigComment("Percent chance for a storm to spawn in a front")
+	public static double chance_to_spawn_storm_in_front = 30.0D;
 
     @Override
     public String getName()

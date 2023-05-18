@@ -79,7 +79,7 @@ public class WeatherManagerServer extends WeatherManager
 			List<FrontObject> fronts = new ArrayList<FrontObject>(this.fronts.values());
 			List<WeatherObject> systems = getWeatherObjects();
 			WeatherObject spawn = null;
-			boolean spawned = false;
+			boolean spawned = false, spawnInFront = Maths.chance(ConfigFront.chance_to_spawn_storm_in_front * 0.01D);
 			
 			for (int i = 0; i < fronts.size(); i++)
 			{
@@ -99,7 +99,7 @@ public class WeatherManagerServer extends WeatherManager
 				}
 				else
 				{
-					if(!front.equals(globalFront) && canSpawnWeather(1))
+					if(!front.equals(globalFront) && spawnInFront && canSpawnWeather(1))
 					{
 						spawn = front.createNaturalStorm();
 						if (spawn != null)
@@ -154,7 +154,7 @@ public class WeatherManagerServer extends WeatherManager
 				if (WeatherUtilConfig.isWeatherEnabled(dim) && world.getTotalWorldTime() % ConfigStorm.spawningTickRate == 0)
 				{
 					List<EntityPlayer> players = world.playerEntities;
-					int layer;
+					int layer, frontCount = fronts.size() + 1;
 					
 					for (EntityPlayer player : players)
 					{
@@ -167,7 +167,20 @@ public class WeatherManagerServer extends WeatherManager
 							if (!ConfigStorm.enable_spawn_per_player)
 								break;
 						}
+						for (int i = 0; i < frontCount; i++)
+							if(!spawnInFront && canSpawnWeather(1))
+							{
+								spawn = globalFront.createNaturalStorm(player);
+								if (spawn != null)
+								{
+									spawned = true;
+									PacketWeatherObject.create(dim, spawn);
+								}
+							}
 					}
+					
+					if (!spawnInFront && spawned)
+						ticksStormFormed = world.getTotalWorldTime() + ConfigStorm.storm_spawn_delay;
 					
 					if (canSpawnWeather(2))
 					{

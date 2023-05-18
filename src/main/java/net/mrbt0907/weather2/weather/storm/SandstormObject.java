@@ -14,6 +14,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.api.weather.WeatherEnum;
 import net.mrbt0907.weather2.client.entity.particle.ParticleSandstorm;
+import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.config.ConfigSand;
 import net.mrbt0907.weather2.registry.BlockRegistry;
@@ -768,16 +769,14 @@ public class SandstormObject extends WeatherObject
 		return (float) motion.speed();
 	}
 
-	@Override
 	public int getParticleCount()
 	{
 		return particleBehavior == null ? 0 : particleBehavior.particles.size();
 	}
 
-	@Override
 	public boolean canSpawnParticle()
 	{
-		return true;
+		return ConfigParticle.max_particles < 0 || ClientTickHandler.weatherManager.getParticleCount() < ConfigParticle.max_particles;
 	}
 
 }

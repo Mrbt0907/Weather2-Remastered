@@ -11,7 +11,7 @@ import org.lwjgl.opengl.GL11;
 public class RenderWindVane extends TileEntitySpecialRenderer<TileEntity>
 {
 	public ModelWindVane model;
-	public ResourceLocation texture = new ResourceLocation(Weather2.MODID + ":textures/blocks/windvane_custom.png");
+	public ResourceLocation texture = new ResourceLocation(Weather2.OLD_MODID + ":textures/blocks/windvane_custom.png");
 	
 	public RenderWindVane() {
 		model = new ModelWindVane();

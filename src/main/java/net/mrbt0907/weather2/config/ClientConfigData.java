@@ -27,7 +27,7 @@ public class ClientConfigData
 	
 	//Misc
 	public boolean aestheticMode = false;
-	public boolean debug_mode = false;
+	public boolean debug_mode = ConfigMisc.debug_mode;
 	public boolean debug_mode_radar = false;
 	public double radar_range = 1024.0D;
 	public double doppler_radar_range = 2048.0D;

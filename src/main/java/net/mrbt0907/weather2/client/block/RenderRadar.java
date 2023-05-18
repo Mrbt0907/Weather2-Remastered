@@ -64,40 +64,34 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 			if (player != null)
 			{
 				WeatherManagerClient wm = ClientTickHandler.weatherManager;
-				if (/*ConfigSimulation.simulation_enable*/ false)
+				float precipStr = Math.abs(SceneEnhancer.curPrecipStr);
+				String rainThunder = Math.round(player.world.rainingStrength * 100.0F) + "% / " + Math.round(player.world.thunderingStrength * 100.0F) + "%";
+				renderLivingLabel("\u00A7" + " Vanilla Weather Time: " + wm.weatherRainTime, x, y + 1.9F, z, 1, 10, 10, playerViewY, 1.0F);
+				renderLivingLabel("\u00A7" + " Client Weather: " + (player.world.isThundering() ? "Thundering" : precipStr >= 0.5F ? "Heavy Rain" : precipStr >= 0.15F ? "Light Rain" : precipStr > 0.01F ? "Drizzle" : "Clear"), x, y + 2.0F, z, 1, 10, 10, playerViewY, 1.0F);
+				renderLivingLabel("\u00A7" + " Server Weather: " + (wm.weatherID == 2 ? "Thunder" : wm.weatherID == 1 ? "Rain" : "Clear"), x, y + 2.1F, z, 1, 10, 10, playerViewY, 1.0F);
+				renderLivingLabel("\u00A7" + " Precipitation Strength: " + Math.round(precipStr * 100.0F) + "%", x, y + 2.2F, z, 1, 10, 10, playerViewY, 1.0F);
+				renderLivingLabel("\u00A7" + " Vanilla Rain/Thunder Strength: " + rainThunder, x, y + 2.3F, z, 1, 10, 10, playerViewY, 1.0F);
+				renderLivingLabel("\u00A7" + " -------------------------", x, y + 2.4F, z, 1, 10, 10, playerViewY, 1.0F);
+				if (radar.system != null && radar.system instanceof StormObject)
 				{
-					
-				}
-				else
-				{
-					float precipStr = Math.abs(SceneEnhancer.curPrecipStr);
-					String rainThunder = Math.round(player.world.rainingStrength * 100.0F) + "% / " + Math.round(player.world.thunderingStrength * 100.0F) + "%";
-					renderLivingLabel("\u00A7" + " Vanilla Weather Time: " + wm.weatherRainTime, x, y + 1.9F, z, 1, 10, 10, playerViewY, 1.0F);
-					renderLivingLabel("\u00A7" + " Client Weather: " + (player.world.isThundering() ? "Thundering" : precipStr >= 0.5F ? "Heavy Rain" : precipStr >= 0.15F ? "Light Rain" : precipStr > 0.01F ? "Drizzle" : "Clear"), x, y + 2.0F, z, 1, 10, 10, playerViewY, 1.0F);
-					renderLivingLabel("\u00A7" + " Server Weather: " + (wm.weatherID == 2 ? "Thunder" : wm.weatherID == 1 ? "Rain" : "Clear"), x, y + 2.1F, z, 1, 10, 10, playerViewY, 1.0F);
-					renderLivingLabel("\u00A7" + " Precipitation Strength: " + Math.round(precipStr * 100.0F) + "%", x, y + 2.2F, z, 1, 10, 10, playerViewY, 1.0F);
-					renderLivingLabel("\u00A7" + " Vanilla Rain/Thunder Strength: " + rainThunder, x, y + 2.3F, z, 1, 10, 10, playerViewY, 1.0F);
-					renderLivingLabel("\u00A7" + " -------------------------", x, y + 2.4F, z, 1, 10, 10, playerViewY, 1.0F);
-					if (radar.system != null && radar.system instanceof StormObject)
-					{
-						StormObject system = (StormObject) radar.system;
-						renderLivingLabel("\u00A7" + " Hail: " + MathHelper.clamp(system.hail - 100.0F, 0.0F, 100.0F) + "%", x, y + 2.5F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Stage Complete: " + (((system.intensity - system.stage + 1)) * 100.0F) + "%", x, y + 2.6F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Current Funnel Wind Speed: " + (long)WeatherUtil.toMph(system.windSpeed) + " MPH", x, y + 2.7F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Current Funnel Size: " + (long)system.funnelSize + " Blocks", x, y + 2.8F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Current Stage/MaxStage: " + system.stage + "/" + system.stageMax, x, y + 2.9F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Size Multiplier: " + (system.sizeRate * 100) + "%", x, y + 3.0F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " Is Violent: " + system.isViolent, x, y + 3.1F, z, 1, 10, 10, playerViewY, 1.0F);
-						renderLivingLabel("\u00A7" + " UUID: " + system.getUUID(), x, y + 3.2F, z, 1, 10, 10, playerViewY, 1.0F);
-						String stage = radar.system.getName();
+					StormObject system = (StormObject) radar.system;
+					renderLivingLabel("\u00A7" + " Hail: " + MathHelper.clamp(system.hail - 100.0F, 0.0F, 100.0F) + "%", x, y + 2.5F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Stage Complete: " + (((system.intensity - system.stage + 1)) * 100.0F) + "%", x, y + 2.6F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Current Funnel Wind Speed: " + (long)WeatherUtil.toMph(system.windSpeed) + " MPH", x, y + 2.7F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Current Funnel Size: " + (long)system.funnelSize + " Blocks", x, y + 2.8F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Current Stage/MaxStage: " + system.stage + "/" + system.stageMax, x, y + 2.9F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Size Multiplier: " + (system.sizeRate * 100) + "%", x, y + 3.0F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Is Violent: " + system.isViolent, x, y + 3.1F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " UUID: " + system.getUUID(), x, y + 3.2F, z, 1, 10, 10, playerViewY, 1.0F);
+					String stage = radar.system.getName();
 						
-						if (system.isDying)
-							stage += "  (Dying)";
-						renderLivingLabel("\u00A7" + " " + TextFormatting.BOLD + stage, x, y + 3.3F, z, 1, 10, 10, playerViewY, 1.0F);
-					}
-
-					renderLivingLabel("\u00A7" + " Radar Tier " + radar.getTier() + " (R:" + radar.pingRange + ")", x, y + 3.4F, z, 1, 10, 10, playerViewY, 1.0F);
+					if (system.isDying)
+						stage += "  (Dying)";
+					renderLivingLabel("\u00A7" + " " + TextFormatting.BOLD + stage, x, y + 3.3F, z, 1, 10, 10, playerViewY, 1.0F);
 				}
+
+				renderLivingLabel("\u00A7" + " Radar Tier " + radar.getTier() + " (R:" + radar.pingRange + ")", x, y + 3.4F, z, 1, 10, 10, playerViewY, 1.0F);
+				
 			}
 		}
 		

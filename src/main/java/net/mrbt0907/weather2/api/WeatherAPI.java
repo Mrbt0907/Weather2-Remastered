@@ -1,7 +1,9 @@
 package net.mrbt0907.weather2.api;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -14,13 +16,18 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.event.EventRegisterGrabLists;
+import net.mrbt0907.weather2.api.event.EventRegisterParticleRenderer;
 import net.mrbt0907.weather2.api.event.EventRegisterStages;
+import net.mrbt0907.weather2.api.weather.AbstractStormRenderer;
 import net.mrbt0907.weather2.api.weather.WeatherEnum;
+import net.mrbt0907.weather2.client.weather.tornado.NormalStormRenderer;
 import net.mrbt0907.weather2.config.ConfigGrab;
+import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import net.mrbt0907.weather2.util.ConfigList;
 import net.mrbt0907.weather2.weather.WeatherManager;
+import net.mrbt0907.weather2.weather.storm.StormObject;
 import net.mrbt0907.weather2.weather.storm.WeatherObject;
 import net.mrbt0907.weather2.util.Maths.Vec3;
 
@@ -30,7 +37,10 @@ public class WeatherAPI
 	private static final ConfigList hurricaneStageList = new ConfigList();
 	private static final ConfigList grabList = new ConfigList();
 	private static final ConfigList replaceList = new ConfigList();
-	private static final ConfigList windResistanceList = new ConfigList();
+	private static final ConfigList windResistanceList = new ConfigList().setReplaceOnly();
+	
+	private static Map<ResourceLocation, Class<?>> particleRenderers = new LinkedHashMap<ResourceLocation, Class<?>>();
+	private static ResourceLocation currentParticleRenderer;
 	
 	/**Gets the weather manager used in the world provided. There is a weather manager for each dimension.*/
 	public static WeatherManager getManager(World world)
@@ -38,7 +48,7 @@ public class WeatherAPI
 		WeatherManager manager = null;
 		if (world != null)
 			if (world.isRemote)
-				manager = getManager();//net.mrbt0907.weather2.client.event.ClientTickHandler.weatherManager;
+				manager = getManager();
 			else
 				manager = net.mrbt0907.weather2.server.event.ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
 		
@@ -122,6 +132,77 @@ public class WeatherAPI
 		return 65.0F + 27.0F * stage;
 	}
 	
+	@SideOnly(Side.CLIENT)
+	public static ResourceLocation getParticleRendererId()
+	{
+		return currentParticleRenderer;
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static net.mrbt0907.weather2.api.weather.AbstractStormRenderer getParticleRenderer(StormObject storm)
+	{
+		if (currentParticleRenderer == null || storm == null)
+		{
+			return null;
+		}
+		
+		Class<?> renderer = particleRenderers.get(currentParticleRenderer);
+		
+		try
+		{
+			return renderer == null ? null : (AbstractStormRenderer) renderer.getConstructor(StormObject.class).newInstance(storm);
+		}
+		catch (Exception e)
+		{
+			Weather2.error(e);
+			return null;
+		}
+	}
+	
+	@SideOnly(Side.CLIENT)
+	public static void refreshRenders(boolean fullRefresh)
+	{
+		currentParticleRenderer = null;
+		if (fullRefresh)
+		{
+			Weather2.debug("Refreshing all renderers...");
+			particleRenderers.clear();
+			Weather2.debug("Registering particle renderers...");
+			particleRenderers.put(new ResourceLocation(Weather2.MODID, "normal"), NormalStormRenderer.class);
+			Weather2.debug("Registered particle renderer " + Weather2.MODID + ":normal");
+			EventRegisterParticleRenderer event = new EventRegisterParticleRenderer();
+			MinecraftForge.EVENT_BUS.post(event);
+			particleRenderers.putAll(event.getRegistry());
+			Weather2.debug("All weather renderers have been updated: " + particleRenderers.size() + " total");
+		}
+		
+		if (ConfigParticle.particle_renderer.matches("^\\d$"))
+		{
+			try
+			{
+				int i = 0, ii = Integer.parseInt(ConfigParticle.particle_renderer);
+				for (ResourceLocation id : particleRenderers.keySet())
+				{
+					if (i == ii)
+						currentParticleRenderer = id;
+					i++;
+				}
+			}
+			catch (Exception e)
+			{
+				Weather2.error(e);
+				ConfigParticle.particle_renderer = Weather2.MODID + ":normal";
+				currentParticleRenderer = new ResourceLocation(Weather2.MODID, "normal");
+			}
+		}
+		else
+			for (ResourceLocation id : particleRenderers.keySet())
+				if (id.toString().equals(ConfigParticle.particle_renderer))
+					currentParticleRenderer = id;
+		
+		Weather2.debug("Set particle renderer to " + (currentParticleRenderer == null ? "none" : currentParticleRenderer.toString()));
+	}
+	
 	/**Refreshes the dimension rules. These rules determine if weather can spawn in a dimension and whether they can create effects in a dimension.*/
 	public static void refreshDimensionRules()
 	{
@@ -162,16 +243,16 @@ public class WeatherAPI
     	Set<ResourceLocation> entries =  Block.REGISTRY.getKeys();
     	
     	ConfigList list = processGrabList(entries, event.grabList, ConfigGrab.grab_list_partial_matches, 0);
-    	event.grabList.clear();
-    	event.grabList.addAll(list);
+    	grabList.clear();
+    	grabList.addAll(list);
     	
     	list = processGrabList(entries, event.replaceList, ConfigGrab.replace_list_partial_matches, 1);
-    	event.replaceList.clear();
-    	event.replaceList.addAll(list);
-    	
+    	replaceList.clear();
+    	replaceList.addAll(list);
     	list = processGrabList(entries, event.windResistanceList, ConfigGrab.wind_resistance_partial_matches, 2);
-    	event.windResistanceList.clear();
-    	event.windResistanceList.addAll(list);
+    	windResistanceList.clear();
+    	windResistanceList.addAll(list);
+    	
     	Weather2.debug("Grab Rules have been updated:\n- Grab List = " + WeatherAPI.getGrabList().size() + " Entry(s)\n- Replace List = " + WeatherAPI.getReplaceList().size() + " Entry(s)\n- Wind Resistance List = " + WeatherAPI.getWRList().size() + " Entry(s)");
 	}
 	
@@ -183,6 +264,8 @@ public class WeatherAPI
     	List<Object> values;
     	boolean usePartialMatch = false;
     	
+    	if (cfg.isReplaceOnly())
+    		list.setReplaceOnly();
     	
     	for (Entry<String, Object[]> entry : cfg.toMap().entrySet())
     	{
@@ -197,13 +280,12 @@ public class WeatherAPI
     		}
     		keys = new ArrayList<String>();
     		values = new ArrayList<Object>();
-    		
     		for(ResourceLocation block : entries)
     		{
     			keyC = block.toString();
     			
     			if (keyC.equals(keyB) || usePartialMatch && keyC.toLowerCase().contains(keyA.toLowerCase()))
-    			 keys.add(keyC);
+    				keys.add(keyC);
     		}
 
     		for(Object str : entry.getValue())
@@ -243,10 +325,7 @@ public class WeatherAPI
     							float a = Float.parseFloat((String) str);
     							values.add(a);
     						}
-    						catch (Exception e)
-    						{
-    							
-    						}
+    						catch (Exception e) {}
     					}
     					break;
     				default:

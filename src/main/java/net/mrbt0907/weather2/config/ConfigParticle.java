@@ -2,13 +2,21 @@ package net.mrbt0907.weather2.config;
 
 import modconfig.ConfigComment;
 import modconfig.IConfigCategory;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
 import net.mrbt0907.weather2.Weather2;
+import net.mrbt0907.weather2.api.WeatherAPI;
+import net.mrbt0907.weather2.client.event.ClientTickHandler;
 
 import java.io.File;
 
 
 public class ConfigParticle implements IConfigCategory
 {
+	@ConfigComment("Determines the renderer used for storms and clouds. Accepts number ids and renderer ids. Ex: 0 or " + Weather2.MODID + ":normal uses the default renderer.")
+	public static String particle_renderer = "0";
+	@ConfigComment("Enables on screen debug information about the current particle renderer")
+	public static boolean enable_debug_renderer = false;
 	@ConfigComment("Enables falling leaves in the wind")
 	public static boolean enable_falling_leaves = true;
     @ConfigComment("Particle rates for leaf, waterfall, and fire particles")
@@ -91,7 +99,13 @@ public class ConfigParticle implements IConfigCategory
     }
 
     @Override
-    public void hookUpdatedValues() {
-
+    public void hookUpdatedValues()
+    {
+    	if (FMLCommonHandler.instance().getSide() == Side.CLIENT)
+    	{
+    		WeatherAPI.refreshRenders(false);
+    		if (ClientTickHandler.weatherManager != null)
+    			ClientTickHandler.weatherManager.refreshParticleLimit();
+    	}
     }
 }

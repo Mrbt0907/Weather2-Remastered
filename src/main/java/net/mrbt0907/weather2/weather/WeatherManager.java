@@ -3,6 +3,7 @@ package net.mrbt0907.weather2.weather;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,8 +37,8 @@ public class WeatherManager
 	
 	//fronts
 	protected FrontObject globalFront;
-	protected Map<UUID, FrontObject> fronts = new HashMap<UUID, FrontObject>();
-	protected Map<UUID, WeatherObject> systems = new HashMap<UUID, WeatherObject>();
+	protected Map<UUID, FrontObject> fronts = new LinkedHashMap<UUID, FrontObject>();
+	protected Map<UUID, WeatherObject> systems = new LinkedHashMap<UUID, WeatherObject>();
 	
 	//volcanos
 	protected List<VolcanoObject> volcanoObjects = new ArrayList<>();

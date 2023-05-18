@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
@@ -13,6 +15,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
+import net.mrbt0907.weather2.client.SceneEnhancer;
+import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.entity.EntityLightningBolt;
 import net.mrbt0907.weather2.entity.EntityLightningBoltCustom;
 import net.mrbt0907.weather2.weather.WeatherManager;
@@ -32,6 +36,7 @@ public class WeatherManagerClient extends WeatherManager
 	public static StormObject closestStormCached;
 	public int weatherID = 0;
 	public int weatherRainTime = 0;
+	private int particleLimit = 0;
 
 	public WeatherManagerClient(World world)
 	{
@@ -112,6 +117,7 @@ public class WeatherManagerClient extends WeatherManager
 				wo.readFromNBT();
 				
 				front.addWeatherObject(wo);
+				refreshParticleLimit();
 				break;
 			}
 			case 2:
@@ -138,6 +144,8 @@ public class WeatherManagerClient extends WeatherManager
 					front.removeWeatherObject(uuidA);
 				else
 					removeWeatherObject(uuidA);
+
+				refreshParticleLimit();
 				break;
 			}
 			case 4:
@@ -261,6 +269,30 @@ public class WeatherManagerClient extends WeatherManager
 	public int getParticleCount()
 	{
 		return weatherParticles.size();
+	}
+	
+	public void refreshParticleLimit()
+	{
+		int systems = 0;
+		EntityPlayerSP player = Minecraft.getMinecraft().player;
+		
+		for (WeatherObject system : this.systems.values())
+			if (system.pos.distance(player.posX, system.pos.posY, player.posZ) < SceneEnhancer.fogDistance)
+				systems++;
+		
+		if (systems == 0) systems = 1;
+		
+		particleLimit = ConfigParticle.max_particles > 0 ? ConfigParticle.max_particles / systems : Integer.MAX_VALUE;
+		this.systems.forEach((uuid, system) ->
+		{
+			if (system instanceof StormObject && ((StormObject)system).particleRenderer != null)
+				((StormObject)system).particleRenderer.refreshParticleLimit();
+		});
+	}
+	
+	public int getParticleLimit()
+	{
+		return particleLimit;
 	}
 	
 	@Override

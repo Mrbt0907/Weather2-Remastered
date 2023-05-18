@@ -13,7 +13,7 @@ public class ConfigStorm implements IConfigCategory
 	@ConfigComment("Whether or not to use the Enhanced Fujita Scale for tornados.")
     public static boolean enable_ef_scale = false;
 	@ConfigComment("A multiplier for modifying the exponential growth of the sizes of storms. Use increments of 0.1 as that is considered a big increase.")
-	public static double storm_size_curve_mult = 1.2D;
+	public static double storm_size_curve_mult = 1.0D;
 	@ConfigComment("A deadly storm has a 10 in x chance to spawn a water spout in\nhigh wind conditions")
     public static int high_wind_waterspout_10_in_x = 150;
 	@ConfigComment("How many weather objects can develop in a dimension?")

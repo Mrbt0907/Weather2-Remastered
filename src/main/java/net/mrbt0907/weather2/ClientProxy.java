@@ -12,6 +12,7 @@ import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.api.WeatherAPI;
 import net.mrbt0907.weather2.block.TileAnemometer;
 import net.mrbt0907.weather2.block.TileSiren;
 import net.mrbt0907.weather2.block.TileWeatherDeflector;
@@ -94,8 +95,7 @@ public class ClientProxy extends CommonProxy
 	{
 		super.postInit();
 		guiWeather = new GuiWeather();
+		WeatherAPI.refreshRenders(true);
 		MinecraftForge.EVENT_BUS.register(guiWeather);
-		
-		
 	}
 }

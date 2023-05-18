@@ -8,6 +8,7 @@ import java.util.Map;
 public class ConfigList
 {
 	private Map<String, Object[]> map = new LinkedHashMap<String, Object[]>();
+	private boolean replace = false;
 	
 	public ConfigList() {}
 	
@@ -29,17 +30,26 @@ public class ConfigList
 	{
 		if (map.containsKey(id))
 		{
-			Object[] oldTable = map.get(id);
-			int sizeA = oldTable.length, sizeB = sizeA + values.length;
-			Object[] table = new Object[sizeB];
+			Object[] oldTable = map.get(id), table = null;
+			int sizeA = oldTable.length, sizeB;
 			
-			for (int i = 0; i < sizeB; i++)
+			if (replace)
+				table = values;
+			else
 			{
-				if (i < sizeA)
-					table[i] = oldTable[i];
-				else
-					table[i] = values[i - sizeA];
+				sizeB = sizeA + values.length;
+				table = new Object[sizeB];
+				
+				for (int i = 0; i < sizeB; i++)
+				{
+					if (i < sizeA)
+						table[i] = oldTable[i];
+					else
+						table[i] = values[i - sizeA];
+				}
 			}
+			
+			map.put(id, table);
 		}
 		else
 			map.put(id, values);
@@ -94,6 +104,17 @@ public class ConfigList
 	public int size()
 	{
 		return map.size();
+	}
+	
+	public boolean isReplaceOnly()
+	{
+		return replace;
+	}
+	
+	public ConfigList setReplaceOnly()
+	{
+		replace = true;
+		return this;
 	}
 	
 	/**Parses a given string to add and remove entries from this list. Format goes as follows:

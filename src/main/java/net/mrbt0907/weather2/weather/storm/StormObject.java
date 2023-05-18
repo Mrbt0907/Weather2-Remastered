@@ -1,26 +1,21 @@
 package net.mrbt0907.weather2.weather.storm;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
-import CoroUtil.config.ConfigCoroUtil;
 import CoroUtil.util.ChunkCoordinatesBlock;
 import CoroUtil.util.CoroUtilBlock;
 import CoroUtil.util.CoroUtilCompatibility;
 import CoroUtil.util.CoroUtilEntOrParticle;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiIngameMenu;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -32,16 +27,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WeatherAPI;
+import net.mrbt0907.weather2.api.weather.AbstractStormRenderer;
 import net.mrbt0907.weather2.api.weather.IWeatherLayered;
 import net.mrbt0907.weather2.api.weather.IWeatherRain;
 import net.mrbt0907.weather2.api.weather.WeatherEnum;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
-import net.mrbt0907.weather2.client.SceneEnhancer;
-import net.mrbt0907.weather2.client.entity.particle.ExtendedEntityRotFX;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.weather.StormNames;
 import net.mrbt0907.weather2.config.ConfigMisc;
-import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.config.ConfigSnow;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.entity.EntityIceBall;
@@ -50,28 +43,12 @@ import net.mrbt0907.weather2.network.packets.PacketLightning;
 import net.mrbt0907.weather2.util.*;
 import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.weather.WindManager;
-import extendedrenderer.ExtendedRenderer;
-import extendedrenderer.particle.ParticleRegistry;
-import extendedrenderer.particle.behavior.ParticleBehaviorFog;
-import extendedrenderer.particle.entity.EntityRotFX;
 
 public class StormObject extends WeatherObject implements IWeatherRain, IWeatherLayered
 {
 	//-----Rendering-----\\
-	//List of particles that make up the clouds above
-	@SideOnly(Side.CLIENT)
-	public List<EntityRotFX> listParticlesCloud;
-	//List of ground particles that a storm generates
-	@SideOnly(Side.CLIENT)
-	public List<EntityRotFX> listParticlesGround;
-	//List of custom rain particles that a storm generates
-	@SideOnly(Side.CLIENT)
-	public List<EntityRotFX> listParticlesRain;
-	//List of funnel particles that a tornado makes
-	@SideOnly(Side.CLIENT)
-	public List<EntityRotFX> listParticlesFunnel;
-	@SideOnly(Side.CLIENT)
-	public ParticleBehaviorFog particleBehaviorFog;
+	public AbstractStormRenderer particleRenderer;
+	public ResourceLocation particleRendererId;
 	public int particleLimit = 600;
 	public float angle = 0.0F;
 	
@@ -167,14 +144,6 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		
 		pos = new Vec3(0, getLayerHeight(), 0);
 		size = Maths.random(250,350) + size;
-		
-		if (world.isRemote)
-		{
-			listParticlesCloud = new ArrayList<EntityRotFX>();
-			listParticlesFunnel = new ArrayList<EntityRotFX>();
-			listParticlesGround = new ArrayList<EntityRotFX>();
-			listParticlesRain = new ArrayList<EntityRotFX>();
-		}
 	}
 	
 	public void init()
@@ -294,10 +263,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			manager.getWorld().profiler.endStartSection("tickWeather");
 			tickWeatherEvents();
 			manager.getWorld().profiler.endStartSection("tickProgression");
-			if (/*ConfigSimulation.simulation_enable*/false)
-				tickProgressionSimulation();
-			else
-				tickProgressionNormal();
+			tickProgressionNormal();
 			manager.getWorld().profiler.endStartSection("tickSnowFall");
 			tickSnowFall();
 			manager.getWorld().profiler.endSection();
@@ -620,15 +586,6 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		}
 	}
 	
-	public void tickProgressionSimulation()
-	{
-		World world = manager.getWorld();
-		if (world.getTotalWorldTime() % ConfigStorm.storm_tick_delay == 0 && ConfigStorm.storm_tick_delay > 0)
-		{
-			//Crickets...
-		}
-	}
-	
 	public void tickProgressionNormal()
 	{
 		World world = manager.getWorld();
@@ -694,7 +651,10 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 				
 				//force storms to die if its no longer raining while overcast mode is active
 				if (ConfigMisc.overcast_mode && !neverDissipate && !manager.getWorld().isRaining())
+				{
+					Weather2.debug("KILLED");
 					isDying = true;
+				}
 				
 				//force rain on while real storm and not dying
 				if (!isDying && rain < MINIMUM_DRIZZLE)
@@ -915,469 +875,28 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	@SideOnly(Side.CLIENT)
 	public void tickClient()
 	{
-		if (particleBehaviorFog == null)
-			particleBehaviorFog = new ParticleBehaviorFog(pos.toVec3Coro());
-		else if (!Minecraft.getMinecraft().isSingleplayer() || !(Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu))
-				particleBehaviorFog.tickUpdateList();
-		
-		EntityPlayer entP = Minecraft.getMinecraft().player;
-		IBlockState state = ConfigCoroUtil.optimizedCloudRendering ? Blocks.AIR.getDefaultState() : ChunkUtils.getBlockState(manager.getWorld(), (int) pos_funnel_base.posX, (int) pos_funnel_base.posY - 1, (int) pos_funnel_base.posZ);
-		Material material = state.getMaterial();
-		double maxRenderDistance = SceneEnhancer.fogDistance;
 		double spinSpeedMax = 0.4D;
-		float sizeCloudMult = Math.min(Math.max(size * 0.0015F, 1.0F), getLayerHeight() * 0.02F);
-		float sizeFunnelMult = Math.min(Math.max(funnelSize * (isViolent ? 0.016F : 0.008F), 1.0F), getLayerHeight() * 0.02F);
-		float sizeOtherMult = Math.min(Math.max(size * 0.003F, 1.0F), getLayerHeight() * 0.035F);
-		float heightMult = getLayerHeight() * 0.00290625F;
-		float rotationMult = Math.max(heightMult * 0.45F, 1.0F);
-		float r = -1.0F, g = -1.0F, b = -1.0F;
-		if (!ConfigCoroUtil.optimizedCloudRendering && state.getBlock().equals(Blocks.AIR))
-		{
-			state = Blocks.DIRT.getDefaultState();
-			material = state.getMaterial();
-		}
-			
-		if (material.equals(Material.GROUND) || material.equals(Material.GRASS) || material.equals(Material.LEAVES) || material.equals(Material.PLANTS))
-		{
-			r = 0.3F; g = 0.25F; b = 0.15F;
-		}
-		else if (material.equals(Material.SAND))
-		{
-			r = 0.5F; g = 0.45F; b = 0.35F;
-		}
-		else if (material.equals(Material.SNOW))
-		{
-			r = 0.5F; g = 0.5F; b = 0.7F;
-		}
-		else if (material.equals(Material.WATER) || isSpout)
-		{
-			r = 0.3F; g = 0.35F; b = 0.7F;
-		}
-		else if (material.equals(Material.LAVA))
-		{
-			r = 1.0F; g = 0.45F; b = 0.35F;
-		}
+		spin = Math.min(spinSpeedMax, Math.max(0.007D * stage, 0.03D));
 		
-		if (/*ConfigSimulation.simulation_enable*/false)
-			spin = Math.min(spinSpeedMax, Math.max(intensity * 0.0001F * sizeCloudMult, 0.03F));
-		else
-			spin = Math.min(spinSpeedMax, Math.max(0.007D * stage * sizeCloudMult, 0.03D));
-		
-		//bonus!
 		if (stormType == StormType.WATER.ordinal())
 			spin += 0.025D;
-		
+				
 		if (size == 0) size = 1;
-		int delay = Math.max(1, (int)(100F / size));
-		int loopSize = 1;
-		int extraSpawning = 0;
 		
-		if (isSevere())
+		ResourceLocation id = WeatherAPI.getParticleRendererId();
+		if (particleRendererId != id)
 		{
-			loopSize += 4;
-			extraSpawning = (int) Math.min(funnelSize * 2.375F, 1000.0F);
-		}
-		
-		Random rand = new Random();
-		Vec3 playerAdjPos = new Vec3(entP.posX, pos.posY, entP.posZ);
-		
-		//spawn clouds
-		if (ConfigCoroUtil.optimizedCloudRendering)
-		{
-			/*int count = 9;
-
-			for (int i = 0; i < count && canSpawnParticle(); i++)
+			if (particleRenderer != null)
 			{
-				if (!lookupParticlesCloud.containsKey(i))
-				{
-					//position doesnt matter, set by renderer while its invisible still
-					Vec3 tryPos = new Vec3(pos.posX, layers.get(layer), pos.posZ);
-					EntityRotFX particle;
-					if (WeatherUtil.isAprilFoolsDay())
-						particle = spawnFogParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 0, ParticleRegistry.chicken);
-					else
-						particle = spawnFogParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 0, net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_test);
-					//offset starting rotation for even distribution except for middle one
-					if (i != 0)
-					{
-						double rotPos = (i - 1);
-						float radStart = (float) ((360D / 8D) * rotPos);
-						particle.rotationAroundCenter = radStart;
-					}
-
-					lookupParticlesCloud.put(i, particle);
-					listParticles.add(particle);
-				}
+				particleRenderer.cleanup();
+				particleRenderer = null;
 			}
+			particleRendererId = id;
+			particleRenderer = WeatherAPI.getParticleRenderer(this);
+		}
 			
-			if (isSevere())
-			{
-				count = 32;
-
-				for (int i = 0; i < count && canSpawnParticle(); i++)
-				{
-					if (!lookupParticlesCloudLower.containsKey(i)) {
-
-						//position doesnt matter, set by renderer while its invisible still
-						Vec3 tryPos = new Vec3(pos.posX, layers.get(layer) + (rand.nextDouble() * size * 0.4D), pos.posZ);
-						EntityRotFX particle;
-						if (WeatherUtil.isAprilFoolsDay())
-							particle = spawnFogParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 1, ParticleRegistry.chicken);
-						else
-							particle = spawnFogParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 1, net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_test);
-						
-
-						//set starting offset for even distribution
-						double rotPos = i % 15;
-						float radStart = (float) ((360D / 16D) * rotPos);
-						particle.rotationAroundCenter = radStart;
-
-						lookupParticlesCloudLower.put(i, particle);
-						listParticles.add(particle);
-					}
-				}
-			}*/
-		}
-		else
-		{
-			if (this.manager.getWorld().getTotalWorldTime() % (delay + ConfigParticle.cloud_particle_delay) == 0) {
-				for (int i = 0; i < loopSize && canSpawnParticle(); i++)
-				{
-					if (!ConfigCoroUtil.optimizedCloudRendering && listParticlesCloud.size() < (size + extraSpawning) / 1F) {
-						double spawnRad = size * 1.2D;
-						Vec3 tryPos = new Vec3(pos.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), getLayerHeight() + (rand.nextDouble() * 40.0F), pos.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
-						if (tryPos.distance(playerAdjPos) < maxRenderDistance) {
-							if (getAvoidAngleIfTerrainAtOrAheadOfPosition(getAngle(), tryPos) == 0) {
-								ExtendedEntityRotFX particle;
-								if (WeatherUtil.isAprilFoolsDay()) {
-									particle = spawnFogParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 0, ParticleRegistry.chicken);
-									particle.setColor(1F, 1F, 1F);
-								}
-								else
-								{
-									float finalBright = Math.min(0.7F, 0.5F + (rand.nextFloat() * 0.2F)) + (stage >= Stage.RAIN.getStage() ? -0.2F : 0.0F );
-									particle = spawnFogParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 0);
-									particle.setColor(finalBright, finalBright, finalBright);
-									
-									if (isFirenado && isSevere())
-									{
-											particle.setParticleTexture(net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_fire);
-											particle.setColor(1F, 1F, 1F);
-									}
-								}
-
-								particle.rotationPitch = Maths.random(70.0F, 110.0F);
-								particle.setScale(600.0F * sizeCloudMult);
-								listParticlesCloud.add(particle);
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		//ground effects
-		if (!ConfigCoroUtil.optimizedCloudRendering && stormType == StormType.LAND.ordinal() && stage > Stage.SEVERE.getStage() && r >= 0.0F && !material.isLiquid())
-		{
-			for (int i = 0; i < 4 && canSpawnParticle(); i++)
-			{
-				if (listParticlesGround.size() < 300)
-				{
-					double spawnRad = funnelSize + 150.0D;
-					
-					Vec3 tryPos = new Vec3(pos_funnel_base.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), posGround.posY, pos_funnel_base.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
-					if (tryPos.distance(playerAdjPos) < maxRenderDistance)
-					{
-						int groundY = WeatherUtilBlock.getPrecipitationHeightSafe(manager.getWorld(), new BlockPos((int)tryPos.posX, 0, (int)tryPos.posZ)).getY();
-						ExtendedEntityRotFX particle;
-						if (WeatherUtil.isAprilFoolsDay())
-							particle = spawnFogParticle(tryPos.posX, groundY + 3, tryPos.posZ, 1, ParticleRegistry.potato);
-						else
-							particle = spawnFogParticle(tryPos.posX, groundY + 3, tryPos.posZ, 1);
-						particle.setColor(r, g, b);
-						particle.setTicksFadeInMax(40);
-						particle.setTicksFadeOutMax(80);
-						particle.setGravity(0.01F);
-						particle.setMaxAge(100);
-						particle.setScale(190.0F * sizeFunnelMult);
-						particle.rotationYaw = rand.nextInt(360);
-						particle.rotationPitch = rand.nextInt(80);
-						
-						listParticlesGround.add(particle);
-					}
-				}
-			}
-		}
-		
-		delay = 1;
-		loopSize = 3 + (int)(funnelSize / 80);
-		double spawnRad = funnelSize * 0.02F;
-		
-		if (stage >= Stage.TORNADO.getStage() + 1) 
-		{
-			spawnRad *= 48.25D;
-			particleLimit = 2000;
-		}
-		
-		//spawn funnel
-		if (isDeadly() && stormType == 0 || (isSpout))
-		{
-			if (this.manager.getWorld().getTotalWorldTime() % (delay + ConfigParticle.funnel_particle_delay) == 0)
-			{
-				for (int i = 0; i < loopSize && listParticlesFunnel.size() <= particleLimit && canSpawnParticle(); i++)
-				{
-					if (listParticlesFunnel.size() < particleLimit)
-					{
-						Vec3 tryPos = new Vec3(pos_funnel_base.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), pos.posY, pos_funnel_base.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
-						
-						if (tryPos.distance(playerAdjPos) < maxRenderDistance)
-						{
-							ExtendedEntityRotFX particle;
-							if (!isFirenado)
-								if (WeatherUtil.isAprilFoolsDay())
-									particle = spawnFogParticle(tryPos.posX, pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2, ParticleRegistry.potato);
-								else
-									particle = spawnFogParticle(tryPos.posX, pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2);
-							else
-								particle = spawnFogParticle(tryPos.posX, pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2, net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_fire);
-
-							
-							//move these to a damn profile damnit!
-							particle.setMaxAge(150 + ((stage-1) * 10) + rand.nextInt(100));
-							particle.rotationYaw = rand.nextInt(360);
-							
-							float finalBright = Math.min(0.7F, 0.35F + (rand.nextFloat() * 0.2F));
-							
-							//highwind aka spout in this current code location
-							if (stage == Stage.SEVERE.getStage())
-							{
-								particle.setScale(250.0F * sizeFunnelMult);
-								particle.setColor(finalBright, finalBright, finalBright);
-							}
-							else
-							{
-								particle.setScale(500.0F * sizeFunnelMult);
-								if (r >= 0.0F)
-								{
-									particle.setColor(r, g, b);
-									particle.setFinalColor(1.0F - formingStrength, finalBright, finalBright, finalBright);
-									particle.setColorFade(0.75F);
-								}
-								else
-									particle.setColor(finalBright, finalBright, finalBright);
-							}
-
-							if (isFirenado)
-							{
-								particle.setRBGColorF(1F, 1F, 1F);
-								particle.setScale(particle.getScale() * 0.7F);
-							}
-							
-							listParticlesFunnel.add(particle);
-						}
-					}
-				}
-			}
-		}
-		
-		if (ConfigParticle.enable_distant_downfall && ticks % 20 == 0 && ConfigParticle.distant_downfall_particle_rate > 0.0F && listParticlesRain.size() < 1000 && stage > Stage.THUNDER.getStage() && isRaining())
-		{
-			int particleCount = (int)Math.ceil(rain * stage * ConfigParticle.distant_downfall_particle_rate * 0.005F);
-			
-			for (int i = 0; i < particleCount && listParticlesRain.size() < 1000 && canSpawnParticle(); i++)
-			{
-				double spawnRad2 = size;
-				Vec3 tryPos = new Vec3(pos.posX + (rand.nextDouble()*spawnRad2) - (rand.nextDouble()*spawnRad2), pos.posY + rand.nextInt(50), pos.posZ + (rand.nextDouble()*spawnRad2) - (rand.nextDouble()*spawnRad2));
-				if (tryPos.distance(playerAdjPos) < maxRenderDistance)
-				{
-					ExtendedEntityRotFX particle;
-					float finalBright = Math.min(0.7F, 0.5F + (rand.nextFloat() * 0.2F)) + (stage >= Stage.RAIN.getStage() ? -0.2F : 0.0F );
-					particle = spawnFogParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 2);
-					particle.setMaxAge(200 + rand.nextInt(100));
-					particle.setScale(550.0F * sizeOtherMult);
-					particle.setAlphaF(0.0F);
-					particle.setColor(finalBright, finalBright, finalBright);
-					particle.facePlayer = false;
-					listParticlesRain.add(particle);
-				}
-			}
-		}
-		
-		for (int i = 0; i < listParticlesFunnel.size(); i++)
-		{
-			EntityRotFX ent = listParticlesFunnel.get(i);
-			if (!ent.isAlive() || ent.getPosY() > getLayerHeight() + 200)
-			{
-				ent.setExpired();
-				listParticlesFunnel.remove(ent);
-			}
-			else
-			{
-				 double var16 = this.pos.posX - ent.getPosX();
-				 double var18 = this.pos.posZ - ent.getPosZ();
-				 ent.rotationYaw = (float)(Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
-				 ent.rotationYaw += ent.getEntityId() % 90;
-				 ent.rotationPitch = -30F;
-				 
-				 spinEntity(ent);
-			}
-		}
-		
-		for (int i = 0; i < listParticlesCloud.size(); i++)
-		{
-			EntityRotFX ent = listParticlesCloud.get(i);
-			if (!ent.isAlive() || stormType == StormType.WATER.ordinal() && ent.getDistance(pos.posX, ent.posY, pos.posZ) < funnelSize)
-			{
-				ent.setExpired();
-				listParticlesCloud.remove(ent);
-			}
-			else
-			{
-				double curSpeed = Math.sqrt(ent.getMotionX() * ent.getMotionX() + ent.getMotionY() * ent.getMotionY() + ent.getMotionZ() * ent.getMotionZ());
-				double curDist = 10D;
-				
-				if (isSevere())
-				{
-					double speed = spin + (rand.nextDouble() * 0.04D) * rotationMult;
-					double distt = Math.max(ConfigStorm.max_storm_size, funnelSize + 20.0D);//300D;
-					
-					if (stormType == 1)
-					{
-						speed *= 2.0D;
-						distt *= 2.0D;
-					}
-					
-					double vecX = ent.getPosX() - pos.posX;
-					double vecZ = ent.getPosZ() - pos.posZ;
-					float angle = (float)(Math.atan2(vecZ, vecX) * 180.0D / Math.PI);
-					
-					//fix speed causing inner part of formation to have a gap
-					angle += speed * 50D;
-					
-					angle -= (ent.getEntityId() % 10) * 3D;
-					
-					//random addition
-					angle += rand.nextInt(10) - rand.nextInt(10);
-					
-					if (curDist > distt)
-					{
-						angle += 40;
-					}
-					
-					//keep some near always - this is the lower formation part
-					if (ent.getEntityId() % 40 < 5) {
-						if (stage >= Stage.TORNADO.getStage()) {
-							if (stormType == StormType.WATER.ordinal()) {
-								angle += 40 + ((ent.getEntityId() % 5) * 4);
-								if (curDist > 150 + ((stage-Stage.TORNADO.getStage()+1) * 30)) {
-									angle += 10;
-								}
-							} else {
-								angle += 30 + ((ent.getEntityId() % 5) * 4);
-							}
-							
-						} else {
-							//make a wider spinning lower area of cloud, for high wind
-							if (curDist > 150) {
-								angle += 50 + ((ent.getEntityId() % 5) * 4);
-							}
-						}
-						
-						double var16 = this.pos.posX - ent.getPosX();
-						double var18 = this.pos.posZ - ent.getPosZ();
-						ent.rotationYaw = (float)(Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
-						ent.rotationPitch = -30F - (ent.getEntityId() % 10);
-					}
-					else
-					{
-						ent.rotationPitch = (float) (90.0F - (90.0f * Math.min(ent.getPosY() / (getLayerHeight() + ent.getScale() * 0.75F), 1.0F)));
-					}
-					
-					if (curSpeed < speed * 20D)
-					{
-						ent.setMotionX(ent.getMotionX() + -Math.sin(Math.toRadians(angle)) * speed);
-						ent.setMotionZ(ent.getMotionZ() + Math.cos(Math.toRadians(angle)) * speed);
-					}
-				}
-				else
-				{
-					float cloudMoveAmp = 0.2F * (1 + layer);
-					
-					float speed = getSpeed() * cloudMoveAmp;
-					float angle = getAngle();
-
-					//TODO: prevent new particles spawning inside or near solid blocks
-
-					if ((manager.getWorld().getTotalWorldTime()) % 40 == 0) {
-						ent.avoidTerrainAngle = getAvoidAngleIfTerrainAtOrAheadOfPosition(angle, new Vec3(ent.getPos()));
-					}
-
-					angle += ent.avoidTerrainAngle;
-
-					if (ent.avoidTerrainAngle != 0)
-						speed *= 0.5D;
-					
-					
-					if (curSpeed < speed * 1D)
-					{
-						ent.setMotionX(ent.getMotionX() + -Math.sin(Math.toRadians(angle)) * speed);
-						ent.setMotionZ(ent.getMotionZ() + Math.cos(Math.toRadians(angle)) * speed);
-					}
-				}
-				
-				
-				float dropDownSpeedMax = 0.5F;
-				
-				if (stormType == 1 || stage > 8)
-					dropDownSpeedMax = 1.9F;
-				
-				if (ent.getMotionY() < -dropDownSpeedMax)
-					ent.setMotionY(-dropDownSpeedMax);
-				
-				
-				if (ent.getMotionY() > dropDownSpeedMax) 
-					ent.setMotionY(dropDownSpeedMax);
-				
-			}
-		}
-		
-		
-		
-		for (int i = 0; i < listParticlesRain.size(); i++)
-		{
-			EntityRotFX ent = listParticlesRain.get(i);
-			if (!ent.isAlive())
-				listParticlesRain.remove(ent);
-			
-			if (ent.motionY > -1.0D * heightMult)
-				ent.motionY = ent.motionY - (0.1D);
-			
-			double speed = Math.sqrt(ent.getMotionX() * ent.getMotionX() + ent.getMotionY() * ent.getMotionY() + ent.getMotionZ() * ent.getMotionZ());
-			double spin = this.spin + 0.04F;
-			double vecX = ent.getPosX() - pos.posX;
-			double vecZ = ent.getPosZ() - pos.posZ;
-			float angle = (float)(Math.atan2(vecZ, vecX) * 180.0D / Math.PI);
-			ent.rotationPitch = 0.0F;
-			ent.rotationYaw = angle + 90;
-			
-			if (ent.getAlphaF() < 0.01F)
-				ent.setAlphaF(ent.getAlphaF() + 0.01F);
-			if (speed < spin * 15.0D * rotationMult)
-			{
-				ent.setMotionX(ent.getMotionX() + -Math.sin(Math.toRadians(angle)) * spin);
-				ent.setMotionZ(ent.getMotionZ() + Math.cos(Math.toRadians(angle)) * spin);
-			}
-		}
-		
-		for (int i = 0; i < listParticlesGround.size(); i++)
-		{
-			EntityRotFX ent = listParticlesGround.get(i);
-			
-			if (!ent.isAlive())
-				listParticlesGround.remove(ent);
-			else
-				 spinEntity(ent);
-		}
+		if (particleRenderer != null)
+			particleRenderer.tick();
 	}
 	
 	@Override
@@ -1579,47 +1098,6 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
-	public ExtendedEntityRotFX spawnFogParticle(double x, double y, double z, int parRenderOrder) {
-		return spawnFogParticle(x, y, z, parRenderOrder, net.mrbt0907.weather2.registry.ParticleRegistry.cloud256);
-	}
-	
-	@SideOnly(Side.CLIENT)
-	public ExtendedEntityRotFX spawnFogParticle(double x, double y, double z, int parRenderOrder, TextureAtlasSprite tex) {
-		double speed = 0D;
-		Random rand = new Random();
-		ExtendedEntityRotFX entityfx = new ExtendedEntityRotFX(manager.getWorld(), x, y, z, (rand.nextDouble() - rand.nextDouble()) * speed, 0.0D, (rand.nextDouble() - rand.nextDouble()) * speed, tex);
-		entityfx.pb = particleBehaviorFog;
-		entityfx.renderOrder = parRenderOrder;
-		particleBehaviorFog.initParticle(entityfx);
-		
-		entityfx.setCanCollide(false);
-		entityfx.callUpdatePB = false;
-		
-		if (stage == Stage.NORMAL.getStage())
-			entityfx.setMaxAge(300 + rand.nextInt(100));
-		else
-			entityfx.setMaxAge((size/2) + rand.nextInt(100));
-		
-		//pieces that move down with funnel need render order shift, also only for relevant storm formations
-		if (entityfx.getEntityId() % 20 < 5 && isSevere())
-		{
-			entityfx.renderOrder = 1;
-			entityfx.setMaxAge((size) + rand.nextInt(100));
-		}
-
-		//temp?
-		if (ConfigCoroUtil.optimizedCloudRendering)
-			entityfx.setMaxAge(400);
-		
-		ExtendedRenderer.rotEffRenderer.addEffect(entityfx);
-		particleBehaviorFog.particles.add(entityfx);
-		if (ClientTickHandler.weatherManager != null)
-			ClientTickHandler.weatherManager.addWeatherParticle(entityfx);
-		
-		return entityfx;
-	}
-
 	@Override
 	public void cleanup() {
 		super.cleanup();
@@ -1633,23 +1111,11 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	@Override
 	public void cleanupClient(boolean wipe)
 	{	
-		if (!wipe)
+		if (wipe && particleRenderer != null)
 		{
-			for (EntityRotFX particle : listParticlesCloud) particle.setExpired();
-				listParticlesCloud.clear();
-			for (EntityRotFX particle : listParticlesFunnel) particle.setExpired();
-				listParticlesFunnel.clear();
-			for (EntityRotFX particle : listParticlesGround) particle.setExpired();
-				listParticlesGround.clear();
-			for (EntityRotFX particle : listParticlesRain) particle.setExpired();
-				listParticlesRain.clear();	
+			particleRenderer.cleanup();
+			particleRenderer = null;
 		}
-		
-		if (particleBehaviorFog != null)
-			particleBehaviorFog.particles.clear();
-		
-		if (wipe)
-			particleBehaviorFog = null;
 	}
 	
 	public float getTemperatureMCToWeatherSys(float parOrigVal) {
@@ -1821,17 +1287,5 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			default:
 				return "";
 		}
-	}
-
-	@Override
-	public int getParticleCount()
-	{
-		return listParticlesCloud.size() + listParticlesFunnel.size() + listParticlesGround.size() + listParticlesRain.size();
-	}
-
-	@Override
-	public boolean canSpawnParticle()
-	{
-		return ConfigParticle.max_particles < 0 || ClientTickHandler.weatherManager.getParticleCount() < ConfigParticle.max_particles;
 	}
 }

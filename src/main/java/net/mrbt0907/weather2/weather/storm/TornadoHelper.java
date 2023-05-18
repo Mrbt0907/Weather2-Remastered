@@ -255,7 +255,7 @@ public class TornadoHelper
 				{
 					if ((ConfigGrab.enable_list_sharing && Maths.chance(50) || !ConfigGrab.enable_list_sharing) && (ConfigGrab.grab_list_strength_match && WeatherUtilBlock.checkResistance(storm, id) || !ConfigGrab.grab_list_strength_match))
 					{
-						snapshots.add(new BlockSnapshot(storm, AIR, state, pos));
+						snapshots.add(new BlockSnapshot(storm, null, state, pos));
 						return true;
 					}
 				}

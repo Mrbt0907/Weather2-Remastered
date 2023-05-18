@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIMoveIndoors;
 import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.event.EntityViewRenderEvent.FogColors;
 import net.minecraftforge.client.event.EntityViewRenderEvent.RenderFogEvent;
@@ -20,9 +21,11 @@ import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WeatherAPI;
 import net.mrbt0907.weather2.api.WeatherUtilData;
 import net.mrbt0907.weather2.api.event.EventRegisterGrabLists;
+import net.mrbt0907.weather2.api.event.EventRegisterParticleRenderer;
 import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.foliage.FoliageEnhancerShader;
+import net.mrbt0907.weather2.client.weather.tornado.LegacyStormRenderer;
 import net.mrbt0907.weather2.config.ConfigFoliage;
 import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.config.ConfigParticle;
@@ -36,6 +39,13 @@ import net.mrbt0907.weather2.weather.WindManager;
 
 public class EventHandlerForge
 {
+
+	@SubscribeEvent
+	public void onParticleRendererRegister(EventRegisterParticleRenderer event)
+	{
+		event.register(new ResourceLocation(Weather2.MODID, "legacy"), LegacyStormRenderer.class);
+	}
+	
 	@SubscribeEvent
 	public void onGrabListRefresh(EventRegisterGrabLists event)
 	{
