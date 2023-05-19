@@ -25,7 +25,6 @@ import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
 import net.mrbt0907.weather2.config.ConfigFront;
 import net.mrbt0907.weather2.config.ConfigSimulation;
 import net.mrbt0907.weather2.config.ConfigStorm;
-import net.mrbt0907.weather2.config.ConfigWind;
 import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.util.WeatherUtil;
@@ -56,6 +55,7 @@ public class FrontObject implements IWeatherDetectable
 	public int maxStorms;
 	public int storms;
 	public int activeStorms;
+	public int deathTicks;
 	
 	public FrontObject(WeatherManager manager, Vec3 pos, int layer)
 	{
@@ -95,9 +95,12 @@ public class FrontObject implements IWeatherDetectable
 	{
 		if (maxStorms > -1 && storms >= maxStorms)
 		{
-			isDying = true;
+			if (!isDying)
+				isDying = true;
 			
-			if (systems.size() == 0 || activeStorms == 0)
+			deathTicks++;
+			
+			if ((systems.size() == 0 || activeStorms == 0) && deathTicks > 2000)
 			{
 				isDead = true;
 				return;
@@ -128,18 +131,13 @@ public class FrontObject implements IWeatherDetectable
 				float vecX = (float) -Math.sin(Math.toRadians(angle));
 				float vecZ = (float) Math.cos(Math.toRadians(angle));
 				float cloudSpeed = 0.2F;
-				float speed = (manager.windManager.windSpeed * cloudSpeed) + (type == 1 ? 0.2F : 0.02F);
+				float speed = ((manager.windManager.windSpeed * cloudSpeed) + (type == 1 ? 0.2F : 0.02F)) * (type == 0 ? 0.1F : 1.0F);
 				motion.posX = CoroUtilMisc.adjVal((float)motion.posX, vecX * speed, (float)ConfigFront.speed_change_mult * mult);
 				motion.posZ = CoroUtilMisc.adjVal((float)motion.posZ, vecZ * speed, (float)ConfigFront.speed_change_mult * mult);
 		
 				pos.posX += motion.posX;
 				pos.posZ += motion.posZ;
 			}
-	}
-	
-	public void tickProgressionSimulation()
-	{
-		
 	}
 	
 	/**TODO: Make occluded fronts  merge only when cold front meets warm front from behind, make stationary fronts merge when colliding from any other direction*/
@@ -151,8 +149,12 @@ public class FrontObject implements IWeatherDetectable
 			{
 				BlockPos pos = this.pos.toBlockPos();
 				float temperature = WeatherUtil.getTemperature(world, pos);
-				float humidity = WeatherUtil.getTemperature(world, pos);
+				float humidity = WeatherUtil.getHumidity(world, pos);
 				float pressure = WeatherUtil.getPressure(world, pos);
+				
+				
+				if (type == 2 && temperature < 0.5F)
+					temperature = 0.5F; 
 				
 				this.temperature = CoroUtilMisc.adjVal(this.temperature, temperature, 0.0001F * (float)ConfigFront.environment_change_mult);
 				this.humidity = CoroUtilMisc.adjVal(this.humidity, humidity, 0.0005F * (float)ConfigFront.environment_change_mult);
@@ -179,16 +181,6 @@ public class FrontObject implements IWeatherDetectable
 							motion = new Vec3(0.0D, 0.0D, 0.0D);
 						}
 					}
-				
-				if (type < 3)
-				{
-					if (motion.speed() / ConfigWind.windSpeedMax <= 0.05F)
-						type = 0;
-					else if (temperature < 0.5)
-						type = 1;
-					else
-						type = 2;
-				}
 			}
 		}
 	}

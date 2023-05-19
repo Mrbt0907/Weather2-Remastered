@@ -98,12 +98,12 @@ public class ConfigMisc implements IConfigCategory {
 
 	@Override
 	public String getConfigFileName() {
-		return "Weather2" + File.separator + getName();
+		return Weather2.MODID + File.separator + getName();
 	}
 
 	@Override
 	public String getCategory() {
-		return "Weather2: " + getName();
+		return Weather2.MODID + ":" + getName();
 	}
 
 	@Override

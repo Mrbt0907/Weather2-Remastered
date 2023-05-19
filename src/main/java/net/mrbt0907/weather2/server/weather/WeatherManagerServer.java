@@ -542,7 +542,7 @@ public class WeatherManagerServer extends WeatherManager
 	
 	public void playerJoinedWorldSyncFull(EntityPlayerMP entP)
 	{
-		Weather2.debug("Weather2: playerJoinedWorldSyncFull for dim: " + dim);
+		Weather2.debug((entP == null ? "An unknown player " : "Player " + entP.getDisplayNameString() + "'s client requested for a full sync"));
 		
 		//sync storms
 		fronts.forEach((uuid, front) -> {PacketFrontObject.create(entP, front); front.getWeatherObjects().forEach(wo -> PacketWeatherObject.create(entP, wo));});

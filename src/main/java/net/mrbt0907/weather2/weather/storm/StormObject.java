@@ -49,7 +49,6 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	//-----Rendering-----\\
 	public AbstractStormRenderer particleRenderer;
 	public ResourceLocation particleRendererId;
-	public int particleLimit = 600;
 	public float angle = 0.0F;
 	
 	//-----Storm-----\\
@@ -143,7 +142,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		super(front);
 		
 		pos = new Vec3(0, getLayerHeight(), 0);
-		size = Maths.random(250,350) + size;
+		size = Maths.random(100,200) + size;
 	}
 	
 	public void init()
@@ -575,9 +574,6 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			if (par2 >= 0 && par2 < 256 && world.getLightFor(EnumSkyBlock.BLOCK, pos) < 10)
 			{
 				IBlockState iblockstate1 = ChunkUtils.getBlockState(world, pos);
-
-				//TODO: incoming new way to detect if blocks can be snowed on https://github.com/MinecraftForge/MinecraftForge/pull/4569/files
-				//might not require any extra work from me?
 				if ((iblockstate1.getBlock().isAir(iblockstate1, world, pos) || iblockstate1.getBlock() == Blocks.SNOW_LAYER) && Blocks.SNOW_LAYER.canPlaceBlockAt(world, pos))
 					return true;
 			}
@@ -642,6 +638,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 						hail = 125.0F;
 					if (rain < 0.0F)
 					{
+						Weather2.debug("Storm " + getUUID().toString() + " has stopped raining");
 						rain = 0.0F;
 						shouldBuildHumidity = false;
 					}
@@ -650,9 +647,9 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 					rain = 60.0F;
 				
 				//force storms to die if its no longer raining while overcast mode is active
-				if (ConfigMisc.overcast_mode && !neverDissipate && !manager.getWorld().isRaining())
+				if (ConfigMisc.overcast_mode && isNatural && !neverDissipate && !manager.getWorld().isRaining())
 				{
-					Weather2.debug("KILLED");
+					Weather2.debug("Storm " + getUUID().toString() + " was forced to dissipate because of overcast mode at stage " + stage + " and is now dying");
 					isDying = true;
 				}
 				
@@ -683,11 +680,11 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 					if (intensify && (stage < stageMax || alwaysProgresses))
 					{
 						stageNext();
-						Weather2.debug("storm ID: " + getUUID().toString() + " - growing, stage: " + stage);
+						Weather2.debug("Storm " + getUUID().toString() + " has intensified to stage " + stage);
 						
 						if (shouldConvert && !ConfigStorm.disable_cyclones && (stage < WeatherEnum.Stage.SEVERE.getStage() && hasOcean || ConfigStorm.disable_tornados))
 						{
-							Weather2.debug("storm ID: " + getUUID().toString() + " marked as tropical cyclone!");
+							Weather2.debug("Storm " + getUUID().toString() + " was converted into a tropical cyclone");
 							stormType = StormType.WATER.ordinal();
 							updateType();
 						}
@@ -695,7 +692,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 					
 					else if (!(neverDissipate || alwaysProgresses) && stage >= stageMax && intensify)
 					{
-						Weather2.debug("storm peaked at: " + stage);
+						Weather2.debug("Storm " + getUUID().toString() + " has peaked at stage " + stage + " and is now dying");
 						isDying = true;
 					}
 				}
@@ -709,7 +706,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 					if (intensity - (stage - 1) <= 0)
 					{
 						stagePrev();
-						Weather2.debug("storm ID: " + this.getUUID().toString() + " - dying, stage: " + stage);
+						Weather2.debug("Storm " + getUUID().toString() + " has weakened to stage " + stage);
 						if (stage == 2 && revives < maxRevives)
 						{
 							isDying = false;
@@ -866,7 +863,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	
 	//FYI rain doesnt count as storm
 	public void setNoStorm() {
-		Weather2.debug("storm ID: " + this.getUUID().toString() + " - ended storm event");
+		Weather2.debug("Storm " + this.getUUID().toString() + " was terminated");
 		stage = Stage.NORMAL.getStage();
 		intensity = 0;
 		isDead = true;

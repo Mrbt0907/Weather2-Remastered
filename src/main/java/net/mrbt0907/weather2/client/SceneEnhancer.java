@@ -1783,7 +1783,7 @@ public class SceneEnhancer implements Runnable {
 		Minecraft mc = Minecraft.getMinecraft();
 		IBlockState iblockstate = ActiveRenderInfo.getBlockStateAtEntityViewpoint(mc.world, mc.getRenderViewEntity(), 1F);
 		if (iblockstate.getMaterial().isLiquid()) return false;
-		return ConfigParticle.enable_render_distance && WeatherUtilConfig.isWeatherEnabled(ClientTickHandler.weatherManager.getDimension());
+		return ConfigParticle.enable_extended_render_distance && WeatherUtilConfig.isWeatherEnabled(ClientTickHandler.weatherManager.getDimension());
 	}
 	
 	public static void renderWorldLast(RenderWorldLastEvent event) {

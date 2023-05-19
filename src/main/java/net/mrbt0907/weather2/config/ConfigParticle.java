@@ -34,6 +34,10 @@ public class ConfigParticle implements IConfigCategory
     public static boolean enable_heavy_precipitation = true;
 	@ConfigComment("Enables distant downfall in severe storms")
     public static boolean enable_distant_downfall = true;
+	@ConfigComment("Enables tornado debris clouds in severe storms")
+    public static boolean enable_tornado_debris = true;
+	@ConfigComment("Enables tornado clouds to change colors based on what block is picked up")
+    public static boolean enable_tornado_block_colors = true;
 	@ConfigComment("Enables dust particles to kick up in high wind situations")
     public static boolean enable_wind_particle = true;
 	@ConfigComment("Enables vanilla rain and thunder only")
@@ -48,10 +52,12 @@ public class ConfigParticle implements IConfigCategory
 	public static double wind_particle_rate = 0.2D;
 	@ConfigComment("Particle rates for distant downfall particles")
 	public static double distant_downfall_particle_rate = 0.2D;
+	@ConfigComment("Particle delay in ticks for tornado debris particles")
+	public static int ground_debris_particle_delay = 5;
 	@ConfigComment("Particle delay in ticks for storm particles\n(Tornado or hurricane particles)")
-	public static int funnel_particle_delay = 5;
+	public static int funnel_particle_delay = 10;
 	@ConfigComment("Particle multiplier used to increase or decrease particle rates")
-	public static double particle_multiplier = 0.5D;
+	public static double particle_multiplier = 1.0D;
 	@ConfigComment("The delay in ticks for the particle thread")
 	public static int effect_process_delay = 400;
 	@ConfigComment("Maximum percent of cloud coverage, supports over 100% for extended full cloud sky coverage")
@@ -63,12 +69,12 @@ public class ConfigParticle implements IConfigCategory
 	@ConfigComment("Distance between cloud formations, not particles, this includes invisible cloudless formations used during partial cloud coverage")
 	public static int min_cloud_distance = 300;
 	@ConfigComment("Should particles render outside of the normal render distance?")
-	public static boolean enable_render_distance = false;
+	public static boolean enable_extended_render_distance = false;
 	@ConfigComment("Distance that particles can render up to in blocks. Does not work with optifine installed")
 	public static double render_distance = 3500.0D;
 
 	@ConfigComment("How many weather2 particles can exist at once. Set to -1 for infinite particles. A typical hailstorm spawns around 3500~ particles on ultra settings")
-	public static int max_particles = -1;
+	public static int max_particles = 2000;
 	@ConfigComment("Particle multiplier that adjusts how fast rain rates change. Set it higher to make rain change faster")
 	public static double rain_change_mult = 1.0D;
 	
@@ -90,12 +96,12 @@ public class ConfigParticle implements IConfigCategory
 
     @Override
     public String getConfigFileName() {
-        return "Weather2" + File.separator + getName();
+        return Weather2.MODID + File.separator + getName();
     }
 
     @Override
     public String getCategory() {
-        return "Weather2: " + getName();
+        return Weather2.MODID + ":" + getName();
     }
 
     @Override

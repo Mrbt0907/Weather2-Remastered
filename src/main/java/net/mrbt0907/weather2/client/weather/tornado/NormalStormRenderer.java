@@ -66,31 +66,35 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		float heightMult = storm.getLayerHeight() * 0.00290625F;
 		float rotationMult = Math.max(heightMult * 0.45F, 1.0F);
 		float r = -1.0F, g = -1.0F, b = -1.0F;
-		if (!ConfigCoroUtil.optimizedCloudRendering && state.getBlock().equals(Blocks.AIR))
+
+		if (ConfigParticle.enable_tornado_block_colors)
 		{
-			state = Blocks.DIRT.getDefaultState();
-			material = state.getMaterial();
-		}
-			
-		if (material.equals(Material.GROUND) || material.equals(Material.GRASS) || material.equals(Material.LEAVES) || material.equals(Material.PLANTS))
-		{
-			r = 0.3F; g = 0.25F; b = 0.15F;
-		}
-		else if (material.equals(Material.SAND))
-		{
-			r = 0.5F; g = 0.45F; b = 0.35F;
-		}
-		else if (material.equals(Material.SNOW))
-		{
-			r = 0.5F; g = 0.5F; b = 0.7F;
-		}
-		else if (material.equals(Material.WATER) || storm.isSpout)
-		{
-			r = 0.3F; g = 0.35F; b = 0.7F;
-		}
-		else if (material.equals(Material.LAVA))
-		{
-			r = 1.0F; g = 0.45F; b = 0.35F;
+			if (!ConfigCoroUtil.optimizedCloudRendering && state.getBlock().equals(Blocks.AIR))
+			{
+				state = Blocks.DIRT.getDefaultState();
+				material = state.getMaterial();
+			}
+				
+			if (material.equals(Material.GROUND) || material.equals(Material.GRASS) || material.equals(Material.LEAVES) || material.equals(Material.PLANTS))
+			{
+				r = 0.3F; g = 0.25F; b = 0.15F;
+			}
+			else if (material.equals(Material.SAND))
+			{
+				r = 0.5F; g = 0.45F; b = 0.35F;
+			}
+			else if (material.equals(Material.SNOW))
+			{
+				r = 0.5F; g = 0.5F; b = 0.7F;
+			}
+			else if (material.equals(Material.WATER) || storm.isSpout)
+			{
+				r = 0.3F; g = 0.35F; b = 0.7F;
+			}
+			else if (material.equals(Material.LAVA))
+			{
+				r = 1.0F; g = 0.45F; b = 0.35F;
+			}
 		}
 		
 		int delay = Math.max(1, (int)(100F / storm.size));
@@ -181,14 +185,14 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		}
 		
 		//ground effects
-		if (!ConfigCoroUtil.optimizedCloudRendering && storm.stormType == StormType.LAND.ordinal() && storm.stage > Stage.SEVERE.getStage() && r >= 0.0F && !material.isLiquid())
+		if (ConfigParticle.enable_tornado_debris && !ConfigCoroUtil.optimizedCloudRendering && storm.stormType == StormType.LAND.ordinal() && storm.stage > Stage.SEVERE.getStage() && r >= 0.0F && !material.isLiquid())
 		{
-			for (int i = 0; i < 3 && shouldSpawn(2); i++)
+			if (manager.getWorld().getTotalWorldTime() % (delay + ConfigParticle.ground_debris_particle_delay) == 0)
 			{
-				if (listParticlesGround.size() < 300)
+				for (int i = 0; i < 3 && shouldSpawn(2); i++)
 				{
 					double spawnRad = storm.funnelSize + 150.0D;
-					
+						
 					Vec3 tryPos = new Vec3(storm.pos_funnel_base.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), storm.posGround.posY, storm.pos_funnel_base.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
 					if (tryPos.distance(playerAdjPos) < maxRenderDistance)
 					{
@@ -204,10 +208,10 @@ public class NormalStormRenderer extends AbstractStormRenderer
 						particle.setTicksFadeOutMax(80);
 						particle.setGravity(0.01F);
 						particle.setMaxAge(100);
-						particle.setScale(190.0F * sizeFunnelMult);
+						particle.setScale(130.0F * sizeFunnelMult);
 						particle.rotationYaw = rand.nextInt(360);
 						particle.rotationPitch = rand.nextInt(80);
-						
+							
 						listParticlesGround.add(particle);
 					}
 				}
@@ -219,10 +223,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		double spawnRad = storm.funnelSize * 0.02F;
 		
 		if (storm.stage >= Stage.TORNADO.getStage() + 1) 
-		{
 			spawnRad *= 48.25D;
-			storm.particleLimit = 2000;
-		}
 		
 		//spawn funnel
 		if (storm.isDeadly() && storm.stormType == 0 || storm.isSpout)
@@ -231,56 +232,54 @@ public class NormalStormRenderer extends AbstractStormRenderer
 			{
 				for (int i = 0; i < loopSize && shouldSpawn(1); i++)
 				{
-					if (listParticlesFunnel.size() < storm.particleLimit)
+					Vec3 tryPos = new Vec3(storm.pos_funnel_base.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), storm.pos.posY, storm.pos_funnel_base.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
+
+					if (tryPos.distance(playerAdjPos) < maxRenderDistance)
 					{
-						Vec3 tryPos = new Vec3(storm.pos_funnel_base.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), storm.pos.posY, storm.pos_funnel_base.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
-						
-						if (tryPos.distance(playerAdjPos) < maxRenderDistance)
-						{
-							ExtendedEntityRotFX particle;
-							if (!storm.isFirenado)
-								if (WeatherUtil.isAprilFoolsDay())
-									particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2, ParticleRegistry.potato);
-								else
-									particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2);
+						ExtendedEntityRotFX particle;
+						if (!storm.isFirenado)
+							if (WeatherUtil.isAprilFoolsDay())
+								particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2, ParticleRegistry.potato);
 							else
-								particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2, net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_fire);
-							if (particle == null) break;
+								particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2);
+						else
+							particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2, net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_fire);
+						if (particle == null) break;
 							
 							//move these to a damn profile damnit!
-							particle.setMaxAge(150 + ((storm.stage-1) * 10) + rand.nextInt(100));
-							particle.rotationYaw = rand.nextInt(360);
+						particle.setMaxAge(150 + ((storm.stage-1) * 10) + rand.nextInt(100));
+						particle.rotationYaw = rand.nextInt(360);
 							
-							float finalBright = Math.min(0.6F, 0.4F + (rand.nextFloat() * 0.2F));
+						float finalBright = Math.min(0.6F, 0.4F + (rand.nextFloat() * 0.2F));
 							
-							//highwind aka spout in this current code location
-							if (storm.stage == Stage.SEVERE.getStage())
+						//highwind aka spout in this current code location
+						if (storm.stage == Stage.SEVERE.getStage())
+						{
+							particle.setScale(250.0F * sizeFunnelMult);
+							particle.setColor(finalBright, finalBright, finalBright);
+						}
+						else
+						{
+							particle.setScale(500.0F * sizeFunnelMult);
+							if (r >= 0.0F)
 							{
-								particle.setScale(250.0F * sizeFunnelMult);
-								particle.setColor(finalBright, finalBright, finalBright);
+								particle.setColor(r, g, b);
+								particle.setFinalColor(1.0F - storm.formingStrength, finalBright, finalBright, finalBright);
+								particle.setColorFade(0.75F);
 							}
 							else
-							{
-								particle.setScale(500.0F * sizeFunnelMult);
-								if (r >= 0.0F)
-								{
-									particle.setColor(r, g, b);
-									particle.setFinalColor(1.0F - storm.formingStrength, finalBright, finalBright, finalBright);
-									particle.setColorFade(0.75F);
-								}
-								else
-									particle.setColor(finalBright, finalBright, finalBright);
-							}
-
-							if (storm.isFirenado)
-							{
-								particle.setRBGColorF(1F, 1F, 1F);
-								particle.setScale(particle.getScale() * 0.7F);
-							}
-							
-							listParticlesFunnel.add(particle);
+								particle.setColor(finalBright, finalBright, finalBright);
 						}
+
+						if (storm.isFirenado)
+						{
+							particle.setRBGColorF(1F, 1F, 1F);
+							particle.setScale(particle.getScale() * 0.7F);
+						}
+							
+						listParticlesFunnel.add(particle);
 					}
+					
 				}
 			}
 		}

@@ -10,7 +10,10 @@ import java.util.Map;
 
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.MinecraftForge;
 import net.mrbt0907.weather2.Weather2;
+import net.mrbt0907.weather2.api.EZGuiAPI;
+import net.mrbt0907.weather2.api.event.EventEZGuiData;
 import net.mrbt0907.weather2.client.gui.GuiEZConfig;
 import net.mrbt0907.weather2.config.*;
 import CoroUtil.config.ConfigCoroUtil;
@@ -19,8 +22,9 @@ import modconfig.ConfigMod;
 
 public class WeatherUtilConfig
 {
-	public static final String version = "2.3";
-	public static final Map<Integer, Integer> DEFAULTS = new HashMap<Integer, Integer>();
+	public static final String version = "2.4";
+	public static final Map<String, Integer> CLIENT_DEFAULTS = new HashMap<String, Integer>();
+	public static final Map<String, Integer> SERVER_DEFAULTS = new HashMap<String, Integer>();
 	private static List<Integer> weatherList = new ArrayList<Integer>();
 	private static List<Integer> effectList = new ArrayList<Integer>();
 	
@@ -32,115 +36,120 @@ public class WeatherUtilConfig
 	
 	public static void processServerData(NBTTagCompound cache)
 	{
-		for(int i = GuiEZConfig.BA_CLOUD; i < GuiEZConfig.BD_MIN; i++)
-			if(cache.hasKey(GuiEZConfig.prefix + i))
+		for(String key : cache.getKeySet())
+		{
+			int value = cache.getInteger(key);
+			switch (key)
 			{
-				int value = cache.getInteger(GuiEZConfig.prefix + i);
-				switch (i)
-				{
-					case GuiEZConfig.BB_GLOBAL:
-						ConfigMisc.overcast_mode = value == 1;
-						break;
-					case GuiEZConfig.BB_RADAR:
-						ConfigMisc.debug_mode_radar = value == 1;
-						break;
-					case GuiEZConfig.BC_ENABLE_TORNADO:
-						ConfigStorm.disable_tornados = value == 0;
-						break;
-					case GuiEZConfig.BC_ENABLE_CYCLONE:
-						ConfigStorm.disable_cyclones = value == 0;
-						break;
-					case GuiEZConfig.BC_ENABLE_SANDSTORM:
-						ConfigSand.disable_sandstorms = value == 0;
-						break;
-					case GuiEZConfig.BC_FREQUENCY:
-						switch(value)
-						{
-							case 0:
-								ConfigStorm.max_weather_objects = 30;
-								ConfigStorm.storm_spawn_chance = 5;
-								ConfigStorm.storm_spawn_delay = 6000;
-								ConfigStorm.storms_aim_at_player = false;
-								ConfigStorm.storm_aim_accuracy_in_angle = 180;
-								ConfigSand.sandstorm_spawn_1_in_x = 300;
-								ConfigSand.sandstorm_spawn_delay = 8000;
-								break;
-							case 1:
-								ConfigStorm.max_weather_objects = 30;
-								ConfigStorm.storm_spawn_chance = 10;
-								ConfigStorm.storm_spawn_delay = 4000;
-								ConfigStorm.storms_aim_at_player = false;
-								ConfigStorm.storm_aim_accuracy_in_angle = 180;
-								ConfigSand.sandstorm_spawn_1_in_x = 200;
-								ConfigSand.sandstorm_spawn_delay = 8000;
-								break;
-							case 2:
-								ConfigStorm.max_weather_objects = 30;
-								ConfigStorm.storm_spawn_chance = 15;
-								ConfigStorm.storm_spawn_delay = 2500;
-								ConfigStorm.storms_aim_at_player = false;
-								ConfigStorm.storm_aim_accuracy_in_angle = 180;
-								ConfigSand.sandstorm_spawn_1_in_x = 100;
-								ConfigSand.sandstorm_spawn_delay = 4000;
-								break;
-							case 3:
-								ConfigStorm.max_weather_objects = 40;
-								ConfigStorm.storm_spawn_chance = 20;
-								ConfigStorm.storm_spawn_delay = 2000;
-								ConfigStorm.storms_aim_at_player = false;
-								ConfigStorm.storm_aim_accuracy_in_angle = 180;
-								ConfigSand.sandstorm_spawn_1_in_x = 60;
-								ConfigSand.sandstorm_spawn_delay = 2000;
-								break;
-							case 4:
-								ConfigStorm.max_weather_objects = 50;
-								ConfigStorm.storm_spawn_chance = 30;
-								ConfigStorm.storm_spawn_delay = 1250;
-								ConfigStorm.storms_aim_at_player = true;
-								ConfigStorm.storm_aim_accuracy_in_angle = 90;
-								ConfigSand.sandstorm_spawn_1_in_x = 40;
-								ConfigSand.sandstorm_spawn_delay = 1500;
-								break;
-							case 5:
-								ConfigStorm.max_weather_objects = 50;
-								ConfigStorm.storm_spawn_chance = 50;
-								ConfigStorm.storm_spawn_delay = 750;
-								ConfigStorm.storms_aim_at_player = true;
-								ConfigStorm.storm_aim_accuracy_in_angle = 45;
-								ConfigSand.sandstorm_spawn_1_in_x = 25;
-								ConfigSand.sandstorm_spawn_delay = 1200;
-								break;
-							case 6:
-								ConfigStorm.max_weather_objects = 100;
-								ConfigStorm.storm_spawn_chance = 100;
-								ConfigStorm.storm_spawn_delay = 200;
-								ConfigStorm.storms_aim_at_player = true;
-								ConfigStorm.storm_aim_accuracy_in_angle = 0;
-								ConfigSand.sandstorm_spawn_1_in_x = 3;
-								ConfigSand.sandstorm_spawn_delay = 1000;
-								break;
-						}
-						break;
-					case GuiEZConfig.BC_GRAB_BLOCK:
-						ConfigGrab.grab_blocks = value == 1;
-						break;
-					case GuiEZConfig.BC_GRAB_ITEM:
-						ConfigGrab.grab_items = value == 1;
-						break;
-					case GuiEZConfig.BC_GRAB_MOB:
-						ConfigGrab.grab_villagers = value == 1;
-						ConfigGrab.grab_animals = value == 1;
-						ConfigGrab.grab_mobs = value == 1;
-						break;
-					case GuiEZConfig.BC_GRAB_PLAYER:
-						ConfigGrab.grab_players = value == 1;
-						break;
-					case GuiEZConfig.BC_STORM_PER_PLAYER:
-						ConfigStorm.enable_spawn_per_player = value == 0;
-						ConfigSand.enable_global_rates_for_sandstorms = value == 0;
-						break;
-				}
+				case EZGuiAPI.BB_GLOBAL:
+					ConfigMisc.overcast_mode = value == 1;
+					break;
+				case EZGuiAPI.BB_RADAR:
+					ConfigMisc.debug_mode_radar = value == 1;
+					break;
+				case EZGuiAPI.BC_ENABLE_TORNADO:
+					ConfigStorm.disable_tornados = value == 0;
+					break;
+				case EZGuiAPI.BC_ENABLE_CYCLONE:
+					ConfigStorm.disable_cyclones = value == 0;
+					break;
+				case EZGuiAPI.BC_ENABLE_SANDSTORM:
+					ConfigSand.disable_sandstorms = value == 0;
+					break;
+				case EZGuiAPI.BC_FREQUENCY:
+					switch(value)
+					{
+						case 0:
+							ConfigStorm.max_weather_objects = 30;
+							ConfigStorm.storm_spawn_chance = 5;
+							ConfigStorm.storm_spawn_delay = 6000;
+							ConfigStorm.storms_aim_at_player = false;
+							ConfigStorm.storm_aim_accuracy_in_angle = 180;
+							ConfigSand.sandstorm_spawn_1_in_x = 300;
+							ConfigSand.sandstorm_spawn_delay = 8000;
+							break;
+						case 1:
+							ConfigStorm.max_weather_objects = 30;
+							ConfigStorm.storm_spawn_chance = 10;
+							ConfigStorm.storm_spawn_delay = 4000;
+							ConfigStorm.storms_aim_at_player = false;
+							ConfigStorm.storm_aim_accuracy_in_angle = 180;
+							ConfigSand.sandstorm_spawn_1_in_x = 200;
+							ConfigSand.sandstorm_spawn_delay = 8000;
+							break;
+						case 2:
+							ConfigStorm.max_weather_objects = 30;
+							ConfigStorm.storm_spawn_chance = 15;
+							ConfigStorm.storm_spawn_delay = 2500;
+							ConfigStorm.storms_aim_at_player = false;
+							ConfigStorm.storm_aim_accuracy_in_angle = 180;
+							ConfigSand.sandstorm_spawn_1_in_x = 100;
+							ConfigSand.sandstorm_spawn_delay = 4000;
+							break;
+						case 3:
+							ConfigStorm.max_weather_objects = 40;
+							ConfigStorm.storm_spawn_chance = 20;
+							ConfigStorm.storm_spawn_delay = 2000;
+							ConfigStorm.storms_aim_at_player = false;
+							ConfigStorm.storm_aim_accuracy_in_angle = 180;
+							ConfigSand.sandstorm_spawn_1_in_x = 60;
+							ConfigSand.sandstorm_spawn_delay = 2000;
+							break;
+						case 4:
+							ConfigStorm.max_weather_objects = 50;
+							ConfigStorm.storm_spawn_chance = 30;
+							ConfigStorm.storm_spawn_delay = 1250;
+							ConfigStorm.storms_aim_at_player = true;
+							ConfigStorm.storm_aim_accuracy_in_angle = 90;
+							ConfigSand.sandstorm_spawn_1_in_x = 40;
+							ConfigSand.sandstorm_spawn_delay = 1500;
+							break;
+						case 5:
+							ConfigStorm.max_weather_objects = 50;
+							ConfigStorm.storm_spawn_chance = 50;
+							ConfigStorm.storm_spawn_delay = 750;
+							ConfigStorm.storms_aim_at_player = true;
+							ConfigStorm.storm_aim_accuracy_in_angle = 45;
+							ConfigSand.sandstorm_spawn_1_in_x = 25;
+							ConfigSand.sandstorm_spawn_delay = 1200;
+							break;
+						case 6:
+							ConfigStorm.max_weather_objects = 100;
+							ConfigStorm.storm_spawn_chance = 100;
+							ConfigStorm.storm_spawn_delay = 200;
+							ConfigStorm.storms_aim_at_player = true;
+							ConfigStorm.storm_aim_accuracy_in_angle = 0;
+							ConfigSand.sandstorm_spawn_1_in_x = 3;
+							ConfigSand.sandstorm_spawn_delay = 1000;
+							break;
+					}
+					break;
+				case EZGuiAPI.BC_GRAB_BLOCK:
+					ConfigGrab.grab_blocks = value == 1;
+					break;
+				case EZGuiAPI.BC_GRAB_ITEM:
+					ConfigGrab.grab_items = value == 1;
+					break;
+				case EZGuiAPI.BC_GRAB_MOB:
+					ConfigGrab.grab_villagers = value == 1;
+					ConfigGrab.grab_animals = value == 1;
+					ConfigGrab.grab_mobs = value == 1;
+					break;
+				case EZGuiAPI.BC_GRAB_PLAYER:
+					ConfigGrab.grab_players = value == 1;
+					break;
+				case EZGuiAPI.BC_STORM_PER_PLAYER:
+					ConfigStorm.enable_spawn_per_player = value == 0;
+					ConfigSand.enable_global_rates_for_sandstorms = value == 0;
+					break;
 			}
+			
+			if (!key.equals("dimData"))
+			{
+				EventEZGuiData event = new EventEZGuiData(key, nbtClientData.getInteger(key), value);
+				MinecraftForge.EVENT_BUS.post(event);
+			}
+		}
 		
 		if (cache.hasKey("dimData"))
 		{
@@ -188,313 +197,319 @@ public class WeatherUtilConfig
 	
 	public static void processClientData(NBTTagCompound cache)
 	{
-		for(int i = GuiEZConfig.BA_CLOUD; i < GuiEZConfig.BD_MIN; i++)
-			if(cache.hasKey(GuiEZConfig.prefix + i))
+		for(String key : cache.getKeySet())
+		{
+			int value = cache.getInteger(key);
+			switch (key)
 			{
-				int value = cache.getInteger(GuiEZConfig.prefix + i);
-				switch (i)
+				case EZGuiAPI.BA_CLOUD:
+					switch(value)
+					{
+						case 0:
+							ConfigParticle.max_cloud_coverage_perc = 0.0D;
+							ConfigParticle.min_cloud_coverage_perc = 0.0D;
+							ConfigParticle.cloud_particle_delay = 666999;
+							break;
+						case 1:
+							ConfigParticle.max_cloud_coverage_perc = 15.0D;
+							ConfigParticle.min_cloud_coverage_perc = 0.0D;
+							ConfigParticle.cloud_particle_delay = 45;
+							break;
+						case 2:
+							ConfigParticle.max_cloud_coverage_perc = 25.0D;
+							ConfigParticle.min_cloud_coverage_perc = 10.0D;
+							ConfigParticle.cloud_particle_delay = 15;
+							break;
+						case 3:
+							ConfigParticle.max_cloud_coverage_perc = 50.0D;
+							ConfigParticle.min_cloud_coverage_perc = 20.0D;
+							ConfigParticle.cloud_particle_delay = 5;
+							break;
+						case 4:
+							ConfigParticle.max_cloud_coverage_perc = 80.0D;
+							ConfigParticle.min_cloud_coverage_perc = 250.0D;
+							ConfigParticle.cloud_particle_delay = 2;
+							break;
+						case 5:
+							ConfigParticle.max_cloud_coverage_perc = 100.0D;
+							ConfigParticle.min_cloud_coverage_perc = 50.0D;
+							ConfigParticle.cloud_particle_delay = 1;
+							break;
+						case 6:
+							ConfigParticle.max_cloud_coverage_perc = 200.0D;
+							ConfigParticle.min_cloud_coverage_perc = 50.0D;
+							ConfigParticle.cloud_particle_delay = 0;
+							break;
+					}
+					break;
+				case EZGuiAPI.BA_FUNNEL:
+					switch(value)
+					{
+						case 0:
+							ConfigParticle.sandstorm_debris_particle_rate = 0.0D;
+							ConfigParticle.sandstorm_dust_particle_rate = 0.0D;
+							ConfigParticle.funnel_particle_delay = 666999;
+							break;
+						case 1:
+							ConfigParticle.sandstorm_debris_particle_rate = 0.025D;
+							ConfigParticle.sandstorm_dust_particle_rate = 0.05D;
+							ConfigParticle.funnel_particle_delay = 45;
+							break;
+						case 2:
+							ConfigParticle.sandstorm_debris_particle_rate = 0.05D;
+							ConfigParticle.sandstorm_dust_particle_rate = 0.1D;
+							ConfigParticle.funnel_particle_delay = 15;
+							break;
+						case 3:
+							ConfigParticle.sandstorm_debris_particle_rate = 0.1D;
+							ConfigParticle.sandstorm_dust_particle_rate = 0.15D;
+							ConfigParticle.funnel_particle_delay = 5;
+							break;
+						case 4:
+							ConfigParticle.sandstorm_debris_particle_rate = 0.15D;
+							ConfigParticle.sandstorm_dust_particle_rate = 0.4D;
+							ConfigParticle.funnel_particle_delay = 2;
+							break;
+						case 5:
+							ConfigParticle.sandstorm_debris_particle_rate = 0.25D;
+							ConfigParticle.sandstorm_dust_particle_rate = 0.6D;
+							ConfigParticle.funnel_particle_delay = 1;
+								break;
+						case 6:
+							ConfigParticle.sandstorm_debris_particle_rate = 0.5D;
+							ConfigParticle.sandstorm_dust_particle_rate = 1.0D;
+							ConfigParticle.funnel_particle_delay = 0;
+							break;
+					}
+					break;
+				case EZGuiAPI.BA_PRECIPITATION:
+					ConfigParticle.particle_multiplier = 0.5D;
+					switch(value)
+					{
+						case 0:
+							ConfigParticle.enable_precipitation = true;
+							ConfigParticle.enable_precipitation_splash = false;
+							ConfigParticle.enable_heavy_precipitation = false;
+							ConfigParticle.use_vanilla_rain_and_thunder = false;
+							ConfigParticle.precipitation_particle_rate = 0.00000000000001D;
+							ConfigParticle.enable_distant_downfall = false;
+							ConfigParticle.distant_downfall_particle_rate = 0.0F;
+							break;
+						case 1:
+							ConfigParticle.enable_precipitation = false;
+							ConfigParticle.enable_precipitation_splash = false;
+							ConfigParticle.enable_heavy_precipitation = false;
+							ConfigParticle.use_vanilla_rain_and_thunder = true;
+							ConfigParticle.precipitation_particle_rate = 0.05D;
+							ConfigParticle.enable_distant_downfall = false;
+							ConfigParticle.distant_downfall_particle_rate = 0.4F;
+							break;
+						case 2:
+							ConfigParticle.enable_precipitation = true;
+							ConfigParticle.enable_precipitation_splash = false;
+							ConfigParticle.enable_heavy_precipitation = false;
+							ConfigParticle.use_vanilla_rain_and_thunder = false;
+							ConfigParticle.precipitation_particle_rate = 0.2D;
+							ConfigParticle.enable_distant_downfall = false;
+							ConfigParticle.distant_downfall_particle_rate = 0.2F;
+							break;
+						case 3:
+							ConfigParticle.enable_precipitation = true;
+							ConfigParticle.enable_precipitation_splash = true;
+							ConfigParticle.enable_heavy_precipitation = false;
+							ConfigParticle.use_vanilla_rain_and_thunder = false;
+							ConfigParticle.precipitation_particle_rate = 0.40D;
+							ConfigParticle.enable_distant_downfall = false;
+							ConfigParticle.distant_downfall_particle_rate = 0.2F;
+							break;
+						case 4:
+							ConfigParticle.enable_precipitation = true;
+							ConfigParticle.enable_precipitation_splash = true;
+							ConfigParticle.enable_heavy_precipitation = true;
+							ConfigParticle.use_vanilla_rain_and_thunder = false;
+							ConfigParticle.precipitation_particle_rate = 0.65D;
+							ConfigParticle.enable_distant_downfall = true;
+							ConfigParticle.distant_downfall_particle_rate = 0.4F;
+							break;
+						case 5:
+							ConfigParticle.enable_precipitation = true;
+							ConfigParticle.enable_precipitation_splash = true;
+							ConfigParticle.enable_heavy_precipitation = true;
+							ConfigParticle.use_vanilla_rain_and_thunder = false;
+							ConfigParticle.precipitation_particle_rate = 1.0D;
+							ConfigParticle.enable_distant_downfall = true;
+							ConfigParticle.distant_downfall_particle_rate = 0.6F;
+							break;
+						case 6:
+							ConfigParticle.enable_precipitation = true;
+							ConfigParticle.enable_precipitation_splash = true;
+							ConfigParticle.enable_heavy_precipitation = true;
+							ConfigParticle.use_vanilla_rain_and_thunder = false;
+							ConfigParticle.precipitation_particle_rate = 1.6D;
+							ConfigParticle.enable_distant_downfall = true;
+							ConfigParticle.distant_downfall_particle_rate = 1.0F;
+							break;
+						case 7:
+							ConfigParticle.enable_precipitation = true;
+							ConfigParticle.enable_precipitation_splash = true;
+							ConfigParticle.enable_heavy_precipitation = true;
+							ConfigParticle.use_vanilla_rain_and_thunder = false;
+							ConfigParticle.precipitation_particle_rate = 4.0D;
+							ConfigParticle.enable_distant_downfall = true;
+							ConfigParticle.distant_downfall_particle_rate = 2.0F;
+							break;
+					}
+					break;
+				case EZGuiAPI.BA_EFFECT:
+					ConfigParticle.particle_multiplier = 0.5D;
+					switch(value)
+					{
+						case 0:
+							ConfigParticle.enable_falling_leaves = false;
+							ConfigParticle.enable_fire_particle = false;
+							ConfigParticle.enable_waterfall_splash = false;
+							ConfigParticle.enable_wind_particle = false;
+							ConfigParticle.wind_particle_rate = 0.0D;
+							ConfigParticle.ambient_particle_rate = 0.0D;
+							break;
+						case 1:
+							ConfigParticle.enable_falling_leaves = true;
+							ConfigParticle.enable_fire_particle = false;
+							ConfigParticle.enable_waterfall_splash = false;
+							ConfigParticle.enable_wind_particle = false;
+							ConfigParticle.wind_particle_rate = 0.0D;
+							ConfigParticle.ambient_particle_rate = 0.1D;
+							break;
+						case 2:
+							ConfigParticle.enable_falling_leaves = true;
+							ConfigParticle.enable_fire_particle = true;
+							ConfigParticle.enable_waterfall_splash = false;
+							ConfigParticle.enable_wind_particle = false;
+							ConfigParticle.wind_particle_rate = 0.0D;
+							ConfigParticle.ambient_particle_rate = 0.2D;
+							break;
+						case 3:
+							ConfigParticle.enable_falling_leaves = true;
+							ConfigParticle.enable_fire_particle = true;
+							ConfigParticle.enable_waterfall_splash = true;
+							ConfigParticle.enable_wind_particle = true;
+							ConfigParticle.wind_particle_rate = 0.1D;
+							ConfigParticle.ambient_particle_rate = 0.35D;
+							break;
+						case 4:
+							ConfigParticle.enable_falling_leaves = true;
+							ConfigParticle.enable_fire_particle = true;
+							ConfigParticle.enable_waterfall_splash = true;
+							ConfigParticle.enable_wind_particle = true;
+							ConfigParticle.wind_particle_rate = 0.2D;
+							ConfigParticle.ambient_particle_rate = 0.6D;
+							break;
+						case 5:
+							ConfigParticle.enable_falling_leaves = true;
+							ConfigParticle.enable_fire_particle = true;
+							ConfigParticle.enable_waterfall_splash = true;
+							ConfigParticle.enable_wind_particle = true;
+							ConfigParticle.wind_particle_rate = 0.25D;
+							ConfigParticle.ambient_particle_rate = 1.0D;
+							break;
+						case 6:
+							ConfigParticle.enable_falling_leaves = true;
+							ConfigParticle.enable_fire_particle = true;
+							ConfigParticle.enable_waterfall_splash = true;
+							ConfigParticle.enable_wind_particle = true;
+							ConfigParticle.wind_particle_rate = 0.3D;
+							ConfigParticle.ambient_particle_rate = 2.0D;
+							break;
+						case 7:
+							ConfigParticle.enable_falling_leaves = true;
+							ConfigParticle.enable_fire_particle = true;
+							ConfigParticle.enable_waterfall_splash = true;
+							ConfigParticle.enable_wind_particle = true;
+							ConfigParticle.wind_particle_rate = 0.5D;
+							ConfigParticle.ambient_particle_rate = 4.0D;
+							break;
+					}
+					break;
+				case EZGuiAPI.BA_EF:
+					ConfigStorm.enable_ef_scale = value == 1;
+					break;
+				case EZGuiAPI.BA_SHADER:
+					switch(value)
+					{
+						case 0:
+							ConfigCoroUtil.particleShaders = true;
+							ConfigCoroUtil.useEntityRenderHookForShaders = true;
+							ConfigMisc.proxy_render_override = true;
+							break;
+						case 1:
+							ConfigCoroUtil.particleShaders = false;
+							ConfigCoroUtil.useEntityRenderHookForShaders = false;
+							ConfigMisc.proxy_render_override = true;
+							break;
+						case 2:
+							ConfigCoroUtil.particleShaders = false;
+							ConfigCoroUtil.useEntityRenderHookForShaders = false;
+							ConfigMisc.proxy_render_override = true;
+							break;
+						case 3:
+							ConfigCoroUtil.particleShaders = true;
+							ConfigCoroUtil.useEntityRenderHookForShaders = true;
+							ConfigMisc.proxy_render_override = true;
+							break;
+						case 4:
+							ConfigCoroUtil.particleShaders = true;
+							ConfigCoroUtil.useEntityRenderHookForShaders = false;
+							ConfigMisc.proxy_render_override = false;
+							break;
+						case 5:
+							ConfigCoroUtil.particleShaders = true;
+							ConfigCoroUtil.useEntityRenderHookForShaders = false;
+							ConfigMisc.proxy_render_override = false;
+							break;
+						case 6:
+							ConfigCoroUtil.particleShaders = true;
+							ConfigCoroUtil.useEntityRenderHookForShaders = false;
+							ConfigMisc.proxy_render_override = true;
+							break;
+						case 7:
+							ConfigCoroUtil.particleShaders = true;
+							ConfigCoroUtil.useEntityRenderHookForShaders = false;
+							ConfigMisc.proxy_render_override = false;
+							break;
+						case 8:
+							ConfigCoroUtil.particleShaders = true;
+							ConfigCoroUtil.useEntityRenderHookForShaders = false;
+							ConfigMisc.proxy_render_override = false;
+							break;
+						case 9:
+							ConfigCoroUtil.particleShaders = true;
+							ConfigCoroUtil.useEntityRenderHookForShaders = false;
+							ConfigMisc.proxy_render_override = false;
+							break;
+						case 10:
+							ConfigCoroUtil.particleShaders = true;
+							ConfigCoroUtil.useEntityRenderHookForShaders = false;
+							ConfigMisc.proxy_render_override = false;
+							break;
+						case 11:
+							ConfigCoroUtil.particleShaders = false;
+							ConfigCoroUtil.useEntityRenderHookForShaders = false;
+							ConfigMisc.proxy_render_override = false;
+							break;
+					}
+					break;
+				case EZGuiAPI.BA_FOLIAGE:
+					ConfigCoroUtil.foliageShaders = value == 1;
+					break;
+				}
+			
+				if (!key.equals("dimData"))
 				{
-					case GuiEZConfig.BA_CLOUD:
-						switch(value)
-						{
-							case 0:
-								ConfigParticle.max_cloud_coverage_perc = 0.0D;
-								ConfigParticle.min_cloud_coverage_perc = 0.0D;
-								ConfigParticle.cloud_particle_delay = 666999;
-								break;
-							case 1:
-								ConfigParticle.max_cloud_coverage_perc = 15.0D;
-								ConfigParticle.min_cloud_coverage_perc = 0.0D;
-								ConfigParticle.cloud_particle_delay = 45;
-								break;
-							case 2:
-								ConfigParticle.max_cloud_coverage_perc = 25.0D;
-								ConfigParticle.min_cloud_coverage_perc = 10.0D;
-								ConfigParticle.cloud_particle_delay = 15;
-								break;
-							case 3:
-								ConfigParticle.max_cloud_coverage_perc = 50.0D;
-								ConfigParticle.min_cloud_coverage_perc = 20.0D;
-								ConfigParticle.cloud_particle_delay = 5;
-								break;
-							case 4:
-								ConfigParticle.max_cloud_coverage_perc = 80.0D;
-								ConfigParticle.min_cloud_coverage_perc = 250.0D;
-								ConfigParticle.cloud_particle_delay = 2;
-								break;
-							case 5:
-								ConfigParticle.max_cloud_coverage_perc = 100.0D;
-								ConfigParticle.min_cloud_coverage_perc = 50.0D;
-								ConfigParticle.cloud_particle_delay = 1;
-								break;
-							case 6:
-								ConfigParticle.max_cloud_coverage_perc = 200.0D;
-								ConfigParticle.min_cloud_coverage_perc = 50.0D;
-								ConfigParticle.cloud_particle_delay = 0;
-								break;
-						}
-						break;
-					case GuiEZConfig.BA_FUNNEL:
-						switch(value)
-						{
-							case 0:
-								ConfigParticle.sandstorm_debris_particle_rate = 0.0D;
-								ConfigParticle.sandstorm_dust_particle_rate = 0.0D;
-								ConfigParticle.funnel_particle_delay = 666999;
-								break;
-							case 1:
-								ConfigParticle.sandstorm_debris_particle_rate = 0.025D;
-								ConfigParticle.sandstorm_dust_particle_rate = 0.05D;
-								ConfigParticle.funnel_particle_delay = 45;
-								break;
-							case 2:
-								ConfigParticle.sandstorm_debris_particle_rate = 0.05D;
-								ConfigParticle.sandstorm_dust_particle_rate = 0.1D;
-								ConfigParticle.funnel_particle_delay = 15;
-								break;
-							case 3:
-								ConfigParticle.sandstorm_debris_particle_rate = 0.1D;
-								ConfigParticle.sandstorm_dust_particle_rate = 0.15D;
-								ConfigParticle.funnel_particle_delay = 5;
-								break;
-							case 4:
-								ConfigParticle.sandstorm_debris_particle_rate = 0.15D;
-								ConfigParticle.sandstorm_dust_particle_rate = 0.4D;
-								ConfigParticle.funnel_particle_delay = 2;
-								break;
-							case 5:
-								ConfigParticle.sandstorm_debris_particle_rate = 0.25D;
-								ConfigParticle.sandstorm_dust_particle_rate = 0.6D;
-								ConfigParticle.funnel_particle_delay = 1;
-								break;
-							case 6:
-								ConfigParticle.sandstorm_debris_particle_rate = 0.5D;
-								ConfigParticle.sandstorm_dust_particle_rate = 1.0D;
-								ConfigParticle.funnel_particle_delay = 0;
-								break;
-						}
-						break;
-					case GuiEZConfig.BA_PRECIPITATION:
-						ConfigParticle.particle_multiplier = 0.5D;
-						switch(value)
-						{
-							case 0:
-								ConfigParticle.enable_precipitation = true;
-								ConfigParticle.enable_precipitation_splash = false;
-								ConfigParticle.enable_heavy_precipitation = false;
-								ConfigParticle.use_vanilla_rain_and_thunder = false;
-								ConfigParticle.precipitation_particle_rate = 0.00000000000001D;
-								ConfigParticle.enable_distant_downfall = false;
-								ConfigParticle.distant_downfall_particle_rate = 0.0F;
-								break;
-							case 1:
-								ConfigParticle.enable_precipitation = false;
-								ConfigParticle.enable_precipitation_splash = false;
-								ConfigParticle.enable_heavy_precipitation = false;
-								ConfigParticle.use_vanilla_rain_and_thunder = true;
-								ConfigParticle.precipitation_particle_rate = 0.05D;
-								ConfigParticle.enable_distant_downfall = false;
-								ConfigParticle.distant_downfall_particle_rate = 0.4F;
-								break;
-							case 2:
-								ConfigParticle.enable_precipitation = true;
-								ConfigParticle.enable_precipitation_splash = false;
-								ConfigParticle.enable_heavy_precipitation = false;
-								ConfigParticle.use_vanilla_rain_and_thunder = false;
-								ConfigParticle.precipitation_particle_rate = 0.2D;
-								ConfigParticle.enable_distant_downfall = false;
-								ConfigParticle.distant_downfall_particle_rate = 0.2F;
-								break;
-							case 3:
-								ConfigParticle.enable_precipitation = true;
-								ConfigParticle.enable_precipitation_splash = true;
-								ConfigParticle.enable_heavy_precipitation = false;
-								ConfigParticle.use_vanilla_rain_and_thunder = false;
-								ConfigParticle.precipitation_particle_rate = 0.40D;
-								ConfigParticle.enable_distant_downfall = false;
-								ConfigParticle.distant_downfall_particle_rate = 0.2F;
-								break;
-							case 4:
-								ConfigParticle.enable_precipitation = true;
-								ConfigParticle.enable_precipitation_splash = true;
-								ConfigParticle.enable_heavy_precipitation = true;
-								ConfigParticle.use_vanilla_rain_and_thunder = false;
-								ConfigParticle.precipitation_particle_rate = 0.65D;
-								ConfigParticle.enable_distant_downfall = true;
-								ConfigParticle.distant_downfall_particle_rate = 0.4F;
-								break;
-							case 5:
-								ConfigParticle.enable_precipitation = true;
-								ConfigParticle.enable_precipitation_splash = true;
-								ConfigParticle.enable_heavy_precipitation = true;
-								ConfigParticle.use_vanilla_rain_and_thunder = false;
-								ConfigParticle.precipitation_particle_rate = 1.0D;
-								ConfigParticle.enable_distant_downfall = true;
-								ConfigParticle.distant_downfall_particle_rate = 0.6F;
-								break;
-							case 6:
-								ConfigParticle.enable_precipitation = true;
-								ConfigParticle.enable_precipitation_splash = true;
-								ConfigParticle.enable_heavy_precipitation = true;
-								ConfigParticle.use_vanilla_rain_and_thunder = false;
-								ConfigParticle.precipitation_particle_rate = 1.6D;
-								ConfigParticle.enable_distant_downfall = true;
-								ConfigParticle.distant_downfall_particle_rate = 1.0F;
-								break;
-							case 7:
-								ConfigParticle.enable_precipitation = true;
-								ConfigParticle.enable_precipitation_splash = true;
-								ConfigParticle.enable_heavy_precipitation = true;
-								ConfigParticle.use_vanilla_rain_and_thunder = false;
-								ConfigParticle.precipitation_particle_rate = 4.0D;
-								ConfigParticle.enable_distant_downfall = true;
-								ConfigParticle.distant_downfall_particle_rate = 2.0F;
-								break;
-						}
-						break;
-					case GuiEZConfig.BA_EFFECT:
-						ConfigParticle.particle_multiplier = 0.5D;
-						switch(value)
-						{
-							case 0:
-								ConfigParticle.enable_falling_leaves = false;
-								ConfigParticle.enable_fire_particle = false;
-								ConfigParticle.enable_waterfall_splash = false;
-								ConfigParticle.enable_wind_particle = false;
-								ConfigParticle.wind_particle_rate = 0.0D;
-								ConfigParticle.ambient_particle_rate = 0.0D;
-								break;
-							case 1:
-								ConfigParticle.enable_falling_leaves = true;
-								ConfigParticle.enable_fire_particle = false;
-								ConfigParticle.enable_waterfall_splash = false;
-								ConfigParticle.enable_wind_particle = false;
-								ConfigParticle.wind_particle_rate = 0.0D;
-								ConfigParticle.ambient_particle_rate = 0.1D;
-								break;
-							case 2:
-								ConfigParticle.enable_falling_leaves = true;
-								ConfigParticle.enable_fire_particle = true;
-								ConfigParticle.enable_waterfall_splash = false;
-								ConfigParticle.enable_wind_particle = false;
-								ConfigParticle.wind_particle_rate = 0.0D;
-								ConfigParticle.ambient_particle_rate = 0.2D;
-								break;
-							case 3:
-								ConfigParticle.enable_falling_leaves = true;
-								ConfigParticle.enable_fire_particle = true;
-								ConfigParticle.enable_waterfall_splash = true;
-								ConfigParticle.enable_wind_particle = true;
-								ConfigParticle.wind_particle_rate = 0.1D;
-								ConfigParticle.ambient_particle_rate = 0.35D;
-								break;
-							case 4:
-								ConfigParticle.enable_falling_leaves = true;
-								ConfigParticle.enable_fire_particle = true;
-								ConfigParticle.enable_waterfall_splash = true;
-								ConfigParticle.enable_wind_particle = true;
-								ConfigParticle.wind_particle_rate = 0.2D;
-								ConfigParticle.ambient_particle_rate = 0.6D;
-								break;
-							case 5:
-								ConfigParticle.enable_falling_leaves = true;
-								ConfigParticle.enable_fire_particle = true;
-								ConfigParticle.enable_waterfall_splash = true;
-								ConfigParticle.enable_wind_particle = true;
-								ConfigParticle.wind_particle_rate = 0.25D;
-								ConfigParticle.ambient_particle_rate = 1.0D;
-								break;
-							case 6:
-								ConfigParticle.enable_falling_leaves = true;
-								ConfigParticle.enable_fire_particle = true;
-								ConfigParticle.enable_waterfall_splash = true;
-								ConfigParticle.enable_wind_particle = true;
-								ConfigParticle.wind_particle_rate = 0.3D;
-								ConfigParticle.ambient_particle_rate = 2.0D;
-								break;
-							case 7:
-								ConfigParticle.enable_falling_leaves = true;
-								ConfigParticle.enable_fire_particle = true;
-								ConfigParticle.enable_waterfall_splash = true;
-								ConfigParticle.enable_wind_particle = true;
-								ConfigParticle.wind_particle_rate = 0.5D;
-								ConfigParticle.ambient_particle_rate = 4.0D;
-								break;
-						}
-						break;
-					case GuiEZConfig.BA_EF:
-						ConfigStorm.enable_ef_scale = value == 1;
-						break;
-					case GuiEZConfig.BA_SHADER:
-						switch(value)
-						{
-							case 0:
-								ConfigCoroUtil.particleShaders = true;
-								ConfigCoroUtil.useEntityRenderHookForShaders = true;
-								ConfigMisc.proxy_render_override = true;
-								break;
-							case 1:
-								ConfigCoroUtil.particleShaders = false;
-								ConfigCoroUtil.useEntityRenderHookForShaders = false;
-								ConfigMisc.proxy_render_override = true;
-								break;
-							case 2:
-								ConfigCoroUtil.particleShaders = false;
-								ConfigCoroUtil.useEntityRenderHookForShaders = false;
-								ConfigMisc.proxy_render_override = true;
-								break;
-							case 3:
-								ConfigCoroUtil.particleShaders = true;
-								ConfigCoroUtil.useEntityRenderHookForShaders = true;
-								ConfigMisc.proxy_render_override = true;
-								break;
-							case 4:
-								ConfigCoroUtil.particleShaders = true;
-								ConfigCoroUtil.useEntityRenderHookForShaders = false;
-								ConfigMisc.proxy_render_override = false;
-								break;
-							case 5:
-								ConfigCoroUtil.particleShaders = true;
-								ConfigCoroUtil.useEntityRenderHookForShaders = false;
-								ConfigMisc.proxy_render_override = false;
-								break;
-							case 6:
-								ConfigCoroUtil.particleShaders = true;
-								ConfigCoroUtil.useEntityRenderHookForShaders = false;
-								ConfigMisc.proxy_render_override = true;
-								break;
-							case 7:
-								ConfigCoroUtil.particleShaders = true;
-								ConfigCoroUtil.useEntityRenderHookForShaders = false;
-								ConfigMisc.proxy_render_override = false;
-								break;
-							case 8:
-								ConfigCoroUtil.particleShaders = true;
-								ConfigCoroUtil.useEntityRenderHookForShaders = false;
-								ConfigMisc.proxy_render_override = false;
-								break;
-							case 9:
-								ConfigCoroUtil.particleShaders = true;
-								ConfigCoroUtil.useEntityRenderHookForShaders = false;
-								ConfigMisc.proxy_render_override = false;
-								break;
-							case 10:
-								ConfigCoroUtil.particleShaders = true;
-								ConfigCoroUtil.useEntityRenderHookForShaders = false;
-								ConfigMisc.proxy_render_override = false;
-								break;
-							case 11:
-								ConfigCoroUtil.particleShaders = false;
-								ConfigCoroUtil.useEntityRenderHookForShaders = false;
-								ConfigMisc.proxy_render_override = false;
-								break;
-						}
-						break;
-					case GuiEZConfig.BA_FOLIAGE:
-						ConfigCoroUtil.foliageShaders = value == 1;
-						break;
+					EventEZGuiData event = new EventEZGuiData(key, nbtClientData.getInteger(key), value);
+					MinecraftForge.EVENT_BUS.post(event);
 				}
 			}
+		
 		nbtSaveDataClient();
 		ConfigMod.forceSaveAllFilesFromRuntimeSettings();
 	}
@@ -503,18 +518,20 @@ public class WeatherUtilConfig
 	public static void nbtReceiveServer(NBTTagCompound parNBT)
 	{
 		NBTTagCompound cache = new NBTTagCompound();
-		for (int i = 0; i < GuiEZConfig.BD_MIN; i++)
-			if (parNBT.hasKey(GuiEZConfig.prefix + i))
+		String newKey;
+		for (String key : parNBT.getKeySet())
+			if (key.matches("^" + GuiEZConfig.PREFIX + ".+"))
 			{
-				cache.setInteger(GuiEZConfig.prefix + i, parNBT.getInteger(GuiEZConfig.prefix + i));
-				nbtServerData.setInteger(GuiEZConfig.prefix + i, parNBT.getInteger(GuiEZConfig.prefix + i));
+				newKey = key.replaceFirst("^" + GuiEZConfig.PREFIX, "");
+				cache.setInteger(newKey, parNBT.getInteger(key));
+				nbtServerData.setInteger(newKey, parNBT.getInteger(key));
 			}
 		
 		//also add dimension feature config, its iterated over
 		cache.setTag("dimData", parNBT.getCompoundTag("dimData"));
 		nbtServerData.setTag("dimData", parNBT.getCompoundTag("dimData"));
 		
-		Weather2.debug("Received data from the client for server data: " + parNBT);
+		Weather2.debug("Received server data from a client: " + parNBT);
 		processServerData(cache);
 	}
 	
@@ -523,12 +540,16 @@ public class WeatherUtilConfig
 	{
 		if (parNBT.hasKey("server"))
 		{
+			String newKey;
 			if (parNBT.getInteger("server") == 1)
 			{
 				nbtClientData.setBoolean("op", parNBT.getBoolean("op"));
-				for (int i = 0; i < GuiEZConfig.BD_MIN; i++)
-					if (parNBT.hasKey(GuiEZConfig.prefix + i))
-					 nbtServerData.setInteger(GuiEZConfig.prefix + i, parNBT.getInteger(GuiEZConfig.prefix + i));
+				for (String key : parNBT.getKeySet())
+					if (key.matches("^" + GuiEZConfig.PREFIX + ".+"))
+					{
+						newKey = key.replaceFirst("^" + GuiEZConfig.PREFIX, "");
+						nbtServerData.setInteger(newKey, parNBT.getInteger(key));
+					}
 				NBTTagCompound dimensions = parNBT.getCompoundTag("dimData");
 				if (dimensions != null)
 				{
@@ -543,19 +564,20 @@ public class WeatherUtilConfig
 						else if (name.contains("dimc_"))
 							effectList.add(Integer.parseInt(name.replaceFirst("dimc_", "")));;
 				}
-				Weather2.debug("Received data from the server: " + parNBT);
+				Weather2.debug("Received server data from the server: " + parNBT);
 			}
 			else
 			{
 				NBTTagCompound cache = new NBTTagCompound();
-				for (int i = 0; i < GuiEZConfig.BD_MIN; i++)
-					if (parNBT.hasKey(GuiEZConfig.prefix + i))
+				for (String key : parNBT.getKeySet())
+					if (key.matches("^" + GuiEZConfig.PREFIX + ".+"))
 					{
-						cache.setInteger(GuiEZConfig.prefix + i, parNBT.getInteger(GuiEZConfig.prefix + i));
-						nbtClientData.setInteger(GuiEZConfig.prefix + i, parNBT.getInteger(GuiEZConfig.prefix + i));
+						newKey = key.replaceFirst("^" + GuiEZConfig.PREFIX, "");
+						cache.setInteger(newKey, parNBT.getInteger(key));
+						nbtClientData.setInteger(newKey, parNBT.getInteger(key));
 					}
 				
-				Weather2.debug("Received data from the client for client data: " + parNBT);
+				Weather2.debug("Received client data from self: " + parNBT);
 				processClientData(cache);
 			}
 		}
@@ -578,43 +600,45 @@ public class WeatherUtilConfig
 	
 	public static void loadNBT()
 	{
+		EZGuiAPI.refreshOptions();
 		nbtClientData = nbtReadNBTFromDisk(true);
 		nbtServerData = nbtReadNBTFromDisk(false);
 		checkVersion();
 		
-		DEFAULTS.put(GuiEZConfig.BA_CLOUD, 3);
-		DEFAULTS.put(GuiEZConfig.BA_FUNNEL, 3);
-		DEFAULTS.put(GuiEZConfig.BA_PRECIPITATION, 3);
-		DEFAULTS.put(GuiEZConfig.BA_EFFECT, 3);
-		DEFAULTS.put(GuiEZConfig.BA_EF, 0);
-		DEFAULTS.put(GuiEZConfig.BA_SHADER, 0);
-		DEFAULTS.put(GuiEZConfig.BA_FOLIAGE, 0);
-		DEFAULTS.put(GuiEZConfig.BB_GLOBAL, 0);
-		DEFAULTS.put(GuiEZConfig.BB_RADAR, 0);
-		DEFAULTS.put(GuiEZConfig.BC_ENABLE_TORNADO, 1);
-		DEFAULTS.put(GuiEZConfig.BC_ENABLE_CYCLONE, 1);
-		DEFAULTS.put(GuiEZConfig.BC_ENABLE_SANDSTORM, 1);
-		DEFAULTS.put(GuiEZConfig.BC_FREQUENCY, 3);
-		DEFAULTS.put(GuiEZConfig.BC_GRAB_BLOCK, 1);
-		DEFAULTS.put(GuiEZConfig.BC_GRAB_ITEM, 0);
-		DEFAULTS.put(GuiEZConfig.BC_GRAB_MOB, 1);
-		DEFAULTS.put(GuiEZConfig.BC_GRAB_PLAYER, 1);
-		DEFAULTS.put(GuiEZConfig.BC_STORM_PER_PLAYER, 0);
+		CLIENT_DEFAULTS.put(EZGuiAPI.BA_CLOUD, 3);
+		CLIENT_DEFAULTS.put(EZGuiAPI.BA_FUNNEL, 3);
+		CLIENT_DEFAULTS.put(EZGuiAPI.BA_PRECIPITATION, 3);
+		CLIENT_DEFAULTS.put(EZGuiAPI.BA_EFFECT, 3);
+		CLIENT_DEFAULTS.put(EZGuiAPI.BA_EF, 0);
+		CLIENT_DEFAULTS.put(EZGuiAPI.BA_SHADER, 0);
+		CLIENT_DEFAULTS.put(EZGuiAPI.BA_FOLIAGE, 0);
+		SERVER_DEFAULTS.put(EZGuiAPI.BB_GLOBAL, 0);
+		SERVER_DEFAULTS.put(EZGuiAPI.BB_RADAR, 0);
+		SERVER_DEFAULTS.put(EZGuiAPI.BC_ENABLE_TORNADO, 1);
+		SERVER_DEFAULTS.put(EZGuiAPI.BC_ENABLE_CYCLONE, 1);
+		SERVER_DEFAULTS.put(EZGuiAPI.BC_ENABLE_SANDSTORM, 1);
+		SERVER_DEFAULTS.put(EZGuiAPI.BC_FREQUENCY, 3);
+		SERVER_DEFAULTS.put(EZGuiAPI.BC_GRAB_BLOCK, 1);
+		SERVER_DEFAULTS.put(EZGuiAPI.BC_GRAB_ITEM, 0);
+		SERVER_DEFAULTS.put(EZGuiAPI.BC_GRAB_MOB, 1);
+		SERVER_DEFAULTS.put(EZGuiAPI.BC_GRAB_PLAYER, 1);
+		SERVER_DEFAULTS.put(EZGuiAPI.BC_STORM_PER_PLAYER, 0);
+		EZGuiAPI.getOptions();
 		
-		for (int i = GuiEZConfig.BA_CLOUD; i < GuiEZConfig.BB_GLOBAL; i++)
-			if (!nbtClientData.hasKey(GuiEZConfig.prefix + i))
-				nbtClientData.setInteger(GuiEZConfig.prefix + i, DEFAULTS.get(i));
-		for (int i = GuiEZConfig.BB_GLOBAL; i < GuiEZConfig.BD_MIN; i++)
-			if (!nbtServerData.hasKey(GuiEZConfig.prefix + i))
-				nbtServerData.setInteger(GuiEZConfig.prefix + i, DEFAULTS.get(i));
+		for (String key : CLIENT_DEFAULTS.keySet())
+			if (!nbtClientData.hasKey(key))
+				nbtClientData.setInteger(key, CLIENT_DEFAULTS.get(key));
+		for (String key : SERVER_DEFAULTS.keySet())
+			if (!nbtServerData.hasKey(key))
+				nbtServerData.setInteger(key, SERVER_DEFAULTS.get(key));
 	}
 	
-	public static int getConfigValue(int buttonID)
+	public static int getConfigValue(String buttonID)
 	{
-		if (nbtClientData.hasKey(GuiEZConfig.prefix + buttonID))
-			return nbtClientData.getInteger(GuiEZConfig.prefix + buttonID);
-		else if (nbtServerData.hasKey(GuiEZConfig.prefix + buttonID))
-			return nbtServerData.getInteger(GuiEZConfig.prefix + buttonID);
+		if (nbtClientData.hasKey(buttonID))
+			return nbtClientData.getInteger(buttonID);
+		else if (nbtServerData.hasKey(buttonID))
+			return nbtServerData.getInteger(buttonID);
 		else
 			return 0;
 	}
@@ -649,40 +673,46 @@ public class WeatherUtilConfig
 		}
 	}
 	
-	public static void nbtWriteNBTToDisk(NBTTagCompound parData, boolean saveForClient) {
+	public static void nbtWriteNBTToDisk(NBTTagCompound parData, boolean saveForClient)
+	{
 		String fileURL = null;
-		if (saveForClient) {
-			fileURL = CoroUtilFile.getMinecraftSaveFolderPath() + File.separator + "Weather2" + File.separator + "EZGUIConfigClientData.dat";
-		} else {
-			fileURL = CoroUtilFile.getMinecraftSaveFolderPath() + File.separator + "Weather2" + File.separator + "EZGUIConfigServerData.dat";
-		}
 		
-		try {
+		if (saveForClient)
+			fileURL = CoroUtilFile.getMinecraftSaveFolderPath() + File.separator + Weather2.MODID + File.separator + "EZGUIConfigClientData.dat";
+		else
+			fileURL = CoroUtilFile.getMinecraftSaveFolderPath() + File.separator + Weather2.MODID + File.separator + "EZGUIConfigServerData.dat";
+		
+		try
+		{
 			FileOutputStream fos = new FileOutputStream(fileURL);
 	    	CompressedStreamTools.writeCompressed(parData, fos);
 	    	fos.close();
-		} catch (Exception ex) {
+		}
+		catch (Exception ex)
+		{
 			ex.printStackTrace();
-			Weather2.debug("Error writing Weather2 EZ GUI data");
+			Weather2.debug("Error writing Weather2 EZ GUI data, unable to save data");
 		}
 	}
 	
-	public static NBTTagCompound nbtReadNBTFromDisk(boolean loadForClient) {
+	public static NBTTagCompound nbtReadNBTFromDisk(boolean loadForClient)
+	{
 		NBTTagCompound data = new NBTTagCompound();
 		String fileURL = null;
-		if (loadForClient) {
-			fileURL = CoroUtilFile.getMinecraftSaveFolderPath() + File.separator + "Weather2" + File.separator + "EZGUIConfigClientData.dat";
-		} else {
-			fileURL = CoroUtilFile.getMinecraftSaveFolderPath() + File.separator + "Weather2" + File.separator + "EZGUIConfigServerData.dat";
-		}
+		if (loadForClient)
+			fileURL = CoroUtilFile.getMinecraftSaveFolderPath() + File.separator + Weather2.MODID + File.separator + "EZGUIConfigClientData.dat";
+		else
+			fileURL = CoroUtilFile.getMinecraftSaveFolderPath() + File.separator + Weather2.MODID + File.separator + "EZGUIConfigServerData.dat";
 		
-		try {
-			if ((new File(fileURL)).exists()) {
+		try
+		{
+			if ((new File(fileURL)).exists())
 				data = CompressedStreamTools.readCompressed(new FileInputStream(fileURL));
-			}
-		} catch (Exception ex) {
+		}
+		catch (Exception ex)
+		{
 			ex.printStackTrace();
-			Weather2.debug("Error reading Weather2 EZ GUI data");
+			Weather2.debug("Error reading Weather2 EZ GUI data, resetting data to default...");
 		}
 		return data;
 	}

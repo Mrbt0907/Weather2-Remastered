@@ -70,23 +70,24 @@ public class LegacyStormRenderer extends AbstractStormRenderer
 					Block blockIDDown = ChunkUtils.getBlockState(manager.getWorld(), (int)tryX2, (int)storm.pos_funnel_base.posY - 2, (int)tryZ2).getBlock();
 					int colorID = 0;
 			
-					if (storm.isFirenado)
-						colorID = 7;
-					else if (storm.isSpout)
-						colorID = 3;
-					else
-					{
-						if (blockID == Blocks.FLOWING_WATER || blockID == Blocks.WATER || blockIDUp == Blocks.FLOWING_WATER || blockIDUp == Blocks.WATER || blockIDDown == Blocks.FLOWING_WATER || blockIDDown == Blocks.WATER)
+					if (ConfigParticle.enable_tornado_block_colors)
+						if (storm.isFirenado)
+							colorID = 7;
+						else if (storm.isSpout)
 							colorID = 3;
-						else if (blockID == Blocks.SAND || blockID == Blocks.SANDSTONE)
-							colorID = 2;
-						else if (blockID == Blocks.DIRT)
-							colorID = 1;
-						else if (blockID == Blocks.SNOW)
-							colorID = 4;
-						else if (blockID == Blocks.LEAVES || blockID == Blocks.LEAVES2 || blockID == Blocks.GRASS)
-							colorID = 6;
-					}	
+						else
+						{
+							if (blockID == Blocks.FLOWING_WATER || blockID == Blocks.WATER || blockIDUp == Blocks.FLOWING_WATER || blockIDUp == Blocks.WATER || blockIDDown == Blocks.FLOWING_WATER || blockIDDown == Blocks.WATER)
+								colorID = 3;
+							else if (blockID == Blocks.SAND || blockID == Blocks.SANDSTONE)
+								colorID = 2;
+							else if (blockID == Blocks.DIRT)
+								colorID = 1;
+							else if (blockID == Blocks.SNOW)
+								colorID = 4;
+							else if (blockID == Blocks.LEAVES || blockID == Blocks.LEAVES2 || blockID == Blocks.GRASS)
+								colorID = 6;
+						}	
 		
 					float r = -1.0F, g = -1.0F, b = -1.0F;
 					Color color = null;

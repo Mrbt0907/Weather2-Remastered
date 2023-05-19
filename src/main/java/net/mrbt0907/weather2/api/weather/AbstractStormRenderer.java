@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WeatherAPI;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.client.entity.particle.ExtendedEntityRotFX;
@@ -43,6 +44,8 @@ public abstract class AbstractStormRenderer
 	
 	public final void tick()
 	{
+		int attempts = 0;
+		
 		if (particleBehaviorFog == null)
 			particleBehaviorFog = new ParticleBehaviorFog(storm.pos.toVec3Coro());
 		else if (!Minecraft.getMinecraft().isSingleplayer() || !(Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu))
@@ -64,7 +67,30 @@ public abstract class AbstractStormRenderer
 		if (storm != null)
 		{
 			delta = System.nanoTime();
-			onTick(ClientTickHandler.weatherManager);
+			while (attempts > -1)
+				try
+				{
+					onTick(ClientTickHandler.weatherManager);
+					attempts = -1;
+				}
+				catch(Exception e)
+				{
+					attempts++;
+					
+					if (attempts < 3)
+					{
+						Weather2.warn("Particle renderer's onTick() has encountered an error. Retrying...");
+						e.printStackTrace();
+					}
+					else
+					{
+						Weather2.warn("Particle renderer's onTick() has failed to run correctly. Disabling particle renderer...");
+						e.printStackTrace();
+						ConfigParticle.particle_renderer = "-1";
+						WeatherAPI.refreshRenders(false);
+						attempts = -1;
+					}
+				}
 			delta = (long)((System.nanoTime() - delta) * 0.001F);
 			
 			if (worldDelta != ClientTickHandler.weatherManager.getWorld().getTotalWorldTime())
@@ -83,7 +109,33 @@ public abstract class AbstractStormRenderer
 					renderDebugInfo.add("Particle Count: " + this.particles.size());
 					renderDebugInfo.add("Global Particle Count: " + ClientTickHandler.weatherManager.getParticleCount());
 				}
-				List<String> extraDebugInfo = onDebugInfo();
+				List<String> extraDebugInfo = null;
+				
+				attempts = 0;
+				while (attempts > -1)
+					try
+					{
+						extraDebugInfo = onDebugInfo();
+						attempts = -1;
+					}
+					catch(Exception e)
+					{
+						attempts++;
+						
+						if (attempts < 3)
+						{
+							Weather2.warn("Particle renderer's onDebugInfo() has encountered an error. Retrying...");
+							e.printStackTrace();
+						}
+						else
+						{
+							Weather2.warn("Particle renderer's onTick() has failed to run correctly. Disabling particle renderer...");
+							e.printStackTrace();
+							ConfigParticle.particle_renderer = "-1";
+							WeatherAPI.refreshRenders(false);
+							attempts = -1;
+						}
+					}
 				
 				if (extraDebugInfo != null)
 				{
@@ -162,7 +214,32 @@ public abstract class AbstractStormRenderer
 	public final void refreshParticleLimit()
 	{
 		particleLimit = ClientTickHandler.weatherManager.getParticleLimit();
-		onParticleLimitRefresh(ClientTickHandler.weatherManager, particleLimit);
+		int attempts = 0;
+		while (attempts > -1)
+			try
+			{
+				onParticleLimitRefresh(ClientTickHandler.weatherManager, particleLimit);
+				attempts = -1;
+			}
+			catch(Exception e)
+			{
+				attempts++;
+				
+				if (attempts < 3)
+				{
+					Weather2.warn("Particle renderer's onParticleLimitRefresh() has encountered an error. Retrying...");
+					e.printStackTrace();
+				}
+				else
+				{
+					Weather2.warn("Particle renderer's onParticleLimitRefresh() has failed to run correctly. Disabling particle renderer...");
+					e.printStackTrace();
+					ConfigParticle.particle_renderer = "-1";
+					WeatherAPI.refreshRenders(false);
+					attempts = -1;
+				}
+			}
+		
 	}
 	
 	public final boolean canSpawnParticle()

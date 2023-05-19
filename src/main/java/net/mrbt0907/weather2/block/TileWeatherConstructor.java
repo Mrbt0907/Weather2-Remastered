@@ -168,18 +168,18 @@ public class TileWeatherConstructor extends TileEntity implements ITickable
 							if (system != null)
 							{
 								lastTickStormObject = (StormObject)system;
-								Weather2.debug("Weather machine reobtained storm system " + system.getUUID());
+								Weather2.debug("Weather machine reobtained storm " + system.getUUID());
 							}
 							else
 							{
 								createStorm();
-								Weather2.debug("Weather machine created storm system " + lastTickStormObjectID + " because old storm no longer exists");
+								Weather2.debug("Weather machine created storm " + lastTickStormObjectID + " because old storm no longer exists");
 							}
 						}
 						else
 						{
 							createStorm();
-							Weather2.debug("Weather machine created storm system " + lastTickStormObjectID);
+							Weather2.debug("Weather machine created storm " + lastTickStormObjectID);
 						}
 					}
 					else if (lastTickStormObject.isDead)
@@ -187,7 +187,7 @@ public class TileWeatherConstructor extends TileEntity implements ITickable
 						lastTickStormObject = null;
 						lastTickStormObjectID = null;
 						createStorm();
-						Weather2.debug("Weather machine created storm system " + lastTickStormObjectID + " because old storm has died");
+						Weather2.debug("Weather machine created storm " + lastTickStormObjectID + " because old storm has died");
 					}
 			}
 		}
@@ -216,8 +216,6 @@ public class TileWeatherConstructor extends TileEntity implements ITickable
 			if (data.hasUniqueId("lastTickStormObjectID"))
 				lastTickStormObjectID = data.getUniqueId("lastTickStormObjectID");
 		}
-		else
-			Weather2.warn("Could not load weather machine data! This may cause issues.");
 		super.readFromNBT(var1);
 	}
 }

@@ -2,12 +2,13 @@ package net.mrbt0907.weather2.util;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class TriMapEx<T, A, B> {
-  private Map<T, A> listA = new HashMap<>();
-  private Map<T, B> listB = new HashMap<>();
+  private Map<T, A> listA = new LinkedHashMap<>();
+  private Map<T, B> listB = new LinkedHashMap<>();
   
   public A getA(T key) {
     return this.listA.get(key);

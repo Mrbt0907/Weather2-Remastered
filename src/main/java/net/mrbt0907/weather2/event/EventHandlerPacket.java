@@ -12,6 +12,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.ClientProxy;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
+import net.mrbt0907.weather2.client.gui.GuiEZConfig;
 import net.mrbt0907.weather2.network.packets.PacketEZGUI;
 import net.mrbt0907.weather2.server.event.ServerTickHandler;
 import net.mrbt0907.weather2.util.WeatherUtilConfig;
@@ -68,7 +69,6 @@ public class EventHandlerPacket {
 						break;
 					case 16:
 						ClientProxy.clientTickHandler.op = nbt.getBoolean("op");
-						Weather2.debug("Are you op: " + ClientProxy.clientTickHandler.op);
 						break;
 					default:
 						Weather2.error("Recieved an invalid network packet from the server");
@@ -108,7 +108,6 @@ public class EventHandlerPacket {
 						break;
 					case 12:
 						PacketEZGUI.isOp(FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() || FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().canSendCommands(entP.getGameProfile()), entP);
-						Weather2.debug("Is " + entP.getName() + " op: " + (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() || FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().canSendCommands(entP.getGameProfile())));
 						break;
 				}
 			});

@@ -17,7 +17,7 @@ public class ConfigStorm implements IConfigCategory
 	@ConfigComment("A deadly storm has a 10 in x chance to spawn a water spout in\nhigh wind conditions")
     public static int high_wind_waterspout_10_in_x = 150;
 	@ConfigComment("How many weather objects can develop in a dimension?")
-	public static int max_weather_objects = 40;
+	public static int max_weather_objects = 30;
 	@ConfigComment("A storm has a 1 in x chance to spawn a lightning bolt.\nHigher numbers means less lightning in storms")
 	public static int lightning_bolt_1_in_x = 200;
 	@ConfigComment("How big can storms expand up to? Allows funnels to grow larger depending on size.")
@@ -53,7 +53,7 @@ public class ConfigStorm implements IConfigCategory
 	@ConfigComment("Each storm has a x chance to be a storm instead of a cloud. Goes from 0 to 100")
 	public static int storm_spawn_chance = 30;
 	@ConfigComment("The time in ticks it takes for all weather to spawn")
-	public static int storm_spawn_delay = 1000;
+	public static int storm_spawn_delay = 750;
 	@ConfigComment("Should Weather2 cancel vanilla rainstorms at all times?")
 	public static boolean prevent_vanilla_thunderstorms = true;
 	//lightning
@@ -89,11 +89,11 @@ public class ConfigStorm implements IConfigCategory
 	@ConfigComment("Enables Villagers to detect storms and run inside")
 	public static boolean enable_villagers_take_cover = true;
 	@ConfigComment("How high should storms and clouds in the upper layer spawn at?")
-	public static int cloud_layer_2_height = 500;
+	public static int cloud_layer_2_height = 250;
 	@ConfigComment("How high should storms and clouds in the middle layer spawn at?")
-	public static int cloud_layer_1_height = 350;
+	public static int cloud_layer_1_height = 200;
 	@ConfigComment("How high should storms and clouds in the lower layer spawn at?")
-	public static int cloud_layer_0_height = 200;
+	public static int cloud_layer_0_height = 155;
 	@ConfigComment("For a third layer of passive non storm progressing clouds")
 	public static boolean enable_cloud_layer_2 = false;
 	@ConfigComment("For a second layer of passive non storm progressing clouds")
@@ -122,11 +122,11 @@ public class ConfigStorm implements IConfigCategory
 	@ConfigComment("How many times can any storm revive?")
 	public static int max_storm_revives = 2;
 	@ConfigComment("Percent chance for a storm to revive after it is nearly dead")
-	public static double chance_for_storm_revival = 38D;
-	@ConfigComment("How much hail builds up in storms. Higher values = more hail faster")
+	public static double chance_for_storm_revival = 38.0D;
+	@ConfigComment("Percent chance for a storm to begin to hail")
 	public static double chance_for_hail = 42.0D;
 	@ConfigComment("How much hail builds up in storms. Higher values = more hail faster")
-	public static double hail_max_buildup_rate = 1;
+	public static double hail_max_buildup_rate = 1.0D;
 	
     @Override
     public String getName() {
@@ -140,12 +140,12 @@ public class ConfigStorm implements IConfigCategory
 
     @Override
     public String getConfigFileName() {
-        return "Weather2" + File.separator + getName();
+        return Weather2.MODID + File.separator + getName();
     }
 
     @Override
     public String getCategory() {
-        return "Weather2: " + getName();
+        return Weather2.MODID + ":" + getName();
     }
 
     @Override
