@@ -56,15 +56,15 @@ public class GuiWeather extends WeatherUtilGui
 				    	switch(item.getType())
 						{
 							case 1:
-								this.drawString(mc.fontRenderer, String.format("Temperature: %.2f°F,  %.02f°C", WeatherUtil.toFahrenheit(WeatherUtil.getTemperature((World) mc.world, bPos)), WeatherUtil.toCelsius(WeatherUtil.getTemperature((World) mc.world, bPos))), 0, 50, 0xFFFFFFFF);
+								this.drawString(mc.fontRenderer, String.format("Temperature: %.2f°F,  %.02f°C", WeatherUtil.toFahrenheit(WeatherUtil.getTemperature((World) mc.world, bPos)), WeatherUtil.toCelsius(WeatherUtil.getTemperature((World) mc.world, bPos))), 0, 2, 0xFFFFFFFF);
 								break;
 							case 2:
-									this.drawString(mc.fontRenderer, String.format("Humidity: %.02f%%", (WeatherUtil.getHumidity((World) mc.world, bPos) * 100.0F)), 0, 50, 0xFFFFFFFF);
+									this.drawString(mc.fontRenderer, String.format("Humidity: %.02f%%", (WeatherUtil.getHumidity((World) mc.world, bPos) * 100.0F)), 0, 2, 0xFFFFFFFF);
 								break;
 							case 3:
 								float windAngle = WindReader.getWindAngle((World) mc.world, pos);
 								float windSpeed = WindReader.getWindSpeed((World) mc.world, pos);
-								this.drawString(mc.fontRenderer, String.format("Wind Speed: %.2f Mph, %.2f Kph, %.2f M/s  (%.2f) (%s)", WeatherUtil.toMph(windSpeed), WeatherUtil.toKph(windSpeed), WeatherUtil.toMps(windSpeed), windAngle, (windAngle >= 315 ? "South" : windAngle >= 225 ? "East" : windAngle >= 135 ? "North" : windAngle >= 45 ? "West" : "South")), 0, 50, 0xFFFFFFFF);
+								this.drawString(mc.fontRenderer, String.format("Wind Speed: %.2f Mph, %.2f Kph, %.2f M/s  (%.2f) (%s)", WeatherUtil.toMph(windSpeed), WeatherUtil.toKph(windSpeed), WeatherUtil.toMps(windSpeed), windAngle, (windAngle >= 315 ? "South" : windAngle >= 225 ? "East" : windAngle >= 135 ? "North" : windAngle >= 45 ? "West" : "South")), 0, 2, 0xFFFFFFFF);
 								break;
 						}
 					}

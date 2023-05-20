@@ -1574,7 +1574,7 @@ public class SceneEnhancer implements Runnable {
 			else
 				distToStorm = CoroUtilPhysics.getDistanceToShape(posPlayer.toVec3Coro(), points);
 		}
-		else if (storm != null && storm instanceof StormObject)
+		else if (storm != null && storm instanceof StormObject && ((StormObject)storm).isRaining())
 		{
 			distToStorm = CoroUtilPhysics.distBetween(posPlayer.posX, posPlayer.posZ, storm.pos.posX, storm.pos.posZ);
 			fogRedTarget = 0.45F;
