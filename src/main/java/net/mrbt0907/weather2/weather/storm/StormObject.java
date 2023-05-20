@@ -7,6 +7,7 @@ import CoroUtil.util.ChunkCoordinatesBlock;
 import CoroUtil.util.CoroUtilBlock;
 import CoroUtil.util.CoroUtilCompatibility;
 import CoroUtil.util.CoroUtilEntOrParticle;
+import CoroUtil.util.CoroUtilEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.block.state.IBlockState;
@@ -622,8 +623,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 				{
 					if (!isDying)
 					{
-						if (revives < maxRevives)
-							rain += ConfigStorm.humidity_buildup_rate * WeatherUtil.getHumidity(world, pos.toBlockPos());
+						rain += ConfigStorm.humidity_buildup_rate * WeatherUtil.getHumidity(world, pos.toBlockPos());
 						if (hailRate > 0.0F && hailRate < 200.0F)
 							hail += hailRate * WeatherUtil.getHumidity(world, pos.toBlockPos()) * 2.5F;
 					}
@@ -643,8 +643,9 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 						shouldBuildHumidity = false;
 					}
 				}
-				if (rain < 50.0F && stage > 0)
-					rain = 60.0F;
+				
+				if (rain < MINIMUM_DRIZZLE && stage > 0)
+					rain = MINIMUM_DRIZZLE;
 				
 				//force storms to die if its no longer raining while overcast mode is active
 				if (ConfigMisc.overcast_mode && isNatural && !neverDissipate && !manager.getWorld().isRaining())
@@ -653,9 +654,6 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 					isDying = true;
 				}
 				
-				//force rain on while real storm and not dying
-				if (!isDying && rain < MINIMUM_DRIZZLE)
-					rain = MINIMUM_DRIZZLE;
 				
 				if (stage == Stage.SEVERE.getStage() && hasWater)
 				{
@@ -681,6 +679,9 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 					{
 						stageNext();
 						Weather2.debug("Storm " + getUUID().toString() + " has intensified to stage " + stage);
+						
+						if (ConfigStorm.storms_aim_at_player && front.isGlobal() && stage == Stage.TORNADO.getStage())
+							aimStormAtPlayer(null);
 						
 						if (shouldConvert && !ConfigStorm.disable_cyclones && (stage < WeatherEnum.Stage.SEVERE.getStage() && hasOcean || ConfigStorm.disable_tornados))
 						{
@@ -1115,6 +1116,25 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		}
 	}
 	
+	public void aimStormAtPlayer(EntityPlayer entP)
+	{
+		if (entP == null)
+			entP = manager.getWorld().getClosestPlayer(pos.posX, pos.posY, pos.posZ, -1, false);
+		
+		if (entP != null)
+		{
+			float yaw = -(float)(Math.atan2(entP.posX - pos.posX, entP.posZ - pos.posZ) * 180.0D / Math.PI);
+			int size = ConfigStorm.storm_aim_accuracy_in_angle;
+			if (size > 0)
+				yaw += Maths.random(size) - (size / 2);
+			
+			overrideAngle = true;
+			angle = yaw;
+			
+			Weather2.debug("Storm " + getUUID() + " was aimed at player " + CoroUtilEntity.getName(entP));
+		}
+	}
+	
 	public float getTemperatureMCToWeatherSys(float parOrigVal) {
 		return parOrigVal - 0.3F;
 	}
@@ -1156,17 +1176,17 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 
 	public boolean isDrizzling()
 	{
-		return rain >= 50.0F && rain < 100.0F;
+		return rain >= MINIMUM_DRIZZLE && rain < MINIMUM_RAIN;
 	}
 	
 	public boolean isRaining()
 	{
-		return rain >= 100.0F;
+		return rain >= MINIMUM_RAIN;
 	}
 
 	public boolean hasDownfall()
 	{
-		return rain >= 50.0F;
+		return rain >= MINIMUM_DRIZZLE;
 	}
 	
 	@Override

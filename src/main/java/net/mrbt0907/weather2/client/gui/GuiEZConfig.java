@@ -1,7 +1,6 @@
 package net.mrbt0907.weather2.client.gui;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -217,6 +216,7 @@ public class GuiEZConfig extends GuiScreen
 		yCenter = (int) (scaledHeight * 0.5F);
 		xStart = (int) (xCenter - xSize * 0.5F);
 		yStart = (int) (yCenter - ySize * 0.5F);
+		maxSubPages = 1;
 		
 		addButton(new GuiButton(0, xStart + 193, yStart + buttonRowCY, buttonWidth, buttonHeight, format(EZGuiAPI.BUTTON_LIST[4])));
 		if (ClientProxy.clientTickHandler.op) addButton(new GuiButton(1, xStart + 110, yStart + buttonRowCY, buttonWidth + 20, buttonHeight, format(EZGuiAPI.BUTTON_LIST[5])));
@@ -228,55 +228,56 @@ public class GuiEZConfig extends GuiScreen
 		int size = 0;
 		int startingIndex = maxEntries * subPage;
 		
-		try
-		{
-			switch(page)
+		if (page == 0 || WeatherUtilConfig.isOp())
+			try
 			{
-				case 3:
-					size = WeatherUtilConfig.dimNames.size();
-					maxSubPages = size / (this.maxEntries);
-					Object[] keys = WeatherUtilConfig.dimNames.keySet().toArray();
-					Object[] values = WeatherUtilConfig.dimNames.values().toArray();
-					int ii = 0, iii = 0;
-					
-					if (ClientProxy.clientTickHandler.op)
+				switch(page)
+				{
+					case 3:
+						size = WeatherUtilConfig.dimNames.size();
+						maxSubPages = size / (this.maxEntries);
+						Object[] keys = WeatherUtilConfig.dimNames.keySet().toArray();
+						Object[] values = WeatherUtilConfig.dimNames.values().toArray();
+						int ii = 0, iii = 0;
+						
+						if (ClientProxy.clientTickHandler.op)
+							for(int i = 0; i < size && i - startingIndex < this.maxEntries; i++)
+							{
+								ii = i + iii + EZGuiAPI.BUTTON_MIN;
+								addButton(new GuiButtonCycle(ii, xStart + buttonRowBX - (buttonWidth + 5), yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, EZGuiAPI.BL_WTOGGLE, WeatherUtilConfig.isWeatherEnabled((int) keys[i]) ? 1 : 0), (String) values[i]);
+								addButton(new GuiButtonCycle(ii + 1, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, EZGuiAPI.BL_ETOGGLE, WeatherUtilConfig.isEffectsEnabled((int) keys[i]) ? 1 : 0));
+								iii++;
+							}
+						
+						break;
+					default:
+						TriMapEx<String, List<String>, Integer> options = EZGuiAPI.getOptions();
+						Map<String, Integer> categories = EZGuiAPI.getOptionCategories();
+						settings.clear();
+						String id;
+						
+						for(Entry<String, Integer> entry : categories.entrySet())
+							if (entry.getValue() == page)
+								settings.add(entry.getKey());
+						
+						size = settings.size();
+						maxSubPages = ((size - 1) / this.maxEntries);
+						
 						for(int i = 0; i < size && i - startingIndex < this.maxEntries; i++)
 						{
-							ii = i + iii + EZGuiAPI.BUTTON_MIN;
-							addButton(new GuiButtonCycle(ii, xStart + buttonRowBX - (buttonWidth + 5), yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, EZGuiAPI.BL_WTOGGLE, WeatherUtilConfig.isWeatherEnabled((int) keys[i]) ? 1 : 0), (String) values[i]);
-							addButton(new GuiButtonCycle(ii + 1, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, EZGuiAPI.BL_ETOGGLE, WeatherUtilConfig.isEffectsEnabled((int) keys[i]) ? 1 : 0));
-							iii++;
+							if (i >= startingIndex)
+							{
+								id = settings.get(i);
+								addButton(new GuiButtonCycle((i) + EZGuiAPI.BUTTON_MIN, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * (i - startingIndex), buttonWidth, buttonHeight, options.getA(id), WeatherUtilConfig.getConfigValue(id)), id);
+							}
 						}
-					
-					break;
-				default:
-					TriMapEx<String, List<String>, Integer> options = EZGuiAPI.getOptions();
-					Map<String, Integer> categories = EZGuiAPI.getOptionCategories();
-					settings.clear();
-					String id;
-					
-					for(Entry<String, Integer> entry : categories.entrySet())
-						if (entry.getValue() == page)
-							settings.add(entry.getKey());
-					
-					size = settings.size();
-					maxSubPages = ((size - 1) / this.maxEntries);
-					
-					for(int i = 0; i < size && i - startingIndex < this.maxEntries; i++)
-					{
-						if (i >= startingIndex)
-						{
-							id = settings.get(i);
-							addButton(new GuiButtonCycle((i) + EZGuiAPI.BUTTON_MIN, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * (i - startingIndex), buttonWidth, buttonHeight, options.getA(id), options.getB(id)), id);
-						}
-					}
-					break;
+						break;
+				}
 			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
 		
 		if (maxSubPages > 0)
 		{

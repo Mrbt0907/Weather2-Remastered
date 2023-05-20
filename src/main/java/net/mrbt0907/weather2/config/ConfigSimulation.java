@@ -12,9 +12,9 @@ public class ConfigSimulation implements IConfigCategory
 	//@ConfigComment({"Should storms use a more realistic storm system? (Does not work rn, don't enable)"})
     //public static boolean simulation_enable = false;
 	@ConfigComment("Distance storms can go to from players before they are deleted")
-	public static int max_storm_distance = 5120;
+	public static int max_storm_distance = 2300;
 	@ConfigComment("Distance storms can spawn away from players")
-	public static int max_storm_spawning_distance = 4000;
+	public static int max_storm_spawning_distance = 2150;
 	
     @Override
     public String getName() {

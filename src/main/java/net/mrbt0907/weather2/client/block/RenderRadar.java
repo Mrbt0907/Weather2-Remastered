@@ -14,6 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
+import net.mrbt0907.weather2.api.weather.IWeatherRain;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.block.TileRadar;
 import net.mrbt0907.weather2.client.SceneEnhancer;
@@ -75,7 +76,7 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 				if (radar.system != null && radar.system instanceof StormObject)
 				{
 					StormObject system = (StormObject) radar.system;
-					renderLivingLabel("\u00A7" + " Hail: " + MathHelper.clamp(system.hail - 100.0F, 0.0F, 100.0F) + "%", x, y + 2.5F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Rain/Hail: " + MathHelper.clamp(Math.round((system.rain - IWeatherRain.MINIMUM_DRIZZLE) * 10.0F / 3.0F) * 0.1F, 0.0F, 100.0F) + "%/" + MathHelper.clamp(system.hail - 100.0F, 0.0F, 100.0F) + "%", x, y + 2.5F, z, 1, 10, 10, playerViewY, 1.0F);
 					renderLivingLabel("\u00A7" + " Stage Complete: " + (((system.intensity - system.stage + 1)) * 100.0F) + "%", x, y + 2.6F, z, 1, 10, 10, playerViewY, 1.0F);
 					renderLivingLabel("\u00A7" + " Current Funnel Wind Speed: " + (long)WeatherUtil.toMph(system.windSpeed) + " MPH", x, y + 2.7F, z, 1, 10, 10, playerViewY, 1.0F);
 					renderLivingLabel("\u00A7" + " Current Funnel Size: " + (long)system.funnelSize + " Blocks", x, y + 2.8F, z, 1, 10, 10, playerViewY, 1.0F);

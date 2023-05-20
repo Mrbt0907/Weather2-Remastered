@@ -13,7 +13,7 @@ public class ConfigStorm implements IConfigCategory
 	@ConfigComment("Whether or not to use the Enhanced Fujita Scale for tornados.")
     public static boolean enable_ef_scale = false;
 	@ConfigComment("A multiplier for modifying the exponential growth of the sizes of storms. Use increments of 0.1 as that is considered a big increase.")
-	public static double storm_size_curve_mult = 1.0D;
+	public static double storm_size_curve_mult = 1.05D;
 	@ConfigComment("A deadly storm has a 10 in x chance to spawn a water spout in\nhigh wind conditions")
     public static int high_wind_waterspout_10_in_x = 150;
 	@ConfigComment("How many weather objects can develop in a dimension?")
@@ -101,7 +101,7 @@ public class ConfigStorm implements IConfigCategory
 	@ConfigComment("How large can a storm's damage path be? Higher values will impact preformance.")
 	public static double max_storm_damage_size = 300.0D;
 	@ConfigComment("Accuracy of tornado aimed at player in degrees.\nHigher values means less accuracy up to 360 degrees")
-	public static int storm_aim_accuracy_in_angle = 5;
+	public static int storm_aim_accuracy_in_angle = 35;
 
 	@ConfigComment("Tick rate for the storm spawning system")
 	public static int spawningTickRate = 20;

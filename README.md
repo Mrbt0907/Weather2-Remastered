@@ -14,14 +14,13 @@ You can report any of these in the Issues tab, and/or place your questions and s
 Head to the releases tab on the right and grab the version of the mod you want. Don't download the sources.jar file unless you want to add support to your mod. Make sure to install Coroutil to play with this mod.
 
 ##  How To Build (Eclipse)
-- Requires MrCrayfish's Vehicle Mod
-- Requires Obfuscate
-- Requires Coroutil
+- Requires Coroutil in libs folder
 - Place these mods in the lib folder (Create the folder in your project folder if it doesn't exist)
-- run "gradlew setupDecompWorkspace eclipse"
+- run "gradlew eclipse genEclipseRuns"
+  This may not work as I did struggle to build this myself
 
 ## Supported Mods
 These mods are supported by Weather2 Remaster by default
-- MrCrayfish's Vehicle Mod - Vehicles get picked up
+- MrCrayfish's Vehicle Mod - Vehicles get picked up (Removed as of 2.8.5, will add it back in 2.8.6)
 
 *Please note that this is a fan update and I take no credit for anything Corosus has created.*

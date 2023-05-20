@@ -342,12 +342,12 @@ public class EventHandlerForge
 		{
 			try
 			{
-				event.getRenderer().farPlaneDistance = (float) ConfigParticle.render_distance;
+				event.getRenderer().farPlaneDistance = (float) ConfigParticle.extended_render_distance;
 			}
 			catch (Exception e)
 			{
-				if ((float) ReflectionHelper.get(EntityRenderer.class, event.getRenderer(), "farPlaneDistance", "field_78530_s") != ConfigParticle.render_distance);
-					ReflectionHelper.set(EntityRenderer.class, event.getRenderer(), (float)ConfigParticle.render_distance, "farPlaneDistance", "field_78530_s");
+				if ((float) ReflectionHelper.get(EntityRenderer.class, event.getRenderer(), "farPlaneDistance", "field_78530_s") != ConfigParticle.extended_render_distance);
+					ReflectionHelper.set(EntityRenderer.class, event.getRenderer(), (float)ConfigParticle.extended_render_distance, "farPlaneDistance", "field_78530_s");
 			}
         }
 		

@@ -7,10 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraftforge.common.MinecraftForge;
-import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.event.EventRegisterEZGuiOption;
 import net.mrbt0907.weather2.util.TriMapEx;
-import net.mrbt0907.weather2.util.WeatherUtilConfig;
 
 public class EZGuiAPI
 {
@@ -71,6 +69,7 @@ public class EZGuiAPI
 	public static final String BA_EF = "a_ef";
 	public static final String BA_SHADER = "a_shader";
 	public static final String BA_FOLIAGE = "a_foliage";
+	public static final String BA_RENDER_DISTANCE = "a_render_distance";
 	public static final String BB_GLOBAL = "b_global";
 	public static final String BB_RADAR = "b_radar";
 	public static final String BC_ENABLE_TORNADO = "c_tornado";
@@ -100,24 +99,25 @@ public class EZGuiAPI
 	{
 		options.clear();
 		optionCategories.clear();
-		options.put(BA_CLOUD, BL_STR, WeatherUtilConfig.getConfigValue(BA_CLOUD));
-		options.put(BA_FUNNEL, BL_STR, WeatherUtilConfig.getConfigValue(BA_FUNNEL));
-		options.put(BA_PRECIPITATION, BL_STR_ALT, WeatherUtilConfig.getConfigValue(BA_PRECIPITATION));
-		options.put(BA_EFFECT, BL_STR_ALT, WeatherUtilConfig.getConfigValue(BA_EFFECT));
-		options.put(BA_EF, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BA_EF));
-		options.put(BA_SHADER, BL_SHADERS, WeatherUtilConfig.getConfigValue(BA_SHADER));
-		options.put(BA_FOLIAGE, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BA_FOLIAGE));
-		options.put(BB_GLOBAL, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BB_GLOBAL));
-		options.put(BB_RADAR, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BB_RADAR));
-		options.put(BC_ENABLE_TORNADO, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BC_ENABLE_TORNADO));
-		options.put(BC_ENABLE_CYCLONE, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BC_ENABLE_CYCLONE));
-		options.put(BC_ENABLE_SANDSTORM, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BC_ENABLE_SANDSTORM));
-		options.put(BC_FREQUENCY, BL_RARE, WeatherUtilConfig.getConfigValue(BC_FREQUENCY));
-		options.put(BC_GRAB_BLOCK, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BC_GRAB_BLOCK));
-		options.put(BC_GRAB_ITEM, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BC_GRAB_ITEM));
-		options.put(BC_GRAB_MOB, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BC_GRAB_MOB));
-		options.put(BC_GRAB_PLAYER, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BC_GRAB_PLAYER));
-		options.put(BC_STORM_PER_PLAYER, BL_TOGGLE, WeatherUtilConfig.getConfigValue(BC_STORM_PER_PLAYER));
+		options.put(BA_CLOUD, BL_STR, 3);
+		options.put(BA_FUNNEL, BL_STR, 3);
+		options.put(BA_PRECIPITATION, BL_STR_ALT, 3);
+		options.put(BA_EFFECT, BL_STR_ALT, 3);
+		options.put(BA_EF, BL_TOGGLE, 0);
+		options.put(BA_SHADER, BL_SHADERS, 0);
+		options.put(BA_FOLIAGE, BL_TOGGLE, 0);
+		options.put(BA_RENDER_DISTANCE, BL_STR_ALT, 0);
+		options.put(BB_GLOBAL, BL_TOGGLE, 0);
+		options.put(BB_RADAR, BL_TOGGLE, 0);
+		options.put(BC_ENABLE_TORNADO, BL_TOGGLE, 1);
+		options.put(BC_ENABLE_CYCLONE, BL_TOGGLE, 1);
+		options.put(BC_ENABLE_SANDSTORM, BL_TOGGLE, 1);
+		options.put(BC_FREQUENCY, BL_RARE, 3);
+		options.put(BC_GRAB_BLOCK, BL_TOGGLE, 1);
+		options.put(BC_GRAB_ITEM, BL_TOGGLE, 0);
+		options.put(BC_GRAB_MOB, BL_TOGGLE, 1);
+		options.put(BC_GRAB_PLAYER, BL_TOGGLE, 1);
+		options.put(BC_STORM_PER_PLAYER, BL_TOGGLE, 0);
 		
 		for(String key : options.keys())
 		{
@@ -132,6 +132,5 @@ public class EZGuiAPI
 		MinecraftForge.EVENT_BUS.post(event);
 		options = event.getOptions();
 		optionCategories = event.getOptionCategories();
-		Weather2.info("Refreshed options: " + optionCategories.size() + " Options");
 	}
 }

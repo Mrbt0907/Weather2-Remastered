@@ -33,7 +33,7 @@ public class ConfigParticle implements IConfigCategory
 	@ConfigComment("Enables heavy downfall in severe storms")
     public static boolean enable_heavy_precipitation = true;
 	@ConfigComment("Enables distant downfall in severe storms")
-    public static boolean enable_distant_downfall = true;
+    public static boolean enable_distant_downfall = false;
 	@ConfigComment("Enables tornado debris clouds in severe storms")
     public static boolean enable_tornado_debris = true;
 	@ConfigComment("Enables tornado clouds to change colors based on what block is picked up")
@@ -66,21 +66,19 @@ public class ConfigParticle implements IConfigCategory
 	public static double min_cloud_coverage_perc = 0.0D;
 	@ConfigComment("How much to randomly change cloud coverage % amount, performed every 10 seconds")
 	public static double cloud_coverage_change_amount = 0.05D;
-	@ConfigComment("Distance between cloud formations, not particles, this includes invisible cloudless formations used during partial cloud coverage")
-	public static int min_cloud_distance = 300;
 	@ConfigComment("Should particles render outside of the normal render distance?")
 	public static boolean enable_extended_render_distance = false;
 	@ConfigComment("Distance that particles can render up to in blocks. Does not work with optifine installed")
-	public static double render_distance = 3500.0D;
+	public static double extended_render_distance = 128.0D;
 
 	@ConfigComment("How many weather2 particles can exist at once. Set to -1 for infinite particles. A typical hailstorm spawns around 3500~ particles on ultra settings")
-	public static int max_particles = 2000;
+	public static int max_particles = 3000;
 	@ConfigComment("Particle multiplier that adjusts how fast rain rates change. Set it higher to make rain change faster")
 	public static double rain_change_mult = 1.0D;
 	
 	//clouds
 	@ConfigComment("How many ticks between cloud particle spawning")
-	public static int cloud_particle_delay = 5;
+	public static int cloud_particle_delay = 3;
 	@ConfigComment("Should rain show up?")
 	public static boolean enable_vanilla_rain = false;
 

@@ -81,7 +81,7 @@ public class FrontObject implements IWeatherDetectable
 			temperature = WeatherUtil.getTemperature(world, pos.toBlockPos());
 			humidity = WeatherUtil.getTemperature(world, pos.toBlockPos());
 			pressure = WeatherUtil.getPressure(world, pos.toBlockPos());
-			if (temperature > 0.5)
+			if (temperature > 0.5 || Maths.chance(25))
 				type = 1;
 			else
 				type = 2;

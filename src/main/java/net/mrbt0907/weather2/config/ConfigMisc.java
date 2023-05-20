@@ -20,11 +20,11 @@ public class ConfigMisc implements IConfigCategory {
 	@ConfigComment("Enables the mod to output data into all radars about storms")
 	public static boolean debug_mode_radar = false;
 	@ConfigComment("How far do Radars sense storms?")
-	public static double radar_range = 1024.0D;
+	public static double radar_range = 512.0D;
 	@ConfigComment("How far do Doppler Radars sense storms?")
-	public static double doppler_radar_range = 2048.0D;
+	public static double doppler_radar_range = 1024.0D;
 	@ConfigComment("How far do Pulse Doppler Radars sense storms?")
-	public static double pulse_doppler_radar_range = 4096.0D;
+	public static double pulse_doppler_radar_range = 2048.0D;
 	
 	//Weather
 	@ConfigComment("How often does the mod sync storms in ticks? Fixes desync when ran")
@@ -37,9 +37,9 @@ public class ConfigMisc implements IConfigCategory {
 	public static int server_weather_mode = 0; //is only used if overcastMode is off
 	//blocks
 	@ConfigComment("How far can sirens detect a storm")
-	public static double siren_scan_range = 256D;
+	public static double siren_scan_range = 256.0D;
 	@ConfigComment("How far can sensors detect a storm")
-	public static double sensor_scan_range = 256D;
+	public static double sensor_scan_range = 512.0D;
 	@ConfigComment("Disables the Weather Machine's ability to create tornados or hurricanes")
 	public static boolean disable_weather_machine_cyclones = false;
 	@ConfigComment("Disables the Weather Machine's recipe")

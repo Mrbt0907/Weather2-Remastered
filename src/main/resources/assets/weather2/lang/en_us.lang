@@ -112,6 +112,7 @@ config.ezgui.button.shader.9=Sushi S (-)
 config.ezgui.button.shader.10=SVS Lite (-)
 config.ezgui.button.shader.11=VPlus
 config.ezgui.button.a_foliage.tooltip=Enable Foliage Shaders
+config.ezgui.button.a_render_distance.tooltip=Extended Render Distance
 config.ezgui.button.b_global.tooltip=Enable Global Weather
 config.ezgui.button.c_tornado.tooltip=Enable Tornados
 config.ezgui.button.c_cyclone.tooltip=Enable Hurricanes

@@ -236,7 +236,7 @@ public class SceneEnhancer implements Runnable {
 		{
 			if (mc.world.getTotalWorldTime() % 10L == 0L)
 			{
-				wo = ClientTickHandler.weatherManager.getClosestWeather(new Vec3(mc.player.posX, mc.player.posY, mc.player.posZ), ConfigParticle.render_distance);
+				wo = ClientTickHandler.weatherManager.getClosestWeather(new Vec3(mc.player.posX, mc.player.posY, mc.player.posZ), ConfigParticle.extended_render_distance);
 			}
 			profileSurroundings();
 			tryAmbientSounds();
@@ -657,7 +657,7 @@ public class SceneEnhancer implements Runnable {
 						}
 						spawnAreaSize = 20;
 						//downfall - at just above 0.3 cause rainstorms lock at 0.3 but flicker a bit above and below
-						if (downfall == true && curPrecipVal >= 0.5) {
+						if (downfall == true && curPrecipVal >= 0.66) {
 
 							int scanAheadRange = 0;
 							//quick is outside check, prevent them spawning right near ground
@@ -690,7 +690,7 @@ public class SceneEnhancer implements Runnable {
 									rain.setKillWhenUnderTopmostBlock_ScanAheadRange(scanAheadRange);
 									rain.setTicksFadeOutMaxOnDeath(10);
 									rain.noExtraParticles = true;
-									rain.windWeight = 8F;
+									rain.windWeight = 11F;
 									rain.setFacePlayer(true);
 									rain.facePlayerYaw = true;
 
@@ -827,7 +827,7 @@ public class SceneEnhancer implements Runnable {
 				
 				if (storm.hasDownfall() && sizeToUse > stormDist)
 				{
-					double rainIntensity = ConfigParticle.enable_vanilla_rain ? 0.0D : overcastIntensity * Math.min((storm.rain - IWeatherRain.MINIMUM_DRIZZLE) / 150, 1.0F);
+					double rainIntensity = ConfigParticle.enable_vanilla_rain ? 0.0D : overcastIntensity * Math.min((storm.rain - IWeatherRain.MINIMUM_DRIZZLE) / 300.0F, 1.0F);
 					
 					tempAdj = storm.temperature > 0 ? 1F : -1F;
 					
