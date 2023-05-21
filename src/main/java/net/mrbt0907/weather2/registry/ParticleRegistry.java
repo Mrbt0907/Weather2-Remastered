@@ -17,7 +17,8 @@ public class ParticleRegistry
 	public static TextureAtlasSprite cloud256_6;
 	public static TextureAtlasSprite cloud32;
 	public static TextureAtlasSprite distant_downfall;
-
+	public static TextureAtlasSprite tornado256;
+	
 	public static TextureAtlasSprite radarIconReflectivityF;
 	public static TextureAtlasSprite radarIconReflectivityE;
 	public static TextureAtlasSprite radarIconReflectivityD;
@@ -49,6 +50,7 @@ public class ParticleRegistry
 		cloud256_6 = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID  + ":particles/cloud256_6"));
 		cloud32 = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID  + ":particles/cloud32"));
 		distant_downfall = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID  + ":particles/distant_downfall"));
+		tornado256 = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":particles/tornado256"));
 		radarIconCloud = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":radar/radar_icon_cloud"));
 		radarIconRain = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":radar/radar_icon_rain"));
 		radarIconSnow = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":radar/radar_icon_snow"));
