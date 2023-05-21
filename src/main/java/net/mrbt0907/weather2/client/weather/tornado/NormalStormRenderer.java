@@ -128,6 +128,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 					particle = spawnParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 0, ParticleRegistry.chicken);
 				else
 					particle = spawnParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 0);
+					
 				
 				if (particle == null) break;
 				//offset starting rotation for even distribution except for middle one
@@ -391,13 +392,15 @@ public class NormalStormRenderer extends AbstractStormRenderer
 						double var16 = storm.pos.posX - ent.getPosX();
 						double var18 = storm.pos.posZ - ent.getPosZ();
 						ent.rotationYaw = (float)(Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
-						ent.rotationPitch = -30F - (ent.getEntityId() % 10);
+						ent.rotationPitch = -30F - (ent.getEntityId() % 10); //meso clouds
+						ent.setScale((ConfigParticle.enable_extended_render_distance ? 1800.0F : 600.0F) * sizeCloudMult);
+						
 					}
 					else
 					{
 						ent.rotationPitch = (float) (90.0F - (90.0f * Math.min(ent.getPosY() / (storm.getLayerHeight() + ent.getScale() * 0.75F), 1.0F)));
 						if (ConfigParticle.enable_extended_render_distance)
-							ent.setScale(2000.0F * sizeCloudMult); 
+							ent.setScale(2000.0F * sizeCloudMult);
 					}
 					
 					if (curSpeed < speed * 20D)
