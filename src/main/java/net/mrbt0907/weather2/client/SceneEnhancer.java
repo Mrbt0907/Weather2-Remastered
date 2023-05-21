@@ -1585,7 +1585,6 @@ public class SceneEnhancer implements Runnable {
 		else
 			distToStorm = distToStormThreshold + 10;
 		
-		
 		//use override if needed
 		if (fogMultTarget < adjustAmountTargetPocketSandOverride)
 			fogMultTarget = adjustAmountTargetPocketSandOverride;
