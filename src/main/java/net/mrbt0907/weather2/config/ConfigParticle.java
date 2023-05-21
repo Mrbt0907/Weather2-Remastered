@@ -70,11 +70,12 @@ public class ConfigParticle implements IConfigCategory
 	public static boolean enable_extended_render_distance = false;
 	@ConfigComment("Distance that particles can render up to in blocks. Does not work with optifine installed")
 	public static double extended_render_distance = 128.0D;
-
 	@ConfigComment("How many weather2 particles can exist at once. Set to -1 for infinite particles. A typical hailstorm spawns around 3500~ particles on ultra settings")
 	public static int max_particles = 3000;
 	@ConfigComment("Particle multiplier that adjusts how fast rain rates change. Set it higher to make rain change faster")
 	public static double rain_change_mult = 1.0D;
+	@ConfigComment("Particle scale multiplier that adjusts how big particles should be")
+	public static double particle_scale_mult = 1.0D;
 	
 	//clouds
 	@ConfigComment("How many ticks between cloud particle spawning")

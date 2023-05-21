@@ -17,6 +17,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WeatherAPI;
 import net.mrbt0907.weather2.api.weather.IWeatherStaged;
@@ -333,10 +335,12 @@ public class TornadoHelper
 	
 	public boolean canGrabEntity(Entity ent)
 	{
-		
 		if (ent == null) return false;	
 		boolean isClient = ent.world.isRemote;
 		
+		EntityEntry entry = EntityRegistry.getEntry(ent.getClass());
+		if (entry != null && WeatherAPI.getEntityGrabList().containsKey(entry.getRegistryName().toString()))
+			return false;
 		if (ent instanceof EntityPlayer)
 			return isClient ? ClientTickHandler.clientConfigData.stormGrabPlayers : ConfigGrab.grab_players;
 		if (ent instanceof INpc)
@@ -347,7 +351,7 @@ public class TornadoHelper
 			return isClient ? ClientTickHandler.clientConfigData.stormGrabMobs : ConfigGrab.grab_mobs;
 		if (ent instanceof EntityAnimal)
 			return isClient ? ClientTickHandler.clientConfigData.stormGrabAnimals : ConfigGrab.grab_animals;
-				
+		
 		//for moving blocks, other non livings
 		return true;
 	}

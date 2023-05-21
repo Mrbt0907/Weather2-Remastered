@@ -10,6 +10,7 @@ public class EventRegisterStages extends Event
 	public final ConfigList tornadoStageList;
 	public final ConfigList hurricaneStageList;
 	
+	/**Event used to register custom tornado chances to the game.*/
 	public EventRegisterStages(ConfigList tornadoStageList, ConfigList hurricaneStageList)
 	{
 		this.tornadoStageList = tornadoStageList;

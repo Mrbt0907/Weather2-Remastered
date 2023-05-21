@@ -11,6 +11,7 @@ import net.mrbt0907.weather2.weather.WeatherManager;
 
 public class WindReader
 {
+	/**Gets the current wind speed of the current dimension*/
 	public static float getWindSpeed(World world, Vec3 pos)
 	{
 		WeatherManager manager = WeatherAPI.getManager(world);
@@ -19,6 +20,7 @@ public class WindReader
 		return 0.0F;
 	}
 	
+	/**Gets the current wind direction of the current dimension*/
 	public static float getWindAngle(World world, Vec3 pos)
 	{
 		WeatherManager manager = WeatherAPI.getManager(world);
@@ -28,11 +30,13 @@ public class WindReader
 			return 0.0F;
 	}
 	
+	/**Forgot what this does*/
 	public static Vec3 getWindVectors(World world, Entity entity, float maxSpeed)
 	{
 		return getWindVectors(world, new Vec3(entity.posX, entity.posY, entity.posZ), new Vec3(entity.motionX, entity.motionY, entity.motionZ), (float) (WeatherUtilEntity.getWeight(entity) * 0.1F * (entity instanceof EntityPlayer ? ConfigWind.windPlayerWeightMult : entity instanceof EntityLivingBase ? ConfigWind.windEntityWeightMult : 1.0F) * (entity.isInWater() ? ConfigWind.windSwimmingWeightMult : 1.0F)), 5.0F);
 	}
 	
+	/**Forgot what this does*/
 	public static Vec3 getWindVectors(World world, Vec3 pos, Vec3 motion, float weight, float maxSpeed)
 	{
 		WeatherManager manager = WeatherAPI.getManager(world);

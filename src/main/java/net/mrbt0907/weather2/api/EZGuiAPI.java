@@ -85,16 +85,24 @@ public class EZGuiAPI
 	private static TriMapEx<String, List<String>, Integer> options = new TriMapEx<String, List<String>, Integer>();
 	private static Map<String, Integer> optionCategories = new LinkedHashMap<String,Integer>();
 	
+	/**Gets all of the EZ Gui options in all 3 categories<br>
+	 * Type String: Option ID<br>
+	 * Type List: Available Options<br>
+	 * Type Integer: Default Value*/
 	public static TriMapEx<String, List<String>, Integer> getOptions()
 	{
 		return options;
 	}
 	
+	/**Gets all of the EZ Gui options with their respective catergory indexes<br>
+	 * Type String: Option ID<br>
+	 * Type Integer: Category Index (0 = Graphics, 1 = Systems, 2 = Storms)*/
 	public static Map<String, Integer> getOptionCategories()
 	{
 		return optionCategories;
 	}
 	
+	/**Refreshes all EZ Gui Options*/
 	public static void refreshOptions()
 	{
 		options.clear();

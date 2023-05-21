@@ -14,11 +14,16 @@ public class EventRegisterParticleRenderer extends Event
 {
 	private final Map<ResourceLocation, Class<?>> registry = new LinkedHashMap<ResourceLocation, Class<?>>();
 	
+	/**Event used to register custom particle spawning renderers into the game.*/
+	public EventRegisterParticleRenderer() {}
+	
+	/**Gets a copy of the current registry for particle renderers.*/
 	public Map<ResourceLocation, Class<?>> getRegistry()
 	{
 		return new LinkedHashMap<ResourceLocation, Class<?>>(registry);
 	}
 	
+	/**Registers a particle renderer to the game.*/
 	public void register(ResourceLocation id, Class<?> particleRenderer)
 	{
 		if (id == null)

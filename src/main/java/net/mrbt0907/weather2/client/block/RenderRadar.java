@@ -20,6 +20,7 @@ import net.mrbt0907.weather2.block.TileRadar;
 import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
+import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.registry.ParticleRegistry;
 import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.util.WeatherUtil;
@@ -81,17 +82,18 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 					renderLivingLabel("\u00A7" + " Current Funnel Wind Speed: " + (long)WeatherUtil.toMph(system.windSpeed) + " MPH", x, y + 2.7F, z, 1, 10, 10, playerViewY, 1.0F);
 					renderLivingLabel("\u00A7" + " Current Funnel Size: " + (long)system.funnelSize + " Blocks", x, y + 2.8F, z, 1, 10, 10, playerViewY, 1.0F);
 					renderLivingLabel("\u00A7" + " Current Stage/MaxStage: " + system.stage + "/" + system.stageMax, x, y + 2.9F, z, 1, 10, 10, playerViewY, 1.0F);
-					renderLivingLabel("\u00A7" + " Size Multiplier: " + (system.sizeRate * 100) + "%", x, y + 3.0F, z, 1, 10, 10, playerViewY, 1.0F);
-					renderLivingLabel("\u00A7" + " Is Violent: " + system.isViolent, x, y + 3.1F, z, 1, 10, 10, playerViewY, 1.0F);
-					renderLivingLabel("\u00A7" + " UUID: " + system.getUUID(), x, y + 3.2F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Lifespan Multiplier: " + ((ConfigStorm.storm_lifespan_min / system.intensityRate) * 1000.0F) + "%", x, y + 3.0F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Size Multiplier: " + (system.sizeRate * 100.0F) + "%", x, y + 3.1F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " Is Violent: " + system.isViolent, x, y + 3.2F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " UUID: " + system.getUUID(), x, y + 3.3F, z, 1, 10, 10, playerViewY, 1.0F);
 					String stage = radar.system.getName();
 						
 					if (system.isDying)
 						stage += "  (Dying)";
-					renderLivingLabel("\u00A7" + " " + TextFormatting.BOLD + stage, x, y + 3.3F, z, 1, 10, 10, playerViewY, 1.0F);
+					renderLivingLabel("\u00A7" + " " + TextFormatting.BOLD + stage, x, y + 3.4F, z, 1, 10, 10, playerViewY, 1.0F);
 				}
 
-				renderLivingLabel("\u00A7" + " Radar Tier " + radar.getTier() + " (R:" + radar.pingRange + ")", x, y + 3.4F, z, 1, 10, 10, playerViewY, 1.0F);
+				renderLivingLabel("\u00A7" + " Radar Tier " + radar.getTier() + " (R:" + radar.pingRange + ")", x, y + 3.5F, z, 1, 10, 10, playerViewY, 1.0F);
 				
 			}
 		}

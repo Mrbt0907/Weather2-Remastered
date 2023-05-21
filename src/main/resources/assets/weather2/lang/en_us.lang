@@ -1,4 +1,4 @@
-itemGroup.weather2=Weather2 Items
+itemGroup.weather2remaster=Weather2 Remastered
 tile.weather_forecast.name=Basic Radar
 tile.weather_forecast_2.name=Doppler Radar
 tile.weather_forecast_3.name=Pulse Doppler Radar
@@ -32,6 +32,9 @@ item.lcd_1.name=Large LCD Array
 item.weather_item.name=Weather Item
 item.sand_layer_placeable.name=Sand Layer
 item.pocket_sand.name=Pocket Sand!
+item.handheld_thermometer.name=Handheld Thermometer
+item.handheld_hygrometer.name=Handheld Hygrometer
+item.handheld_anemometer.name=Handheld Anemometer
 command.storm.usage=/storm <config/create/kill/test> <args>
 command.storm.config.usage=/storm config <refresh>
 command.storm.config.refresh.usage=/storm config refresh <all/dimensionlist/grablist/replacelist/stagelist/windlist/sounds>

@@ -12,6 +12,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
@@ -37,6 +38,7 @@ public class WeatherAPI
 	private static final ConfigList hurricaneStageList = new ConfigList();
 	private static final ConfigList grabList = new ConfigList();
 	private static final ConfigList replaceList = new ConfigList();
+	private static final ConfigList entityList = new ConfigList();
 	private static final ConfigList windResistanceList = new ConfigList().setReplaceOnly();
 	
 	private static Map<ResourceLocation, Class<?>> particleRenderers = new LinkedHashMap<ResourceLocation, Class<?>>();
@@ -126,6 +128,12 @@ public class WeatherAPI
 		return replaceList;
 	}
 	
+	/**Gets the block replace list, which is used to specify what block turns to what when a tornado attempts to replace said block. Feel free to use any block including tile entities*/
+	public static ConfigList getEntityGrabList()
+	{
+		return entityList;
+	}
+	
 	/**Gets the estimated wind speed based on the stage of tornado provided*/
 	public static float getEFWindSpeed(int stage)
 	{
@@ -133,12 +141,14 @@ public class WeatherAPI
 	}
 	
 	@SideOnly(Side.CLIENT)
+	/**Gets the current particle renderer id. Can return null*/
 	public static ResourceLocation getParticleRendererId()
 	{
 		return currentParticleRenderer;
 	}
 	
 	@SideOnly(Side.CLIENT)
+	/**Gets the current particle renderer for use with storms. Can return null*/
 	public static net.mrbt0907.weather2.api.weather.AbstractStormRenderer getParticleRenderer(StormObject storm)
 	{
 		if (currentParticleRenderer == null || storm == null)
@@ -160,6 +170,8 @@ public class WeatherAPI
 	}
 	
 	@SideOnly(Side.CLIENT)
+	/**Refreshes all renderers in the mod.
+	 * @param fullRefresh: Clears the renderer list and repopulates the list.*/
 	public static void refreshRenders(boolean fullRefresh)
 	{
 		currentParticleRenderer = null;
@@ -229,31 +241,34 @@ public class WeatherAPI
 	/**Refreshes every grab list at once*/
 	public static void refreshGrabRules()
 	{
-		EventRegisterGrabLists event = new EventRegisterGrabLists(grabList, replaceList, null, windResistanceList);
+		EventRegisterGrabLists event = new EventRegisterGrabLists(grabList, replaceList, entityList, windResistanceList);
     	event.grabList.clear();
     	event.replaceList.clear();
     	event.windResistanceList.clear();
+    	event.entityList.clear();
     	
     	MinecraftForge.EVENT_BUS.post(event);
     	
     	event.grabList.parse(ConfigGrab.grab_list_entries);
     	event.replaceList.parse(ConfigGrab.replace_list_entries);
     	event.windResistanceList.parse(ConfigGrab.wind_resistance_entries);
+    	event.entityList.parse(ConfigGrab.entity_blacklist_entries);
     	
-    	Set<ResourceLocation> entries =  Block.REGISTRY.getKeys();
-    	
-    	ConfigList list = processGrabList(entries, event.grabList, ConfigGrab.grab_list_partial_matches, 0);
+    	Set<ResourceLocation> blockEntries =  Block.REGISTRY.getKeys(), entityEntries = ForgeRegistries.ENTITIES.getKeys();
+    	ConfigList list = processGrabList(blockEntries, event.grabList, ConfigGrab.grab_list_partial_matches, 0);
     	grabList.clear();
     	grabList.addAll(list);
-    	
-    	list = processGrabList(entries, event.replaceList, ConfigGrab.replace_list_partial_matches, 1);
+    	list = processGrabList(blockEntries, event.replaceList, ConfigGrab.replace_list_partial_matches, 1);
     	replaceList.clear();
     	replaceList.addAll(list);
-    	list = processGrabList(entries, event.windResistanceList, ConfigGrab.wind_resistance_partial_matches, 2);
+    	list = processGrabList(blockEntries, event.windResistanceList, ConfigGrab.wind_resistance_partial_matches, 2);
     	windResistanceList.clear();
     	windResistanceList.addAll(list);
+    	list = processGrabList(entityEntries, event.entityList, ConfigGrab.entity_blacklist_partial_matches, 0);
+    	entityList.clear();
+    	entityList.addAll(list);
     	
-    	Weather2.debug("Grab Rules have been updated:\n- Grab List = " + WeatherAPI.getGrabList().size() + " Entry(s)\n- Replace List = " + WeatherAPI.getReplaceList().size() + " Entry(s)\n- Wind Resistance List = " + WeatherAPI.getWRList().size() + " Entry(s)");
+    	Weather2.debug("Grab Rules have been updated:\n- Grab List = " + WeatherAPI.getGrabList().size() + " Entry(s)\n- Replace List = " + WeatherAPI.getReplaceList().size() + " Entry(s)\n- Wind Resistance List = " + WeatherAPI.getWRList().size() + " Entry(s)\n- Blacklisted Entity List = " + WeatherAPI.getEntityGrabList().size() + " Entry(s)");
 	}
 	
 	private static ConfigList processGrabList(Set<ResourceLocation> entries, ConfigList cfg, boolean partialMatches, int type)

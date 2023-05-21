@@ -43,7 +43,6 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WindReader;
 import net.mrbt0907.weather2.api.weather.IWeatherRain;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
@@ -236,9 +235,7 @@ public class SceneEnhancer implements Runnable {
 		if (mc.world != null && mc.player != null && WeatherUtilConfig.isEffectsEnabled(mc.world.provider.getDimension()) && ClientTickHandler.weatherManager != null)
 		{
 			if (mc.world.getTotalWorldTime() % 10L == 0L)
-			{
 				wo = ClientTickHandler.weatherManager.getClosestWeather(new Vec3(mc.player.posX, mc.player.posY, mc.player.posZ), ConfigParticle.extended_render_distance);
-			}
 			profileSurroundings();
 			tryAmbientSounds();
 		}
@@ -658,7 +655,7 @@ public class SceneEnhancer implements Runnable {
 						}
 						spawnAreaSize = 20;
 						//downfall - at just above 0.3 cause rainstorms lock at 0.3 but flicker a bit above and below
-						if (downfall == true && curPrecipVal >= 0.66) {
+						if (downfall && curPrecipVal >= 0.45) {
 
 							int scanAheadRange = 0;
 							//quick is outside check, prevent them spawning right near ground
@@ -669,7 +666,7 @@ public class SceneEnhancer implements Runnable {
 							else
 								scanAheadRange = 10;
 
-							for (int i = 0; i < 1.5F * curPrecipVal * ConfigParticle.precipitation_particle_rate; i++)
+							for (int i = 0; i < 1.0F * curPrecipVal * ConfigParticle.precipitation_particle_rate; i++)
 							{
 								BlockPos pos = new BlockPos(
 										entP.posX + rand.nextInt(spawnAreaSize) - (spawnAreaSize / 2),
@@ -691,7 +688,7 @@ public class SceneEnhancer implements Runnable {
 									rain.setKillWhenUnderTopmostBlock_ScanAheadRange(scanAheadRange);
 									rain.setTicksFadeOutMaxOnDeath(10);
 									rain.noExtraParticles = true;
-									rain.windWeight = 11F;
+									rain.windWeight = 16F;
 									rain.setFacePlayer(true);
 									rain.facePlayerYaw = true;
 
@@ -830,7 +827,7 @@ public class SceneEnhancer implements Runnable {
 				{
 					double rainIntensity = ConfigParticle.enable_vanilla_rain ? 0.0D : overcastIntensity * Math.min((storm.rain - IWeatherRain.MINIMUM_DRIZZLE) / 300.0F, 1.0F);
 					
-					tempAdj = storm.temperature > 0 ? 1F : -1F;
+					tempAdj = WeatherUtil.getTemperature(mc.world, mc.player.getPosition());
 					
 					//limit plain rain clouds to light intensity
 					if (storm.stage < Stage.THUNDER.getStage())

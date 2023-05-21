@@ -8,6 +8,7 @@ public class EventEZGuiData extends Event
 	public final int oldValue;
 	public final int newValue;
 	
+	/**Used to process EZ Gui options that were changed. Use this to change config values based on the option that was selected.*/
 	public EventEZGuiData(String id, int oldValue, int newValue)
 	{
 		this.id = id;

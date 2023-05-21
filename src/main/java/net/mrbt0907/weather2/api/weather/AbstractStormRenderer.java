@@ -12,7 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
@@ -25,17 +24,21 @@ import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.weather.storm.StormObject;
 
 @SideOnly(Side.CLIENT)
+
 public abstract class AbstractStormRenderer
 {
 	protected ParticleBehaviorFog particleBehaviorFog;
+	/**The storm that the renderer is attached to*/
 	public StormObject storm;
-	public ResourceLocation id;
+	/**The amount of particles that can spawn*/
 	public int particlesLeft;
+	
 	private final List<Particle> particles = new ArrayList<Particle>();
 	private int particleLimit = 1;
 	private static long delta, worldDelta;
 	public static final List<String> renderDebugInfo = new ArrayList<String>();
 	
+	/**Used to spawn particles based on various variables in a storm. Examples are found in net.mrbt0907.weather2.client.weather.tornado*/
 	public AbstractStormRenderer(StormObject storm)
 	{
 		refreshParticleLimit();
@@ -147,10 +150,13 @@ public abstract class AbstractStormRenderer
 		
 	}
 	
+	/**Used to spawn particles and control particles each tick.*/
 	public abstract void onTick(WeatherManagerClient manager);
+	/**Used to split the particle limit evenly between each aspect of this renderer. Does not need to be used*/
 	public abstract void onParticleLimitRefresh(WeatherManagerClient manager, int newParticleLimit);
+	/**Used to add extra information to the debug renderer. Null is acceptable*/
 	public abstract List<String> onDebugInfo();
-	
+	/**Used when the particle renderer is being removed.*/
 	public abstract void cleanupRenderer();
 	
 	public final void cleanup()
@@ -166,11 +172,13 @@ public abstract class AbstractStormRenderer
 		}
 	}
 	
+	/**Spawns a storm particle at the specified location.*/
 	public final ExtendedEntityRotFX spawnParticle(double x, double y, double z, int parRenderOrder)
 	{
 		return spawnParticle(x, y, z, parRenderOrder, ConfigCoroUtil.optimizedCloudRendering ? net.mrbt0907.weather2.registry.ParticleRegistry.cloud32 : net.mrbt0907.weather2.registry.ParticleRegistry.cloud256);
 	}
 	
+	/**Spawns a storm particle at the specified location with a texture.*/
 	public final ExtendedEntityRotFX spawnParticle(double x, double y, double z, int parRenderOrder, TextureAtlasSprite tex)
 	{
 		if (!canSpawnParticle()) return null;
@@ -201,6 +209,7 @@ public abstract class AbstractStormRenderer
 		if (ConfigCoroUtil.optimizedCloudRendering)
 			entityfx.setMaxAge(400);
 		
+		entityfx.particleScale = (float) (entityfx.particleScale * ConfigParticle.particle_scale_mult);
 		ExtendedRenderer.rotEffRenderer.addEffect(entityfx);
 		particleBehaviorFog.particles.add(entityfx);
 		particles.add(entityfx);
@@ -211,6 +220,7 @@ public abstract class AbstractStormRenderer
 		return entityfx;
 	}
 	
+	/**Refreshes the particle limit. Do not use.*/
 	public final void refreshParticleLimit()
 	{
 		particleLimit = ClientTickHandler.weatherManager.getParticleLimit();
@@ -242,6 +252,7 @@ public abstract class AbstractStormRenderer
 		
 	}
 	
+	/**Checks whether the renderer can spawn another particle.*/
 	public final boolean canSpawnParticle()
 	{
 		return particleLimit >= particles.size();

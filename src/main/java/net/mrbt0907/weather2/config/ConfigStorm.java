@@ -127,7 +127,10 @@ public class ConfigStorm implements IConfigCategory
 	public static double chance_for_hail = 42.0D;
 	@ConfigComment("How much hail builds up in storms. Higher values = more hail faster")
 	public static double hail_max_buildup_rate = 1.0D;
-	
+	@ConfigComment("How fast storms may progress at a minimum. Higher values = faster development")
+	public static double storm_lifespan_min = 0.003D;
+	@ConfigComment("How fast storms may progress at a maximum. Higher values = faster development")
+	public static double storm_lifespan_max = 0.04D;
     @Override
     public String getName() {
         return "Storm";

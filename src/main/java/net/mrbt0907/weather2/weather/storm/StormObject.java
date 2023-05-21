@@ -99,7 +99,9 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	/**Determines how strong a storm currently is*/
 	public int stage = Stage.NORMAL.getStage();
 	/**Determines how much progression a storm reached in its current stage*/
-	public float intensity = 0;
+	public float intensity = 0.0F;
+	/**Determines how fast storms will intensify. 0.03 by default*/
+	public float intensityRate = 0.03F;
 	/***/
 	public int revives = 0;
 	/***/
@@ -176,6 +178,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		layer = nbt.getInteger("layer");
 		stageMax = nbt.getInteger("levelStormIntensityMax");
 		intensity = nbt.getFloat("levelCurStagesIntensity");
+		intensityRate = nbt.getFloat("intensityRate");
 		funnelSize = nbt.getFloat("levelCurStageSize");
 		windSpeed = nbt.getFloat("levelCurStageWind");
 		sizeRate = nbt.getFloat("levelCurStageSizeRate");
@@ -205,6 +208,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		nbt.setInteger("layer", layer);
 		nbt.setInteger("levelCurIntensityStage", stage);
 		nbt.setFloat("levelCurStagesIntensity", intensity);
+		nbt.setFloat("intensityRate", intensityRate);
 		nbt.setFloat("levelStormIntensityMax", stageMax);
 		nbt.setFloat("levelCurStageSize", funnelSize);
 		nbt.setFloat("levelCurStageWind", windSpeed);
@@ -663,7 +667,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 				else
 					isSpout = false;
 				
-				float intensityRate = 0.03F;
+				float intensityRate = isDeadly() ? this.intensityRate : 0.03F;
 				boolean intensify = intensity - (stage - 1) > 1.0F;
 				
 				//speed up forming and greater progression when past forming state
@@ -821,7 +825,10 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			hailRate = (float) Maths.random(ConfigStorm.hail_max_buildup_rate);
 		
 		if (stageMax > Stage.SEVERE.getStage())
-			Weather2.debug("New Deadly Storm: \nIs Violent: " + isViolent + "\nMax Stage: " + stageMax + " (EF" + (stageMax - 4) + ")\nSize Multiplier: " + sizeRate * 100 + "%");
+		{
+			intensityRate = Maths.random(ConfigStorm.storm_lifespan_min <= 0.0D ? 0.003F : (float)ConfigStorm.storm_lifespan_min, ConfigStorm.storm_lifespan_max <= 0.0D ? 0.06F : (float)ConfigStorm.storm_lifespan_max);
+			Weather2.debug("New Deadly Storm: \nIs Violent: " + isViolent + "\nMax Stage: " + stageMax + " (EF" + (stageMax - 4) + ")\nSize Multiplier: " + sizeRate * 100 + "%\nLifespan Multiplier: " + intensityRate * 100);
+		}
 		else
 			Weather2.debug("New Normal Storm: \nIs Violent: " + isViolent + "\nMax Stage: " + stageMax + "\nSize Multiplier: " + sizeRate * 100 + "%");
 		canProgress = true;

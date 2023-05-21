@@ -44,7 +44,11 @@ public class ConfigGrab implements IConfigCategory
 	@ConfigComment("Should storms replace blocks based on wind resistance? Will follow grab lists if enabled.")
 	public static boolean replace_list_strength_matches = true;
 	@ConfigComment("See config file for examples. A list of blocks to be replaced by storms. Use commas and/or spaces to separate each entry. Do not use quotation marks. \"!\" Will remove entries set by other mods. Use = without spaces to indicate the replacement block. Accepted formats - modid:name=modid:replacement, name=replacement, modid:name=replacement, name=modid:replacement")
-	public static String replace_list_entries = "leaves=air, leaves2=minecraft:air, minecraft:grass=dirt, minecraft:red_flower=minecraft:air";
+	public static String replace_list_entries = "leaves=minecraft:air, leaves2=minecraft:air, minecraft:grass=dirt, minecraft:red_flower=minecraft:air, minecraft:double_plant=minecraft:air, minecraft:tallgrass=minecraft:air";
+	@ConfigComment("Should the entity grab list also find similarly named entities?")
+	public static boolean entity_blacklist_partial_matches = false;
+	@ConfigComment("See config file for examples. A list of entities that cannot be moved by storms. Use commas and/or spaces to separate each entry. Do not use quotation marks. \"!\" Will remove entries set by other mods. Accepted formats - modid:name, name")
+	public static String entity_blacklist_entries = "";
 	@ConfigComment("Should the wind resistance list also find similarly named items?")
 	public static boolean wind_resistance_partial_matches = false;
 	@ConfigComment("See config file for examples. A list of blocks to register wind resistances to. The numbers are measured in MPH. 65=EF0, 92=EF1, 119=EF2, 146=EF3, 173=EF4, 200=EF5, and so on. Use commas and/or spaces to separate each entry. Do not use quotation marks. \"!\" Will remove entries set by other mods. Use \"=\" without spaces to indicate the wind resistance of the block. Accepted formats - modid:name=number, name=number")

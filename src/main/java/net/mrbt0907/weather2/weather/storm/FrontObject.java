@@ -67,7 +67,7 @@ public class FrontObject implements IWeatherDetectable
 		angle = manager.windManager.windAngle;
 		float vecX = (float) -Math.sin(Math.toRadians(angle));
 		float vecZ = (float) Math.cos(Math.toRadians(angle));
-		float speed = (manager.windManager.windSpeed * 0.2F) + 0.02F;
+		float speed = (manager.windManager.windSpeed * 0.1F) + 0.02F;
 		motion = new Vec3(vecX * speed, 0.0D, vecZ * speed);
 		
 		if (pos == null)

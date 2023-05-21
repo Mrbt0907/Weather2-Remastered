@@ -13,12 +13,14 @@ public class EventRegisterEZGuiOption extends Event
 	private TriMapEx<String, List<String>, Integer> options;
 	private Map<String, Integer> optionCategory;
 	
+	/**Event used to register custom EZ Gui entries to the game.*/
 	public EventRegisterEZGuiOption(TriMapEx<String, List<String>, Integer> options, Map<String, Integer> categories)
 	{
 		this.options = options;
 		this.optionCategory = categories;
 	}
 	
+	/**Registers an EZ Gui option to the EZ Gui.*/
 	public void register(String id, EnumEZCategory category, int defaultOption, String... options)
 	{
 		List<String> settings = new ArrayList<String>();
