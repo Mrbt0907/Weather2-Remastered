@@ -61,7 +61,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		Material material = state.getMaterial();
 		double maxRenderDistance = SceneEnhancer.fogDistance + 64.0D;
 		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0022F, 0.5F), storm.getLayerHeight() * 0.04F);
-		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.01F, 0.8F), storm.getLayerHeight() * 0.04F);
+		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.01F, 0.8F), storm.getLayerHeight() * 0.004F);
 		float sizeOtherMult = Math.min(Math.max(storm.size * 0.003F, 0.5F), storm.getLayerHeight() * 0.035F);
 		float heightMult = storm.getLayerHeight() * 0.00290625F;
 		float rotationMult = Math.max(heightMult * 0.45F, 1.0F);
