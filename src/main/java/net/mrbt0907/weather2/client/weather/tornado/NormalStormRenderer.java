@@ -180,7 +180,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 									particle.setScale(1600.0F * sizeCloudMult);
 								else
 									particle.setScale(600.0F * sizeCloudMult);*/
-								particle.setScale((ConfigParticle.enable_extended_render_distance ? 2000.0F : 600.0F) * sizeCloudMult);
+								particle.setScale((ConfigParticle.enable_extended_render_distance ? 2000.0F : 1000.0F) * sizeCloudMult);
 								listParticlesCloud.add(particle);
 							}
 						}
