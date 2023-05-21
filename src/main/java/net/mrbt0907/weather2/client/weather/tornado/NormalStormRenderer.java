@@ -176,7 +176,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 								}
 
 								particle.rotationPitch = Maths.random(70.0F, 110.0F);
-								particle.setScale(1000.0F * sizeCloudMult);
+								particle.setScale(800.0F * sizeCloudMult);
 								listParticlesCloud.add(particle);
 							}
 						}
