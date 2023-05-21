@@ -60,8 +60,8 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		IBlockState state = ConfigCoroUtil.optimizedCloudRendering ? Blocks.AIR.getDefaultState() : ChunkUtils.getBlockState(manager.getWorld(), (int) storm.pos_funnel_base.posX, (int) storm.pos_funnel_base.posY - 1, (int) storm.pos_funnel_base.posZ);
 		Material material = state.getMaterial();
 		double maxRenderDistance = SceneEnhancer.fogDistance + 64.0D;
-		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0011F, 0.5F), storm.getLayerHeight() * 0.04F);
-		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.01F, 0.8F), storm.getLayerHeight() * 0.004F);
+		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0022F, 0.5F), storm.getLayerHeight() * 0.04F);
+		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.01F, 0.8F), storm.getLayerHeight() * 0.04F);
 		float sizeOtherMult = Math.min(Math.max(storm.size * 0.003F, 0.5F), storm.getLayerHeight() * 0.035F);
 		float heightMult = storm.getLayerHeight() * 0.00290625F;
 		float rotationMult = Math.max(heightMult * 0.45F, 1.0F);
@@ -241,7 +241,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 							if (WeatherUtil.isAprilFoolsDay())
 								particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2, ParticleRegistry.potato);
 							else
-								particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2);
+								particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2, net.mrbt0907.weather2.registry.ParticleRegistry.tornado256);
 						else
 							particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2, net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_fire);
 						if (particle == null) break;
