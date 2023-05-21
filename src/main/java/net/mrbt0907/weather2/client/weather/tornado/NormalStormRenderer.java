@@ -176,7 +176,11 @@ public class NormalStormRenderer extends AbstractStormRenderer
 								}
 
 								particle.rotationPitch = Maths.random(70.0F, 110.0F);
-								particle.setScale(1600.0F * sizeCloudMult);
+								/*if(ConfigParticle.enable_extended_render_distance)
+									particle.setScale(1600.0F * sizeCloudMult);
+								else
+									particle.setScale(600.0F * sizeCloudMult);*/
+								particle.setScale((ConfigParticle.enable_extended_render_distance ? 1600.0F : 600.0F) * sizeCloudMult);
 								listParticlesCloud.add(particle);
 							}
 						}
@@ -393,7 +397,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 						double var18 = storm.pos.posZ - ent.getPosZ();
 						ent.rotationYaw = (float)(Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
 						ent.rotationPitch = -30F - (ent.getEntityId() % 10); //meso clouds
-						ent.setScale(2000.0F * sizeFunnelMult);
+						ent.setScale((ConfigParticle.enable_extended_render_distance ? 1600.0F : 600.0F) * sizeFunnelMult);
 						
 					}
 					else
