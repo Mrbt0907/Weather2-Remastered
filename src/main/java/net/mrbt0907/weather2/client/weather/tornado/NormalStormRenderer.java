@@ -454,7 +454,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 			if (!ent.isAlive())
 				listParticlesRain.remove(ent);
 			
-			if (ent.motionY > -1.0D * heightMult)
+			if (ent.motionY > -heightMult)
 				ent.motionY = ent.motionY - (0.1D);
 			
 			double speed = Math.sqrt(ent.getMotionX() * ent.getMotionX() + ent.getMotionY() * ent.getMotionY() + ent.getMotionZ() * ent.getMotionZ());

@@ -43,6 +43,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WindReader;
 import net.mrbt0907.weather2.api.weather.IWeatherRain;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
@@ -1599,7 +1600,7 @@ public class SceneEnhancer implements Runnable {
 			fogBlueTarget = 0.10F;
 			fogDensityTarget = 0.98F;
 		}
-		else if (storm == null)
+		else if (!(storm != null && storm instanceof StormObject && ((StormObject)storm).isRaining()))
 		{
 			fogRedTarget = fogRedOrig;
 			fogGreenTarget = fogGreenOrig;
