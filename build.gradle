@@ -56,8 +56,8 @@ minecraft {
 
 repositories {
 	maven {
-    	name = "Progwml6 maven"
-    	url = "https://dvs1.progwml6.com/files/maven/"
+    	name = "Blame jared for this one"
+    	url = "https://maven.blamejared.com/"
   }
   maven {
     // location of a maven mirror for JEI files, as a fallback
