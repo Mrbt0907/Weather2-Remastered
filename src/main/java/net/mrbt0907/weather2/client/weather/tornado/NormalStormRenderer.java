@@ -60,7 +60,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		IBlockState state = ConfigCoroUtil.optimizedCloudRendering ? Blocks.AIR.getDefaultState() : ChunkUtils.getBlockState(manager.getWorld(), (int) storm.pos_funnel_base.posX, (int) storm.pos_funnel_base.posY - 1, (int) storm.pos_funnel_base.posZ);
 		Material material = state.getMaterial();
 		double maxRenderDistance = SceneEnhancer.fogDistance + 64.0D;
-		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0022F, 0.5F), storm.getLayerHeight() * 0.04F);
+		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0011F, 0.5F), storm.getLayerHeight() * 0.04F);
 		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.01F, 0.8F), storm.getLayerHeight() * 0.004F);
 		float sizeOtherMult = Math.min(Math.max(storm.size * 0.003F, 0.5F), storm.getLayerHeight() * 0.035F);
 		float heightMult = storm.getLayerHeight() * 0.00290625F;
@@ -180,7 +180,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 									particle.setScale(1600.0F * sizeCloudMult);
 								else
 									particle.setScale(600.0F * sizeCloudMult);*/
-								particle.setScale((ConfigParticle.enable_extended_render_distance ? 1600.0F : 600.0F) * sizeCloudMult);
+								particle.setScale((ConfigParticle.enable_extended_render_distance ? 2000.0F : 600.0F) * sizeCloudMult);
 								listParticlesCloud.add(particle);
 							}
 						}
@@ -397,7 +397,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 						double var18 = storm.pos.posZ - ent.getPosZ();
 						ent.rotationYaw = (float)(Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
 						ent.rotationPitch = -30F - (ent.getEntityId() % 10); //meso clouds
-						ent.setScale((ConfigParticle.enable_extended_render_distance ? 1600.0F : 600.0F) * sizeFunnelMult);
+						ent.setScale((ConfigParticle.enable_extended_render_distance ? 1800.0F : 600.0F) * sizeCloudMult);
 						
 					}
 					else
