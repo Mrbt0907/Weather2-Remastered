@@ -107,7 +107,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	/***/
 	public int maxRevives = 0;
 	/***/
-	public float lightning = 1.0F;
+	public float lightning = 0.5F;
 	/**Determines how much the storm needs to reach before it can increase stages. Unused in new progression system*/
 	public float intensityMax = 0;
 	/**Determines the size of a storm; not the tornado size*/
@@ -182,6 +182,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		funnelSize = nbt.getFloat("levelCurStageSize");
 		windSpeed = nbt.getFloat("levelCurStageWind");
 		sizeRate = nbt.getFloat("levelCurStageSizeRate");
+		lightning = nbt.getFloat("lightning");
 		isViolent = nbt.getBoolean("isViolent");
 		isFirenado = nbt.getBoolean("isFirenado");
 		name = nbt.getString("stormName");
@@ -215,6 +216,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		nbt.setFloat("levelCurStageSizeRate", sizeRate);
 		nbt.setInteger("stormType", stormType);
 		nbt.setString("stormName", name);
+		nbt.setFloat("lightning", lightning);
 		nbt.setBoolean("isViolent", isViolent);
 		nbt.setBoolean("shouldConvert", shouldConvert);
 		nbt.setBoolean("shouldBuildHumidity", shouldBuildHumidity);
@@ -380,36 +382,20 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	public void tickWeatherEvents()
 	{
 		World world = manager.getWorld();
-		
+		EntityPlayer player;
+		int amount = (int)MathHelper.clamp(ConfigStorm.hail_stones_per_tick * hail * 0.0001F, 1.0F, ConfigStorm.hail_stones_per_tick);
 		currentTopYBlock = WeatherUtilBlock.getPrecipitationHeightSafe(world, new BlockPos(MathHelper.floor(pos.posX), 0, MathHelper.floor(pos.posZ))).getY();
 		
-		if (stage > Stage.RAIN.getStage())
+		for (int i = 0; i < world.playerEntities.size(); i++)
 		{
-			if (Maths.random(0, ConfigStorm.lightning_bolt_1_in_x + (int) (Math.max(ConfigStorm.lightning_bolt_1_in_x * lightning, 0.0F))) == 0)
+			player = world.playerEntities.get(Maths.random(0, world.playerEntities.size()));
+			if (isHailing() && pos.distance(player.posX, pos.posY, player.posZ) < size)
 			{
-				int x = (int) (pos.posX + Maths.random(-size, size));
-				int z = (int) (pos.posZ + Maths.random(-size, size));
-				
-				if (world.isBlockLoaded(new BlockPos(x, 0, z)))
+				for (int ii = 0 ; ii < amount; ii++)
 				{
-					int y = world.getPrecipitationHeight(new BlockPos(x, 0, z)).getY();
-					addWeatherEffectLightning(new EntityLightningBolt(world, (double)x, (double)y, (double)z), false);
-				}
-			}
-		}
-		
-		if (isHailing())
-		{
-			int amount = (int)MathHelper.clamp(ConfigStorm.hail_stones_per_tick * hail * 0.0001F, 1.0F, ConfigStorm.hail_stones_per_tick);
-			EntityPlayer player;
-			for (int i = 0; i < amount && world.playerEntities.size() > 0; i++)
-			{
-				player = world.playerEntities.get(Maths.random(0, world.playerEntities.size()));
-				if(pos.distance(player.posX, pos.posY, player.posZ) < size)
-				{
-					int x = (int) (player.posX + Maths.random(-64, 64));
-					int z = (int) (player.posZ + Maths.random(-64, 64));
-					
+					int x = (int) (player.posX + Maths.random(-128, 128));
+					int z = (int) (player.posZ + Maths.random(-128, 128));
+						
 					if (world.isBlockLoaded(new BlockPos(x, getLayerHeight(), z)))
 					{
 						EntityIceBall hail = new EntityIceBall(world);
@@ -417,6 +403,20 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 						world.spawnEntity(hail);
 					}
 				}
+			}
+			
+			if (stage > Stage.RAIN.getStage() && Maths.random(0, ConfigStorm.lightning_bolt_1_in_x - (int)(ConfigStorm.lightning_bolt_1_in_x * lightning)) == 0)
+			{
+				int x = (int) (player.posX + Maths.random(-ConfigStorm.max_lightning_bolt_distance, ConfigStorm.max_lightning_bolt_distance));
+				int z = (int) (player.posZ + Maths.random(-ConfigStorm.max_lightning_bolt_distance, ConfigStorm.max_lightning_bolt_distance));
+					
+				if (world.isBlockLoaded(new BlockPos(x, 0, z)))
+				{
+					int y = world.getPrecipitationHeight(new BlockPos(x, 0, z)).getY();
+					addWeatherEffectLightning(new EntityLightningBolt(world, (double)x, (double)y, (double)z), false);
+				}
+				else
+					PacketLightning.spawnInvisibleLightning(manager.getDimension(), x, getLayerHeight(), z);
 			}
 		}
 		
@@ -685,11 +685,15 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 						Weather2.debug("Storm " + getUUID().toString() + " has intensified to stage " + stage);
 						
 						if (ConfigStorm.storms_aim_at_player && front.isGlobal() && stage == Stage.TORNADO.getStage())
+						{
+							lightning = Math.max(Maths.random(0.01F, 0.95F), lightning);
 							aimStormAtPlayer(null);
+						}
 						
 						if (shouldConvert && !ConfigStorm.disable_cyclones && (stage < WeatherEnum.Stage.SEVERE.getStage() && hasOcean || ConfigStorm.disable_tornados))
 						{
 							Weather2.debug("Storm " + getUUID().toString() + " was converted into a tropical cyclone");
+							lightning = Maths.random(0.01F, 0.30F);
 							stormType = StormType.WATER.ordinal();
 							updateType();
 						}
@@ -779,8 +783,12 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		shouldBuildHumidity = true;
 		sizeRate = Maths.random(0.75F, 1.35F);
 		isViolent = Maths.chance(ConfigStorm.chance_for_violent_storm * 0.01D * 0.25D);
-		
 		stageMax = Math.max(rollDiceOnMaxIntensity(), WeatherEnum.Stage.TORNADO.getStage());
+		intensityRate = Maths.random(ConfigStorm.storm_lifespan_min <= 0.0D ? 0.003F : (float)ConfigStorm.storm_lifespan_min, ConfigStorm.storm_lifespan_max <= 0.0D ? 0.06F : (float)ConfigStorm.storm_lifespan_max);
+
+		Biome biome = world.getBiome(new BlockPos(MathHelper.floor(pos.posX), 0, MathHelper.floor(pos.posZ)));
+		if (shouldConvert)
+			stormType = biome != null && biome.biomeName.toLowerCase().contains("ocean") ? StormType.WATER.ordinal() : StormType.LAND.ordinal();
 		
 		if (isViolent)
 		{
@@ -803,6 +811,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			stage = Stage.RAIN.getStage();
 			intensity = 0.0F;
 		}
+
+		lightning = Maths.random(0.01F, 0.5F);
 		
 		if (stageMax < 1)
 			stageMax = rollDiceOnMaxIntensity();
@@ -1148,7 +1158,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	
 	public void addWeatherEffectLightning(EntityLightningBolt parEnt, boolean custom) {
 		manager.getWorld().weatherEffects.add(parEnt);
-		PacketLightning.send(manager.getDimension(), parEnt, custom);
+		PacketLightning.spawnLightning(manager.getDimension(), parEnt, custom);
 	}
 	
 	@Override

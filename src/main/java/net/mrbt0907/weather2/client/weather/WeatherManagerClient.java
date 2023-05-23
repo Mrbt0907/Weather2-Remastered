@@ -8,7 +8,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
@@ -17,8 +19,11 @@ import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
 import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.config.ConfigParticle;
+import net.mrbt0907.weather2.config.ConfigStorm;
+import net.mrbt0907.weather2.config.ConfigVolume;
 import net.mrbt0907.weather2.entity.EntityLightningBolt;
 import net.mrbt0907.weather2.entity.EntityLightningBoltCustom;
+import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.weather.WeatherManager;
 import net.mrbt0907.weather2.weather.storm.FrontObject;
 import net.mrbt0907.weather2.weather.storm.StormObject;
@@ -177,26 +182,38 @@ public class WeatherManagerClient extends WeatherManager
 				int posXS = mainNBT.getInteger("posX");
 				int posYS = mainNBT.getInteger("posY");
 				int posZS = mainNBT.getInteger("posZ");
-				
-				boolean custom = mainNBT.getBoolean("useCustomLightning");
-				
-				//Weather.dbg("uhhh " + parNBT);
-				
-				double posX = (double)posXS;
-				double posY = (double)posYS;
-				double posZ = (double)posZS;
-				Entity ent = null;
-				if (!custom)
-					ent = new EntityLightningBolt(getWorld(), posX, posY, posZ);
+				if (mainNBT.hasKey("entityID"))
+				{
+					boolean custom = mainNBT.getBoolean("useCustomLightning");
+					
+					//Weather.dbg("uhhh " + parNBT);
+					
+					double posX = (double)posXS;
+					double posY = (double)posYS;
+					double posZ = (double)posZS;
+					Entity ent = null;
+					if (!custom)
+						ent = new EntityLightningBolt(getWorld(), posX, posY, posZ);
+					else
+						ent = new EntityLightningBoltCustom(getWorld(), posX, posY, posZ);
+					ent.serverPosX = posXS;
+					ent.serverPosY = posYS;
+					ent.serverPosZ = posZS;
+					ent.rotationYaw = 0.0F;
+					ent.rotationPitch = 0.0F;
+					ent.setEntityId(mainNBT.getInteger("entityID"));
+					getWorld().addWeatherEffect(ent);
+				}
 				else
-					ent = new EntityLightningBoltCustom(getWorld(), posX, posY, posZ);
-				ent.serverPosX = posXS;
-				ent.serverPosY = posYS;
-				ent.serverPosZ = posZS;
-				ent.rotationYaw = 0.0F;
-				ent.rotationPitch = 0.0F;
-				ent.setEntityId(mainNBT.getInteger("entityID"));
-				getWorld().addWeatherEffect(ent);
+				{
+					Minecraft mc = Minecraft.getMinecraft(); 
+					int x = mainNBT.getInteger("posX"), y = mainNBT.getInteger("posY"), z = mainNBT.getInteger("posZ");
+					if (mc.player != null && Maths.distance(mc.player.posX, mc.player.posY, mc.player.posZ, x, y, z) <= ConfigStorm.max_lightning_bolt_distance)
+					{
+						world.setLastLightningBolt(4);
+						world.playSound(x, y, z, SoundEvents.ENTITY_LIGHTNING_THUNDER, SoundCategory.WEATHER, 64.0F * (float)ConfigVolume.lightning, Maths.random(0.65F, 0.75F), false);
+					}
+				}
 				break;
 			}
 			case 11:

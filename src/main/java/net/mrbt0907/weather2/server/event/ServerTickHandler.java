@@ -140,7 +140,7 @@ public class ServerTickHandler
 				if (player != null) {
 					EntityLightningBoltCustom lightning = new EntityLightningBoltCustom(world, player.posX, player.posY, player.posZ);
 					world.addWeatherEffect(lightning);
-					PacketLightning.send(world.provider.getDimension(), lightning, true);
+					PacketLightning.spawnLightning(world.provider.getDimension(), lightning, true);
 				}
 			}
 		}
