@@ -3,6 +3,7 @@ package net.mrbt0907.weather2.event;
 import extendedrenderer.render.FoliageRenderer;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.GlStateManager.FogMode;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIMoveIndoors;
 import net.minecraft.entity.passive.EntityVillager;
@@ -15,6 +16,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.world.WorldEvent.Save;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
@@ -22,6 +24,7 @@ import net.mrbt0907.weather2.api.WeatherAPI;
 import net.mrbt0907.weather2.api.WeatherUtilData;
 import net.mrbt0907.weather2.api.event.EventRegisterGrabLists;
 import net.mrbt0907.weather2.api.event.EventRegisterParticleRenderer;
+import net.mrbt0907.weather2.client.NewSceneEnhancer;
 import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.foliage.FoliageEnhancerShader;
@@ -278,7 +281,8 @@ public class EventHandlerForge
 	}
 	
 	@SubscribeEvent
-	public void worldSave(Save event) {
+	public void worldSave(Save event)
+	{
 		Weather2.writeOutData(false);
 	}
 	
@@ -286,7 +290,6 @@ public class EventHandlerForge
 	@SideOnly(Side.CLIENT)
     public void worldRender(RenderWorldLastEvent event)
     {
-
 		if (ConfigMisc.toaster_pc_mode) return;
 
 		ClientTickHandler.checkClientWeather();
@@ -298,12 +301,10 @@ public class EventHandlerForge
 	
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
-	public void registerIcons(TextureStitchEvent.Pre event) {
-		
+	public void registerIcons(TextureStitchEvent.Pre event)
+	{
 		//optifine breaks (removes) forge added method setTextureEntry, dont use it
 		ParticleRegistry.init(event);
-		
-		
 	}
 
     @SubscribeEvent
@@ -319,7 +320,7 @@ public class EventHandlerForge
 	{
 		if (ConfigMisc.toaster_pc_mode) return;
 		
-        if (SceneEnhancer.isFogOverridding())
+        if (false && SceneEnhancer.isFogOverridding())
         {
 			//backup original fog colors that are actively being adjusted based on time of day
 			SceneEnhancer.fogRedOrig = event.getRed();
@@ -337,41 +338,34 @@ public class EventHandlerForge
 	public void onFogRender(RenderFogEvent event)
 	{
 		if (ConfigMisc.toaster_pc_mode) return;
-
-		if (SceneEnhancer.isFogOverridding())
-		{
-			try
-			{
-				event.getRenderer().farPlaneDistance = (float) ConfigParticle.extended_render_distance;
-			}
-			catch (Exception e)
-			{
-				if ((float) ReflectionHelper.get(EntityRenderer.class, event.getRenderer(), "farPlaneDistance", "field_78530_s") != ConfigParticle.extended_render_distance);
-					ReflectionHelper.set(EntityRenderer.class, event.getRenderer(), (float)ConfigParticle.extended_render_distance, "farPlaneDistance", "field_78530_s");
-			}
-        }
+		
+		NewSceneEnhancer scene = NewSceneEnhancer.instance();
+		float farplane = ConfigParticle.enable_extended_render_distance ? (float) ConfigParticle.extended_render_distance : event.getFarPlaneDistance();
 		
 		try
 		{
-			SceneEnhancer.fogDistance = event.getRenderer().farPlaneDistance;
+			event.getRenderer().farPlaneDistance = farplane;
 		}
 		catch (Exception e)
 		{
-			SceneEnhancer.fogDistance = (float) ReflectionHelper.get(EntityRenderer.class, event.getRenderer(), "farPlaneDistance", "field_78530_s");
+			if (event.getFarPlaneDistance() != farplane)
+				ReflectionHelper.set(EntityRenderer.class, event.getRenderer(), "farPlaneDistance", "field_78530_s", farplane);
 		}
-
 		
-		//TODO: make use of this, density only works with EXP or EXP 2 mode
-		GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
-		GlStateManager.setFogStart(SceneEnhancer.fogStart);
-        GlStateManager.setFogEnd(SceneEnhancer.fogEnd);
+		scene.renderDistance = farplane;
+		
+		if (scene.changeFog())
+		{
+			GlStateManager.setFog(GlStateManager.FogMode.EXP);
+			GlStateManager.setFogDensity(scene.fogMult);
+		}
 	}
 
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)
 	public void onRenderTick(TickEvent.RenderTickEvent event)
 	{
-		SceneEnhancer.renderTick(event);
+		NewSceneEnhancer.instance().tickRender(event);	
 	}
 
 	@SubscribeEvent

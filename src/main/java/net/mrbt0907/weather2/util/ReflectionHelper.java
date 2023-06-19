@@ -2,71 +2,87 @@ package net.mrbt0907.weather2.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.mrbt0907.weather2.Weather2;
 
-@SuppressWarnings("deprecation")
 public class ReflectionHelper
 {
-	public static <T, E> void setAlt(Class <? extends T> classToAccess, T instance, E value, String... fieldNames)
+	private static final Map<String, Field> FIELDS = new HashMap<String, Field>();
+	private static Field modifiers = null;
+	private static boolean enabled = false;
+	
+	@SuppressWarnings("deprecation")
+	private static Field getField(Class <?> clazz, String fieldName, String fieldObfName)
 	{
-		Field field = net.minecraftforge.fml.relauncher.ReflectionHelper.findField(classToAccess, ObfuscationReflectionHelper.remapFieldNames(classToAccess.getName(), fieldNames));
-		try
+		Field field = FIELDS.get(fieldObfName);
+		
+		if (field == null)
 		{
-			Field modifiersField = Field.class.getDeclaredField("modifiers");
-			modifiersField.setAccessible(true);
-			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-			field.set(instance, value);
+			field = net.minecraftforge.fml.relauncher.ReflectionHelper.findField(clazz, fieldName, fieldObfName);
+			
+			if (field != null)
+				FIELDS.put(fieldObfName, field);
 		}
-
-		catch (Exception e)
-		{
-		}
+			
+		if (modifiers == null)
+			try
+			{
+				modifiers = Field.class.getDeclaredField("modifiers");
+				modifiers.setAccessible(true);
+				enabled = true;
+			}
+			catch (Exception e) {}
+		
+		return field;
+	}
+	
+	private static <T, E> void setValue(Field field, T instance, E value)
+	{
+		if (enabled && field != null)
+			try
+			{
+				modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+				field.set(instance, value);
+			}
+			catch (Exception e) {}
+	}
+	
+	private static <T> Object getValue(Field field, T instance)
+	{
+		if (enabled && field != null)
+			try
+			{
+				modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+				return field.get(instance);
+			}
+			catch (Exception e) {}
+		
+		return null;
+	}
+	
+	public static <T, E> void set(Class <?> clazz, T instance, String fieldName, String fieldObfName, E value)
+	{
+		if (clazz.isAssignableFrom(instance.getClass()))
+			setValue(getField(clazz, fieldName, fieldObfName), instance, value);
 	}
 
-	public static <T, E> void set(Class <T> classToAccess, T instance, E value, String... fieldNames)
+	public static <T> Object get(Class <?> clazz, T instance, String fieldName, String fieldObfName)
 	{
-		Field field = net.minecraftforge.fml.relauncher.ReflectionHelper.findField(classToAccess, ObfuscationReflectionHelper.remapFieldNames(classToAccess.getName(), fieldNames));
-		try
-		{
-			Field modifiersField = Field.class.getDeclaredField("modifiers");
-			modifiersField.setAccessible(true);
-			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-			field.set(instance, value);
-		}
-
-		catch (Exception e)
-		{
-		}
+		if (clazz.isAssignableFrom(instance.getClass()))
+			return getValue(getField(clazz, fieldName, fieldObfName), instance);
+		return null;
 	}
 
-	public static <T> Object get(Class <? super T > classToAccess, T instance, String... fieldNames)
-	{
-		Field field = net.minecraftforge.fml.relauncher.ReflectionHelper.findField(classToAccess, ObfuscationReflectionHelper.remapFieldNames(classToAccess.getName(), fieldNames));
-		try
-		{
-			Field modifiersField = Field.class.getDeclaredField("modifiers");
-			modifiersField.setAccessible(true);
-			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-			return field.get(instance);
-		}
-
-		catch (Exception e)
-		{
-			return null;
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public static <T> List<String> view(String... classes)
+	public static List<String> view(String... classes)
 	{
 		List<String> found = new ArrayList<String>();
 		for (int i = 0; i < classes.length; i++)
 			try
 			{
-				Class <? extends T> clazz = (Class<? extends T>) Class.forName(classes[i]);
+				Class <?> clazz = (Class<?>) Class.forName(classes[i]);
 				Field fields[] = clazz.getDeclaredFields();
 				
 				for (int ii = 0; ii < fields.length; ii++)	
@@ -75,16 +91,11 @@ public class ReflectionHelper
 					Weather2.debug("Found variable:  " + Modifier.toString(fields[ii].getModifiers()) + " " + fields[ii].getType().getSimpleName() + " " + fields[ii].getName() + ";");
 					found.add("Found variable:  " + Modifier.toString(fields[ii].getModifiers()) + " " + fields[ii].getType().getSimpleName() + " " + fields[ii].getName() + ";");
 				}
-				catch (Exception e)
-				{
-				}
+				catch (Exception e) {}
 			}
-			catch (Exception e)
-			{
-			}
+			catch (Exception e) {}
 		return found;
 	}
-	
 }
 
 

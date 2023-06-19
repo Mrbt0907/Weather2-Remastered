@@ -389,34 +389,34 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		for (int i = 0; i < world.playerEntities.size(); i++)
 		{
 			player = world.playerEntities.get(Maths.random(0, world.playerEntities.size()));
-			if (isHailing() && pos.distance(player.posX, pos.posY, player.posZ) < size)
+			if (pos.distance(player.posX, pos.posY, player.posZ) < size)
 			{
-				for (int ii = 0 ; ii < amount; ii++)
+				if (isHailing())
 				{
-					int x = (int) (player.posX + Maths.random(-128, 128));
-					int z = (int) (player.posZ + Maths.random(-128, 128));
-						
-					if (world.isBlockLoaded(new BlockPos(x, getLayerHeight(), z)))
+					for (int ii = 0 ; ii < amount; ii++)
 					{
-						EntityIceBall hail = new EntityIceBall(world);
-						hail.setPosition(x, getLayerHeight(), z);
-						world.spawnEntity(hail);
+						int x = (int) (player.posX + Maths.random(-128, 128));
+						int z = (int) (player.posZ + Maths.random(-128, 128));
+							
+						if (world.isBlockLoaded(new BlockPos(x, getLayerHeight(), z)))
+						{
+							EntityIceBall hail = new EntityIceBall(world);
+							hail.setPosition(x, getLayerHeight(), z);
+							world.spawnEntity(hail);
+						}
 					}
 				}
-			}
-			
-			if (stage > Stage.RAIN.getStage() && Maths.random(0, ConfigStorm.lightning_bolt_1_in_x - (int)(ConfigStorm.lightning_bolt_1_in_x * lightning)) == 0)
-			{
-				int x = (int) (player.posX + Maths.random(-ConfigStorm.max_lightning_bolt_distance, ConfigStorm.max_lightning_bolt_distance));
-				int z = (int) (player.posZ + Maths.random(-ConfigStorm.max_lightning_bolt_distance, ConfigStorm.max_lightning_bolt_distance));
-					
-				if (world.isBlockLoaded(new BlockPos(x, 0, z)))
+				
+				if (stage > Stage.RAIN.getStage() && Maths.random(0, ConfigStorm.lightning_bolt_1_in_x - (int)(ConfigStorm.lightning_bolt_1_in_x * lightning)) == 0)
 				{
-					int y = world.getPrecipitationHeight(new BlockPos(x, 0, z)).getY();
-					addWeatherEffectLightning(new EntityLightningBolt(world, (double)x, (double)y, (double)z), false);
+					int x = (int) (player.posX + Maths.random(-ConfigStorm.max_lightning_bolt_distance, ConfigStorm.max_lightning_bolt_distance));
+					int z = (int) (player.posZ + Maths.random(-ConfigStorm.max_lightning_bolt_distance, ConfigStorm.max_lightning_bolt_distance));
+						
+					if (world.isBlockLoaded(new BlockPos(x, 0, z)))
+						addWeatherEffectLightning(new EntityLightningBolt(world, (double)x, (double)world.getPrecipitationHeight(new BlockPos(x, 0, z)).getY(), (double)z), false);
+					else
+						PacketLightning.spawnInvisibleLightning(manager.getDimension(), x, getLayerHeight(), z);
 				}
-				else
-					PacketLightning.spawnInvisibleLightning(manager.getDimension(), x, getLayerHeight(), z);
 			}
 		}
 		
@@ -1244,7 +1244,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	@Override
 	public float getDownfall(Vec3 pos)
 	{
-		return rain ;
+		return rain;
 	}
 
 	@Override

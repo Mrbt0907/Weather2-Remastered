@@ -82,7 +82,8 @@ import javax.vecmath.Vector3f;
 
 @SuppressWarnings("deprecation")
 @SideOnly(Side.CLIENT)
-public class SceneEnhancer implements Runnable {
+public class SceneEnhancer implements Runnable
+{
 	
 	//this is for the thread we make
 	public World lastWorldDetected = null;
@@ -152,7 +153,8 @@ public class SceneEnhancer implements Runnable {
 	public static TornadoFunnel funnel;
 	private static WeatherObject wo;
 
-	public SceneEnhancer() {
+	public SceneEnhancer()
+	{
 		pm = new ParticleBehaviors(null);
 
 		listPosRandom.clear();
@@ -168,7 +170,7 @@ public class SceneEnhancer implements Runnable {
 		while (true) {
 			try {
 				tickClientThreaded();
-				Thread.sleep(ConfigParticle.effect_process_delay);
+				Thread.sleep(ConfigParticle.scene_enhancer_thread_delay);
 			} catch (Throwable throwable) {
 				throwable.printStackTrace();
 			}

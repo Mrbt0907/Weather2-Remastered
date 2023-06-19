@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WindReader;
+import net.mrbt0907.weather2.client.NewSceneEnhancer;
 import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.foliage.FoliageEnhancerShader;
 import net.mrbt0907.weather2.client.gui.GuiEZConfig;
@@ -27,7 +28,7 @@ import net.mrbt0907.weather2.network.packets.PacketData;
 import net.mrbt0907.weather2.network.packets.PacketEZGUI;
 import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import net.mrbt0907.weather2.util.WeatherUtilSound;
-import net.mrbt0907.weather2.weather.EntityRendererProxyWeather2Mini;
+import net.mrbt0907.weather2.weather.EntityRendererEX;
 
 import org.lwjgl.input.Mouse;
 
@@ -35,7 +36,6 @@ public class ClientTickHandler
 {
 	public static World lastWorld;
 	public static WeatherManagerClient weatherManager;
-	public static SceneEnhancer sceneEnhancer;
 	public static FoliageEnhancerShader foliageEnhancer;
 	public static ClientConfigData clientConfigData;
 
@@ -50,19 +50,17 @@ public class ClientTickHandler
 	public boolean extraGrassLast = ConfigFoliage.enable_extra_grass;
 	public boolean op = false;
 	
-	public ClientTickHandler() {
+	public ClientTickHandler()
+	{
 		//this constructor gets called multiple times when created from proxy, this prevents multiple inits
-		if (sceneEnhancer == null)
-		{
-			sceneEnhancer = new SceneEnhancer();
-			(new Thread(sceneEnhancer, "Weather2 Scene Enhancer")).start();
-		}
+		new Thread(NewSceneEnhancer.instance(), "Weather2 New Scene Enhancer").start();
+		
 		if (foliageEnhancer == null)
 		{
 			foliageEnhancer = new FoliageEnhancerShader();
 			(new Thread(foliageEnhancer, "Weather2 Foliage Enhancer")).start();
 		}
-
+		
 		clientConfigData = new ClientConfigData();
 	}
 
@@ -100,20 +98,23 @@ public class ClientTickHandler
         World world = mc.world;
         mc.profiler.startSection("weather2Client");
         mc.profiler.startSection("renderOverride");
-        if (ConfigMisc.proxy_render_override) {
-        	if (!(mc.entityRenderer instanceof EntityRendererProxyWeather2Mini)) {
+        if (ConfigMisc.proxy_render_override)
+        {
+        	if (!(mc.entityRenderer instanceof EntityRendererEX))
+        	{
 				oldRenderer = mc.entityRenderer;
-        		EntityRendererProxyWeather2Mini temp = new EntityRendererProxyWeather2Mini(mc, mc.getResourceManager());
+        		EntityRendererEX temp = new EntityRendererEX(mc, mc.getResourceManager());
 		        mc.entityRenderer = temp;
         	}
-    	} else {
-    		if ((mc.entityRenderer instanceof EntityRendererProxyWeather2Mini)) {
-    			if (oldRenderer != null) {
+    	}
+        else
+        {
+    		if ((mc.entityRenderer instanceof EntityRendererEX))
+    		{
+    			if (oldRenderer != null)
     				mc.entityRenderer = oldRenderer;
-				} else {
+    			else
 					mc.entityRenderer = new EntityRenderer(mc, mc.getResourceManager());
-				}
-
     		}
     	}
 
@@ -127,17 +128,10 @@ public class ClientTickHandler
 			if (!clientConfigData.aestheticMode && ConfigMisc.enable_forced_clouds_off && world.provider.getDimension() == 0) {
 				mc.gameSettings.clouds = 0;
 			}
-
-			//TODO: split logic up a bit better for this, if this is set to false mid sandstorm, fog is stuck on,
-			// with sandstorms and other things it might not represent the EZ config option
-
-	        mc.profiler.startSection("tickRainRates");
-			SceneEnhancer.tickRainRates();
-			mc.profiler.endStartSection("tickSceneEnhancer");
+			
 			if (WeatherUtilConfig.isEffectsEnabled(world.provider.getDimension()))
-			{
-				sceneEnhancer.tickClient();
-			}
+				NewSceneEnhancer.instance().tick();
+			
 			mc.profiler.endStartSection("tickWind");
 			//TODO: evaluate if best here
 			float windDir = WindReader.getWindAngle(world, null);

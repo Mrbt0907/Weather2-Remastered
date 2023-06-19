@@ -28,7 +28,7 @@ import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.config.ConfigGrab;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.entity.EntityMovingBlock;
-import net.mrbt0907.weather2.util.BlockSnapshot;
+import net.mrbt0907.weather2.util.BlockReplaceSnapshot;
 import net.mrbt0907.weather2.util.ChunkUtils;
 import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.util.Maths.Vec3;
@@ -43,7 +43,7 @@ public class TornadoHelper
 {
 	private static final IBlockState AIR = Blocks.AIR.getDefaultState();
 	//static because its a shared list for the whole dimension
-	public static final List<BlockSnapshot> snapshots = new ArrayList<BlockSnapshot>();
+	public static final List<BlockReplaceSnapshot> snapshots = new ArrayList<BlockReplaceSnapshot>();
 	public static HashMap<Integer, Long> grabbedLastQueryTime = new HashMap<Integer, Long>();
 	public static HashMap<Integer, Integer> grabbedCache = new HashMap<Integer, Integer>();
 	public static HashMap<Integer, Integer> replacedCache = new HashMap<Integer, Integer>();
@@ -74,16 +74,16 @@ public class TornadoHelper
 		{
 			snapshots.forEach(snapshot ->
 			{
-				if (snapshot.state == null)
+				if (snapshot.newState == null)
 				{
 					if (ConfigGrab.enable_repair_block_mode)
 					{
-						placeDamageBlock(world, snapshot.pos, snapshot.oldState);
+						placeDamageBlock(world, snapshot.pos, snapshot.state);
 					}
 					else
 					{
-						ChunkUtils.setBlockState(world, snapshot.pos.getX(), snapshot.pos.getY(), snapshot.pos.getZ(), AIR, snapshot.oldState);
-						EntityMovingBlock entity = new EntityMovingBlock(world, snapshot.pos.getX(), snapshot.pos.getY(), snapshot.pos.getZ(), snapshot.oldState, snapshot.storm);
+						ChunkUtils.setBlockState(world, snapshot.pos.getX(), snapshot.pos.getY(), snapshot.pos.getZ(), AIR, snapshot.state);
+						EntityMovingBlock entity = new EntityMovingBlock(world, snapshot.pos.getX(), snapshot.pos.getY(), snapshot.pos.getZ(), snapshot.state, snapshot.storm);
 						entity.motionX += (world.rand.nextDouble() - world.rand.nextDouble()) * 1.0D;
 						entity.motionZ += (world.rand.nextDouble() - world.rand.nextDouble()) * 1.0D;
 						entity.motionY = 1.0D;
@@ -93,10 +93,9 @@ public class TornadoHelper
 				}
 				else
 				{
-					ChunkUtils.setBlockState(world, snapshot.pos.getX(), snapshot.pos.getY(), snapshot.pos.getZ(), snapshot.state, snapshot.oldState);
+					ChunkUtils.setBlockState(world, snapshot.pos.getX(), snapshot.pos.getY(), snapshot.pos.getZ(), snapshot.newState, snapshot.state);
 					putToCache(world, -1, true);
 				}
-				snapshot.clear();
 			});
 			snapshots.clear();
 		}
@@ -245,7 +244,7 @@ public class TornadoHelper
 					if (state != AIR && UtilMining.canConvertToRepairingBlock(world, state))
 					{
 						putToCache(world, 1, false);
-						snapshots.add(new BlockSnapshot(storm, null, state, pos));
+						snapshots.add(new BlockReplaceSnapshot(storm, null, state, pos));
 						return true;
 					}
 					else
@@ -257,7 +256,7 @@ public class TornadoHelper
 				{
 					if ((ConfigGrab.enable_list_sharing && Maths.chance(50) || !ConfigGrab.enable_list_sharing) && (ConfigGrab.grab_list_strength_match && WeatherUtilBlock.checkResistance(storm, id) || !ConfigGrab.grab_list_strength_match))
 					{
-						snapshots.add(new BlockSnapshot(storm, null, state, pos));
+						snapshots.add(new BlockReplaceSnapshot(storm, null, state, pos));
 						return true;
 					}
 				}
@@ -279,7 +278,7 @@ public class TornadoHelper
 				if ((ConfigGrab.replace_list_strength_matches && WeatherUtilBlock.checkResistance(storm, id) || !ConfigGrab.replace_list_strength_matches))
 				{
 					putToCache(world, 1, true);
-					snapshots.add(new BlockSnapshot(storm, Block.getBlockFromName((String) list[Maths.random(0, list.length)]).getDefaultState(), state, pos));
+					snapshots.add(new BlockReplaceSnapshot(storm, Block.getBlockFromName((String) list[Maths.random(0, list.length)]).getDefaultState(), state, pos));
 					return true;
 				}
 			}

@@ -123,7 +123,7 @@ public class BlockRegistry
 			registry.getRegistry().register(block);			
 			
 			ItemRegistry.add(block);
-			Weather2.debug("Registered block " + block.getRegistryName().getNamespace() +  ":" + block.getRegistryName().getPath());
+			Weather2.debug("Registered block " + block.getRegistryName().getNamespace() + ":" + block.getRegistryName().getPath());
 			return;
 		}
 		

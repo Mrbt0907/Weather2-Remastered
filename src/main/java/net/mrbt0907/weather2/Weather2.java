@@ -29,7 +29,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Weather2.MODID, name=Weather2.MOD, version=Weather2.VERSION, acceptedMinecraftVersions="[1.12.2]", dependencies="required-after:coroutil@[1.12.1-1.2.37,);required-after:forge@[14.23.5.2847,);")
+@Mod(modid = Weather2.MODID, name=Weather2.MOD, version=Weather2.VERSION, acceptedMinecraftVersions="[1.12.2]", dependencies="required-after:coroutil@[1.12.1-1.2.37,);required-after:forge@[14.23.5.2860,);")
 public class Weather2
 {
 	public static final String MOD = "Weather 2 - Remastered";
@@ -146,27 +146,43 @@ public class Weather2
 	
 	public static void debug(Object message)
 	{
-		boolean isDebug = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? ClientTickHandler.clientConfigData.debug_mode : ConfigMisc.debug_mode;
+		boolean isDebug = ConfigMisc.debug_mode;
 		if (isDebug)
 			log.info("[DEBUG] " + message);
 	}
 	
 	public static void warn(Object message)
 	{
-		boolean isDebug = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? ClientTickHandler.clientConfigData.debug_mode : ConfigMisc.debug_mode;
+		boolean isDebug = ConfigMisc.debug_mode;
 		if (isDebug)
 			log.warn(message);
 	}
 
 	public static void error(Object message)
 	{
-		boolean isDebug = FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT ? ClientTickHandler.clientConfigData.debug_mode : ConfigMisc.debug_mode;
+		boolean isDebug = ConfigMisc.debug_mode;
 		if (isDebug)
-			log.error(new Exception(message.toString()));
+		{
+			Throwable exception;
+			
+			if (message instanceof Throwable)
+				exception = (Throwable) message;
+			else
+				exception = new Exception(String.valueOf(message));
+
+			exception.printStackTrace();
+		}
 	}
 	
 	public static void fatal(Object message) throws Exception
 	{
-		throw new Exception(message.toString());
+		Error error;
+		
+		if (message instanceof Error)
+			error = (Error) message;
+		else
+			error = new Error(String.valueOf(message));
+		
+		throw error;
 	}
 }

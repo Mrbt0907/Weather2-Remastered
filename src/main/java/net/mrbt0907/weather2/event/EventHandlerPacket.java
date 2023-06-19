@@ -11,6 +11,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.ClientProxy;
 import net.mrbt0907.weather2.Weather2;
+import net.mrbt0907.weather2.client.NewSceneEnhancer;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.network.packets.PacketEZGUI;
 import net.mrbt0907.weather2.server.event.ServerTickHandler;

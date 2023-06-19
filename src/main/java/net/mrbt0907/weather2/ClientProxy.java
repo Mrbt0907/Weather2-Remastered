@@ -44,7 +44,7 @@ public class ClientProxy extends CommonProxy
 	
 	public ClientProxy()
 	{
-			clientTickHandler = new ClientTickHandler();
+		clientTickHandler = new ClientTickHandler();
 	}
 
 	@Override

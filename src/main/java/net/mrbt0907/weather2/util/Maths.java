@@ -309,4 +309,99 @@ public class Maths
 	{
 		return Math.sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ);
 	}
+	
+	/**Takes the provided integer and adjusts it closer to the target with the adjustment integer. Ensure that the adjustment number is positive!*/
+	public static int adjust(int current, int target, int adjustment)
+	{
+		if (current > target)
+		{
+			current -= adjustment;
+			if (current < target)
+				return target;
+		}
+		else if (current < target)
+		{
+			current += adjustment;
+			if (current > target)
+				return target;
+		}
+		
+		return current;
+	}
+	
+	/**Takes the provided long and adjusts it closer to the target with the adjustment long. Ensure that the adjustment number is positive!*/
+	public static long adjust(long current, long target, long adjustment)
+	{
+		if (current > target)
+		{
+			current -= adjustment;
+			if (current < target)
+				return target;
+		}
+		else if (current < target)
+		{
+			current += adjustment;
+			if (current > target)
+				return target;
+		}
+		
+		return current;
+	}
+	
+	/**Takes the provided short and adjusts it closer to the target with the adjustment short. Ensure that the adjustment number is positive!*/
+	public static short adjust(short current, short target, short adjustment)
+	{
+		if (current > target)
+		{
+			current -= adjustment;
+			if (current < target)
+				return target;
+		}
+		else if (current < target)
+		{
+			current += adjustment;
+			if (current > target)
+				return target;
+		}
+		
+		return current;
+	}
+	
+	/**Takes the provided float and adjusts it closer to the target with the adjustment float. Ensure that the adjustment number is positive!*/
+	public static float adjust(float current, float target, float adjustment)
+	{
+		if (current > target)
+		{
+			current -= adjustment;
+			if (current < target)
+				return target;
+		}
+		else if (current < target)
+		{
+			current += adjustment;
+			if (current > target)
+				return target;
+		}
+		
+		return current;
+	}
+	
+	/**Takes the provided double and adjusts it closer to the target with the adjustment double. Ensure that the adjustment number is positive!*/
+	public static double adjust(double current, double target, double adjustment)
+	{
+		if (current > target)
+		{
+			current -= adjustment;
+			if (current < target)
+				return target;
+		}
+		else if (current < target)
+		{
+			current += adjustment;
+			if (current > target)
+				return target;
+		}
+		
+		return current;
+	}
 }

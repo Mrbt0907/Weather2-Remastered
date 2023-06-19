@@ -59,7 +59,7 @@ public class ConfigParticle implements IConfigCategory
 	@ConfigComment("Particle multiplier used to increase or decrease particle rates")
 	public static double particle_multiplier = 1.0D;
 	@ConfigComment("The delay in ticks for the particle thread")
-	public static int effect_process_delay = 400;
+	public static int scene_enhancer_thread_delay = 400;
 	@ConfigComment("Maximum percent of cloud coverage, supports over 100% for extended full cloud sky coverage")
 	public static double max_cloud_coverage_perc = 50.0D;
 	@ConfigComment("Minimum percent of cloud coverage, supports negative for extended cloudless sky coverage")
