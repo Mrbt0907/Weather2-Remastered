@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '2.8.5.9-indev'
+version = '2.8.6-indev'
 group = 'net.mrbt0907.weather2' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'Weather2Remastered-1.12.2'
 

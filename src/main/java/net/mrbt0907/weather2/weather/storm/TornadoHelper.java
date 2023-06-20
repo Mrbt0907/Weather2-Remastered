@@ -125,7 +125,7 @@ public class TornadoHelper
 	{
 		world.profiler.startSection("tornadoHelperTick");
 		float size = getTornadoBaseSize();
-		forceRotate(world, size * 0.65F);
+		forceRotate(world, size);
 		int firesPerTickMax = 1;
 		int loopAmount;
 		double loopSize;

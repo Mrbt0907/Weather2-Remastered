@@ -9,10 +9,13 @@ import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFishHook;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WeatherUtilData;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.entity.EntityMovingBlock;
@@ -26,116 +29,63 @@ public class WeatherUtilEntity {
 	//old non multiplayer friendly var, needs resdesign where this is used
 	public static int playerInAirTime = 0;
 
-	
-	public static float getWeight(Object entity1) {
-		return getWeight(entity1, false);
-	}
-	
-	public static float getWeight(Object entity1, boolean forTornado)
+	/**Gets the weight of the object asked for. Returns -1.0F if the object cannot be moved*/
+	public static float getWeight(Object entity)
 	{
-		World world = CoroUtilEntOrParticle.getWorld(entity1);
+		World world = CoroUtilEntOrParticle.getWorld(entity);
+		if (world == null)
+			return -1.0F;
 
-		//fixes issue #270
-		if (world == null) {
-			return 1F;
-		}
-
-		if (entity1 instanceof IWindHandler) {
-			return ((IWindHandler) entity1).getWindWeight();
-		}
-		
-		if (entity1 instanceof EntityMovingBlock)
-		{
-			return 1F + ((float)((EntityMovingBlock) entity1).age / 200);
-		}
-
-		if (entity1 instanceof EntityPlayer)
-		{
-			EntityPlayer player = (EntityPlayer) entity1;
-			if (player.onGround || player.handleWaterMovement())
-			{
-				playerInAirTime = 0;
-			}
-			else
-			{
-				//System.out.println(playerInAirTime);
-				playerInAirTime++;
-			}
-
-			
-			if (((EntityPlayer) entity1).capabilities.isCreativeMode) return 99999999F;
-			
-			int extraWeight = 0;
-			
-			if (((EntityPlayer)entity1).inventory != null && !(((EntityPlayer)entity1).inventory.armorInventory.get(2).isEmpty())
-					&& ((EntityPlayer)entity1).inventory.armorInventory.get(2).getItem() == Items.IRON_CHESTPLATE)
-			{
-				extraWeight = 2;
-			}
-
-			if (((EntityPlayer)entity1).inventory != null && !(((EntityPlayer)entity1).inventory.armorInventory.get(2).isEmpty())
-					&& ((EntityPlayer)entity1).inventory.armorInventory.get(2).getItem() == Items.DIAMOND_CHESTPLATE)
-			{
-				extraWeight = 4;
-			}
-
-			if (forTornado) {
-				return 4.5F + extraWeight + ((float)(playerInAirTime / 400));
-			} else {
-				return 5.0F + extraWeight + ((float)(playerInAirTime / 400));
-			}
-		}
-
-		
-		if (isParticleRotServerSafe(world, entity1))
-		{
-			float var = WeatherUtilParticle.getParticleWeight((EntityRotFX)entity1);
-
-			if (var != -1)
-				return var;
-		}
-
-		if (entity1 instanceof EntitySquid)
+		if (entity instanceof IWindHandler)
+			return ((IWindHandler) entity).getWindWeight();
+		else if (entity instanceof EntityRotFX)
+			return WeatherUtilParticle.getParticleWeight((EntityRotFX)entity);
+		else if (entity instanceof EntityMovingBlock)
+			return 1F + ((EntityMovingBlock) entity).age * 0.005F;
+		else if (entity instanceof EntitySquid)
 			return 400F;
-
-		if (entity1 instanceof EntityLivingBase)
+		else if (entity instanceof EntityPlayer)
 		{
-			EntityLivingBase livingEnt = (EntityLivingBase) entity1;
+			EntityPlayer player = (EntityPlayer) entity;
+			if (player.onGround || player.handleWaterMovement())
+				playerInAirTime = 0;
+			else
+				playerInAirTime++;
+			
+			if (player.isCreative() || player.isSpectator()) return -1.0F;
+			
+			float extraWeight = 0.0F;
+			if (player.inventory != null)
+				for (ItemStack stack : player.inventory.armorInventory)
+					if (!stack.isEmpty() && stack.getMaxDamage() > 0)
+						extraWeight += stack.getMaxDamage() * 0.0025F;
+
+				
+			return 5.0F + extraWeight + playerInAirTime * 0.0025F;
+		}
+		else if (entity instanceof EntityLivingBase)
+		{
+			EntityLivingBase livingEnt = (EntityLivingBase) entity;
 			int airTime = livingEnt.getEntityData().getInteger("timeInAir");
+			
 			if (livingEnt.onGround || livingEnt.handleWaterMovement())
 				airTime = 0;
 			else
 				airTime++;
 			
 			livingEnt.getEntityData().setInteger("timeInAir", airTime);
+			return 5.0F + airTime * 0.0025F;
 			
 		}
-
-		if (entity1 instanceof Entity) {
-			Entity ent = (Entity) entity1;
-			if (WeatherUtilData.isWindWeightSet(ent) && (forTornado || WeatherUtilData.isWindAffected(ent))) {
-				return WeatherUtilData.getWindWeight(ent);
-			}
-		}
-
-		if (entity1 instanceof EntityLivingBase) {
-			EntityLivingBase livingEnt = (EntityLivingBase) entity1;
-			int airTime = livingEnt.getEntityData().getInteger("timeInAir");
-			if (forTornado) {
-				return 0.5F + (((float)airTime) / 800F);
-			} else {
-				return 500.0F + (livingEnt.onGround ? 2.0F : 0.0F) + ((airTime) / 400);
-			}
-		}
-
-		if (/*entity1 instanceof EntitySurfboard || */entity1 instanceof EntityBoat || entity1 instanceof EntityItem/* || entity1 instanceof EntityTropicalFishHook*/ || entity1 instanceof EntityFishHook)
-		{
+		else if (entity instanceof EntityBoat || entity instanceof EntityItem || entity instanceof EntityFishHook)
 			return 4000F;
-		}
-
-		if (entity1 instanceof EntityMinecart)
-		{
+		else if (entity instanceof EntityMinecart)
 			return 80F;
+		else if (entity instanceof Entity)
+		{
+			Entity ent = (Entity) entity;
+			if (WeatherUtilData.isWindWeightSet(ent))
+				return WeatherUtilData.getWindWeight(ent);
 		}
 
 		return 1F;
@@ -143,8 +93,7 @@ public class WeatherUtilEntity {
 	
 	public static boolean isParticleRotServerSafe(World world, Object obj)
 	{
-		if (!world.isRemote) return false;
-		return isParticleRotClientCheck(obj);
+		return world.isRemote && isParticleRotClientCheck(obj);
 	}
 	
 	public static boolean isParticleRotClientCheck(Object obj)
@@ -154,14 +103,11 @@ public class WeatherUtilEntity {
 	
 	public static boolean canPushEntity(Entity ent)
 	{
-		//weather2: shouldnt be needed since its particles only now, ish
-		//if (!WeatherUtil.canUseWindOn(ent)) return false;
-		
 		WindManager windMan = ClientTickHandler.weatherManager.windManager;
 		
 		double speed = 10.0D;
-		int startX = (int)(ent.posX - speed * (double)(-MathHelper.sin(windMan.windAngle / 180.0F * (float)Math.PI) * MathHelper.cos(0F/*weatherMan.wind.yDirection*/ / 180.0F * (float)Math.PI)));
-		int startZ = (int)(ent.posZ - speed * (double)(MathHelper.cos(windMan.windAngle / 180.0F * (float)Math.PI) * MathHelper.cos(0F/*weatherMan.wind.yDirection*/ / 180.0F * (float)Math.PI)));
+		int startX = (int)(ent.posX - speed * (double)(-MathHelper.sin(windMan.windAngle / 180.0F * (float)Math.PI) * MathHelper.cos(0F / 180.0F * (float)Math.PI)));
+		int startZ = (int)(ent.posZ - speed * (double)(MathHelper.cos(windMan.windAngle / 180.0F * (float)Math.PI) * MathHelper.cos(0F / 180.0F * (float)Math.PI)));
 
 		return ent.world.rayTraceBlocks((new Vec3(ent.posX, ent.posY + (double)ent.getEyeHeight(), ent.posZ)).toVec3MC(), (new Vec3(startX, ent.posY + (double)ent.getEyeHeight(), startZ)).toVec3MC()) == null;
 	}

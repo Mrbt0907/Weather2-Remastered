@@ -273,7 +273,7 @@ public class EventHandlerForge
 		event.grabList.add("minecraft:gold_block");
 		
 		event.replaceList.add("minecraft:farmland", "minecraft:dirt");
-		event.grabList.add("minecraft:grass_path", "minecraft:dirt");
+		event.replaceList.add("minecraft:grass_path", "minecraft:dirt");
 		event.replaceList.add("minecraft:torch", "minecraft:air");
 		event.replaceList.add("minecraft:redstone_torch", "minecraft:air");
 		event.replaceList.add("minecraft:glowstone", "minecraft:air");

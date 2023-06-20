@@ -76,12 +76,16 @@ public class ConfigParticle implements IConfigCategory
 	public static double rain_change_mult = 1.0D;
 	@ConfigComment("Particle scale multiplier that adjusts how big particles should be")
 	public static double particle_scale_mult = 1.0D;
+	@ConfigComment("Fog multiplier that adjusts how foggy storms can be")
+	public static double fog_mult = 1.0D;
 	
 	//clouds
 	@ConfigComment("How many ticks between cloud particle spawning")
 	public static int cloud_particle_delay = 3;
 	@ConfigComment("Should rain show up?")
 	public static boolean enable_vanilla_rain = false;
+	@ConfigComment("Enables rendering based on layers rather than based on player distance for all weather2 particles")
+	public static boolean enableLegacyRendering = false;
 
     @Override
     public String getName() {

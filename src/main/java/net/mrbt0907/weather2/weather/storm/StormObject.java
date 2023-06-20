@@ -11,6 +11,7 @@ import CoroUtil.util.CoroUtilEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.MaterialLiquid;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntitySquid;
@@ -970,12 +971,13 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	
 	public void spinEntity(Object obj)
 	{
+		float weight = WeatherUtilEntity.getWeight(obj);
+		if (weight < 0.0F) return;
+		
 		StormObject entity = this;
 		WeatherEntityConfig conf = getWeatherEntityConfigForStorm();
-		
-		float heightMult = getLayerHeight() * 0.00490625F;
-		float rotationMult = heightMult * 0.5F * ((isViolent ? 3.1F : 1.55F) + Math.min((stage - 5.0F) / 3.0F, 2.0F));
-		
+		float heightMult = getLayerHeight() * 0.00290625F;
+		float rotationMult = heightMult * 0.45F * ((isViolent ? 3.1F : 1.55F) + Math.min((stage - 5.0F) / 3.0F, 2.0F));
 		World world = CoroUtilEntOrParticle.getWorld(obj);
 		long worldTime = world.getTotalWorldTime();
 		
@@ -985,6 +987,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		
 		double radius = 10D, scale = conf.tornadoWidthScale;
 		double d1 = entity.pos.posX - CoroUtilEntOrParticle.getPosX(obj), d2 = entity.pos.posZ - CoroUtilEntOrParticle.getPosZ(obj);
+		
+		
 		
 		if (conf.type == WeatherEntityConfig.TYPE_SPOUT)
 		{
@@ -1012,82 +1016,83 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		if (distY > maxHeight)
 			distY = maxHeight;
 
-		float weight = WeatherUtilEntity.getWeight(obj, true);
+		
 		double grab = (10D / weight) * ((Math.abs((maxHeight - distY)) / maxHeight));
 		float pullY = 0.0F;
 
 		if (distXZ > 5D)
 			grab = grab * (radius / distXZ);
-		
 
-		pullY += (float)(conf.tornadoLiftRate / (weight / 2F));
+		pullY += (float)(conf.tornadoLiftRate / (weight * 0.5F));
+		double adjPull = 0.005D / ((weight * ((distXZ + 1D) / radius)));
+		double airTime = 0.0D;
+		pullY += adjPull;
 		
 		if (obj instanceof EntityPlayer)
 		{
-			double adjPull = 0.2D / ((weight * ((distXZ + 1D) / radius)));
-			pullY += adjPull;
-			double adjGrab = MathHelper.clamp(10D * (((float)(((double)WeatherUtilEntity.playerInAirTime + 1D) / 400D))), -50.0D, 50.0D);
-			grab = grab - adjGrab;
+			airTime = WeatherUtilEntity.playerInAirTime + 1.0D;
 
-			if (CoroUtilEntOrParticle.getMotionY(obj) > -0.8)
+			if (CoroUtilEntOrParticle.getMotionY(obj) > 0.0D)
 				ent.fallDistance = 0F;
 		}
 		else if (obj instanceof EntityLivingBase)
 		{
-			double adjPull = 0.005D / ((weight * ((distXZ + 1D) / radius)));
-			pullY += adjPull;
-			int airTime = ent.getEntityData().getInteger("timeInAir");
-			double adjGrab = MathHelper.clamp(10D * (((float)(((double)(airTime) + 1D) / 400D))), -50.0D, 50.0D);
+			airTime = ent.getEntityData().getInteger("timeInAir") + 1.0D;
 
-			grab = grab - adjGrab;
-
-			if (ent.motionY > -1.5) ent.fallDistance = 0F;
-			if (ent.motionY > 0.3F) ent.motionY = 0.3F;
+			if (ent.motionY > 0.0D) ent.fallDistance = 0F;
+			//if (ent.motionY > 0.3F) ent.motionY = 0.3F;
 			ent.onGround = false;
 		}
 		
+		if (airTime > 0.0D)
+			grab = grab - MathHelper.clamp(10D * (((float)(airTime / 400D))), -50.0D, 50.0D);
 		
 		grab += conf.relTornadoSize;
 		double profileAngle = Math.max(1, (75D + grab - (10D * scale)));
 		
 		f = (float)((double)f + profileAngle);
-
-		//if (entT != null && entT.scale != 1F) f += 20 - (20 * entT.scale);
-		
 		float f3 = (float)Math.cos(-f * 0.01745329F - (float)Math.PI);
 		float f4 = (float)Math.sin(-f * 0.01745329F - (float)Math.PI);
 		float f5 = conf.tornadoPullRate * 1.5F;
-		
-		//if (entT != null && entT.scale != 1F) f5 *= entT.scale * 1.2F;
 
-		if (obj instanceof EntityLivingBase)
-			f5 /= (WeatherUtilEntity.getWeight(obj, true) * ((distXZ + 1D) / radius));
+		//if (obj instanceof EntityLivingBase)
+		//	f5 /= (weight * ((distXZ + 1D) / radius));
 		
 		//if player and not spout
 		if (obj instanceof EntityPlayer && conf.type != 0)
-			f5 *= ent.onGround ? 10.5F : 5.0F;
+			f5 *= ent.onGround ? 2F : 7.0F;
 		else if (obj instanceof EntityLivingBase && conf.type != 0)
-			f5 *= 1.5F;
-
-		if (conf.type == WeatherEntityConfig.TYPE_SPOUT && obj instanceof EntityLivingBase)
-			f5 *= 0.3F;
+			f5 *= ent.onGround ? 2F : 7.0F;
+		
+		if (obj instanceof EntityLivingBase)
+		{
+			switch (conf.type)
+			{
+				case 0:
+					f5 *= 0.3F;
+					break;
+				case 2:
+					f5 *= 4.0F;
+					break;
+			}
+		}
 		
 		float moveX = f3 * f5;
 		float moveZ = f4 * f5;
 		//tornado strength changes
-		float str = 1F;
+		float str = strength * 1.25f;
 		
-		str = strength * 1.25f;
-		
-		if (obj instanceof EntityLivingBase && conf.type == WeatherEntityConfig.TYPE_SPOUT) str *= 0.3F;
-		if (stormType == StormType.WATER.ordinal()) str *= 0.25F;
-		pullY *= str / 100F;
-		
-		/*if (entT != null && entT.scale != 1F)
+		if (conf.type == WeatherEntityConfig.TYPE_SPOUT)
+			str *= 0.3F;
+		if (stormType == StormType.WATER.ordinal())
 		{
-			pullY *= entT.scale * 1.0F;
-			pullY += 0.002F;
-		}*/
+			str *= 0.55F;
+			pullY = Math.min(pullY , 0.0275F);
+		}
+		if (obj instanceof Particle)
+			pullY *= str * 0.01F;
+		else
+			pullY *= str * 0.1F;
 		
 		//prevent double+ pull on entities
 		if (obj instanceof Entity)

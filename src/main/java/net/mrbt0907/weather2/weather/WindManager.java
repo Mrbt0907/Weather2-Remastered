@@ -76,9 +76,8 @@ public class WindManager
 					nextWindRefresh = manager.getWorld().getTotalWorldTime() + Maths.random(ConfigWind.windRefreshMin, ConfigWind.windRefreshMax);
 					windSpeedTarget = (float) Maths.random(ConfigWind.windSpeedMin, ConfigWind.windSpeedMax);
 					windAngleTarget += (float) Maths.random(-ConfigWind.windAngleChangeMax, ConfigWind.windAngleChangeMax);
-					
-					if (windAngleTarget > 360.0F) windAngleTarget -= 360.0F;
-					if (windAngleTarget < 0.0F) windAngleTarget += 360.0F;
+
+					windAngleTarget = windAngle % 360.0F;
 				}
 
 				tickWindChange();
@@ -95,7 +94,7 @@ public class WindManager
 						entity = entities[i];
 						if (!entity.isDead && entity instanceof EntityLivingBase && WeatherUtilEntity.isEntityOutside(entity, true))
 						{
-							Vec3 a = getWindVectors(new Vec3(entity.posX, entity.posY, entity.posZ), new Vec3(entity.motionX, entity.motionY, entity.motionZ), (float) (WeatherUtilEntity.getWeight(entity) * 0.1F * ConfigWind.windEntityWeightMult * (entity.isInWater() ? ConfigWind.windSwimmingWeightMult : 1.0F)), 0.05F, 5.0F);
+							Vec3 a = getWindVectors(new Vec3(entity.posX, entity.posY, entity.posZ), new Vec3(entity.motionX, entity.motionY, entity.motionZ), (float) (WeatherUtilEntity.getWeight(entity) * 1F * ConfigWind.windEntityWeightMult * (entity.isInWater() ? ConfigWind.windSwimmingWeightMult : 1.0F)), 0.05F, 5.0F);
 							entity.motionX = a.posX;
 							entity.motionY = a.posY;
 							entity.motionZ = a.posZ;
@@ -149,8 +148,7 @@ public class WindManager
 			else
 				windAngle = windAngleTarget;
 			
-			if (windAngle > 360.0F) windAngle -= 360.0F;
-			if (windAngle < 0.0F) windAngle += 360.0F;
+			windAngle = windAngle % 360.0F;
 		}
 		
 		//Wind Speed
@@ -184,8 +182,7 @@ public class WindManager
 			else
 				windAngle = windAngleTarget;
 			
-			if (windAngle > 360.0F) windAngle -= 360.0F;
-			if (windAngle < 0.0F) windAngle += 360.0F;
+			windAngle = windAngle % 360.0F;
 		}
 		
 		//Wind Speed
@@ -291,8 +288,10 @@ public class WindManager
     	float objWeight = weight;
     	
     	//divide by zero protection
-    	if (objWeight <= 0)
+    	if (objWeight == 0.0F)
     		objWeight = 0.001F;
+    	else if (objWeight < 0.0F)
+    		return motion;
     	
     	//TEMP
     	//objWeight = 1F;

@@ -157,7 +157,7 @@ public class NewSceneEnhancer implements Runnable
 			if (rainTarget > 0.0F)
 			{
 				max = 0.2F;
-				fogDensity = Math.max((rain - 0.4F) / 0.6F, 0.0F) * max;
+				fogDensity = Math.max((rain - 0.31F) / 0.69F, 0.0F) * max * (float) ConfigParticle.fog_mult;
 				return;
 			}
 		}
@@ -175,7 +175,7 @@ public class NewSceneEnhancer implements Runnable
 			if (system.hasDownfall())
 			{
 				overcastTarget = 1.0F - (float) MathHelper.clamp((cachedSystemDistance - size) / cachedSystem.size, 0.0F, 1.0F);
-				rainTarget = ConfigParticle.enable_vanilla_rain ? 0.0F : Math.min(system.getDownfall() * overcast * 0.0034F, 1.0F);
+				rainTarget = ConfigParticle.enable_vanilla_rain || ConfigParticle.precipitation_particle_rate <= 0.1F ? 0.0F : Math.min((system.getDownfall() - IWeatherRain.MINIMUM_DRIZZLE) * overcast * 0.0034F, 1.0F);
 				
 				if (WeatherUtil.getTemperature(MC.world, MC.player.getPosition()) < 0.0F)
 					rainTarget = -rainTarget;
@@ -307,7 +307,7 @@ public class NewSceneEnhancer implements Runnable
 		Biome biome = MC.world.getBiome(MC.player.getPosition());
 		float rate = 0.0005F * Math.abs((float) ConfigParticle.rain_change_mult);
 		
-		if (rainTarget < 0.0F && rain > 0.0F)
+		if (rainTarget < 0.0F && rain > 0.0F || rainTarget >= 0.0F && rain < 0.0F)
 			rain = -rain;
 		
 		if (rain != rainTarget)
@@ -328,10 +328,10 @@ public class NewSceneEnhancer implements Runnable
 			if (particleCount > 200)
 				particleCount = 200;
 			
-			particleCount += 3;
+			particleCount += 5;
 			
-			particleCountSheet = ConfigParticle.enable_heavy_precipitation && rain > 0.45F ? (int) (particleCount * 0.2F) : 0;
-			particleCountSplash = ConfigParticle.enable_precipitation_splash ? (int)(particleCount * 2) : 0;
+			particleCountSheet = ConfigParticle.enable_heavy_precipitation && rain > 0.5F ? (int) (particleCount * 0.2F) : 0;
+			particleCountSplash = ConfigParticle.enable_precipitation_splash ? (int)(particleCount * 4) : 0;
 			
 			if (snowing)
 			{
@@ -339,13 +339,14 @@ public class NewSceneEnhancer implements Runnable
 			}
 			else
 			{
+				int type = rain > 0.6F ? 2 : rain > 0.3F ? 1 : 0; 
 				for (int i = 0; i < particleCount; i++)
 				{
 					pos = new BlockPos(MC.player.posX + MC.world.rand.nextInt(spawnArea) - MC.world.rand.nextInt(spawnArea), MC.player.posY - 5 + MC.world.rand.nextInt(25), MC.player.posZ + MC.world.rand.nextInt(spawnArea) - MC.world.rand.nextInt(spawnArea));
 					posPrecip = MC.world.getPrecipitationHeight(pos);
 					if (posPrecip.getY() <= pos.getY())
 					{
-						particle = new ParticleTexExtraRender(MC.world, pos.getX(), pos.getY(), pos.getZ(), 0D, 0D, 0D, ParticleRegistry.rain_white);
+						particle = new ParticleTexExtraRender(MC.world, pos.getX(), pos.getY(), pos.getZ(), 0D, 0D, 0D, type == 2 ? net.mrbt0907.weather2.registry.ParticleRegistry.rainHeavy : type == 1 ? ParticleRegistry.rain_white : net.mrbt0907.weather2.registry.ParticleRegistry.rainLight);
 						particle.setKillWhenUnderTopmostBlock(true);
 						particle.setCanCollide(false);
 						particle.killWhenUnderCameraAtLeast = 5;
@@ -367,7 +368,7 @@ public class NewSceneEnhancer implements Runnable
 							particle.extraYRotation = MC.world.rand.nextInt(360) - 180F;
 						}
 		
-						particle.setScale(1.0F + rain * 1.2F);
+						particle.setScale(type == 2 ? 6F : 2.0F);
 						particle.isTransparent = true;
 						particle.setGravity(2.5F);
 						//rain.isTransparent = true;
@@ -382,7 +383,7 @@ public class NewSceneEnhancer implements Runnable
 					}
 				}
 				
-				spawnArea = 60;
+				spawnArea = 50;
 				for (int i = 0; i < particleCountSplash; i++)
 				{
 					pos = new BlockPos(MC.player.posX + MC.world.rand.nextInt(spawnArea) - (spawnArea  * 0.5F), MC.player.posY - 5 + MC.world.rand.nextInt(15), MC.player.posZ + MC.world.rand.nextInt(spawnArea) - (spawnArea * 0.5F));
@@ -392,7 +393,7 @@ public class NewSceneEnhancer implements Runnable
 
 					if (MC.world.getPrecipitationHeight(pos).getY() <= pos.up().getY())
 					{
-						particle = new ParticleTexFX(MC.player.world, pos.getX() + MC.world.rand.nextFloat(), pos.getY() + 0.01D + axisalignedbb.maxY, pos.getZ() + MC.world.rand.nextFloat(), 0D, 0D, 0D, ParticleRegistry.cloud256_6);
+						particle = new ParticleTexFX(MC.player.world, pos.getX() + MC.world.rand.nextFloat(), pos.getY() + 0.01D + axisalignedbb.maxY, pos.getZ() + MC.world.rand.nextFloat(), 0D, 0D, 0D, net.mrbt0907.weather2.registry.ParticleRegistry.rainSplash);
 						particle.setKillWhenUnderTopmostBlock(true);
 						particle.setCanCollide(false);
 						particle.killWhenUnderCameraAtLeast = 5;
@@ -400,7 +401,7 @@ public class NewSceneEnhancer implements Runnable
 
 						particle.windWeight = 20F;
 						particle.setFacePlayer(upward);
-						particle.setScale(3F + (MC.world.rand.nextFloat() * 3F));
+						particle.setScale(1F + MC.world.rand.nextFloat());
 						particle.setMaxAge(15);
 						particle.setGravity(-0.0F);
 						particle.setTicksFadeInMax(0);
@@ -414,10 +415,11 @@ public class NewSceneEnhancer implements Runnable
 						spawnParticle(particle);
 					}
 				}
-				
+
+				spawnArea = 60;
 				for (int i = 0; i < particleCountSheet; i++)
 				{
-					pos = new BlockPos(MC.player.posX + MC.world.rand.nextInt(spawnArea) - (spawnArea * 0.5F), MC.player.posY - 5 + MC.world.rand.nextInt(25), MC.player.posZ + MC.world.rand.nextInt(spawnArea) - (spawnArea * 0.5F));
+					pos = new BlockPos(MC.player.posX + MC.world.rand.nextInt(spawnArea) - (spawnArea * 0.5F), MC.player.posY - 5 + MC.world.rand.nextInt(35), MC.player.posZ + MC.world.rand.nextInt(spawnArea) - (spawnArea * 0.5F));
 					posPrecip = MC.world.getPrecipitationHeight(pos);
 					if (posPrecip.getY() <= pos.getY())
 					{
@@ -436,7 +438,7 @@ public class NewSceneEnhancer implements Runnable
 						particle.setFacePlayer(true);
 						particle.facePlayerYaw = true;
 
-						particle.setScale(180F + (MC.world.rand.nextFloat() * 3F));
+						particle.setScale(200F + (MC.world.rand.nextFloat() * 3F));
 						particle.setMaxAge(60);
 						particle.setGravity(0.35F);
 						//opted to leave the popin for particle, its not as bad as snow, and using fade in causes less particle visual overall
@@ -466,7 +468,7 @@ public class NewSceneEnhancer implements Runnable
 	/**Processes the cached block positions to spawn ambiance particles*/
 	protected void tickAmbiance()
 	{
-		fogMult = Maths.adjust(fogMult, fogDensity, (fogMult < 0.1F ? 0.00015F : 0.001F) * (float) ConfigParticle.rain_change_mult);
+		fogMult = Maths.adjust(fogMult, fogDensity, (fogMult < 0.1F ? 0.00005F : 0.001F) * (float) ConfigParticle.rain_change_mult);
 		
 		WeatherManagerClient weatherMan = ClientTickHandler.weatherManager;
 			if (weatherMan == null) return;
@@ -589,14 +591,7 @@ public class NewSceneEnhancer implements Runnable
 			BlockPos playerPos = MC.player.getPosition(), groundPos = MC.world.getPrecipitationHeight(playerPos);
 			if (MC.world.rand.nextInt(2) == 0 && playerPos.distanceSq(groundPos) < 16.0D && rain > 0.0D)
 			{
-				if (rain > 0.45F)
-				{
-					if (WeatherUtilSound.getActiveSound(1) != null && WeatherUtilSound.getActiveSound(1).ticksExisted > 30)
-						WeatherUtilSound.play2DSound(SoundRegistry.waterfall, SoundCategory.WEATHER, MC.player, 2, 0.8F + (rain * 0.2F), 1.0F - (rain * 0.1F), 24.0F, false);
-					WeatherUtilSound.play2DSound(SoundRegistry.waterfall, SoundCategory.WEATHER, MC.player, 1, 0.8F + (rain * 0.2F), 1.0F - (rain * 0.1F), 24.0F, false);
-				}
-				else
-					WeatherUtilSound.playForcedSound(SoundEvents.WEATHER_RAIN, SoundCategory.WEATHER, MC.player, 0.2F + (rain * 0.6F), 1.0F - (rain * 0.1F), 24.0F, true, false);
+				WeatherUtilSound.playForcedSound(SoundEvents.WEATHER_RAIN, SoundCategory.WEATHER, MC.player, 0.2F + (rain * 0.6F), 1.0F - (rain * 0.1F), 24.0F, true, false);
 			}
 		}
 		

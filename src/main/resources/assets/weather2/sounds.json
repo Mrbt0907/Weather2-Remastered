@@ -73,6 +73,32 @@
 			{"name": "weather2:streaming/wind_far_2_", "stream": true}
 		]
 	},
+	"ambient.rain.light":
+	{
+		"category": "weather",
+		"subtitle": "subtitle.weather2.ambient.rain.light",
+		"sounds":
+		[
+			{"name": "weather2:env/light_rain"},
+			{"name": "weather2:env/light_rain_1"},
+			{"name": "weather2:env/light_rain_2"},
+			{"name": "weather2:env/light_rain_3"},
+			{"name": "weather2:env/light_rain_4"}
+		]
+	},
+	"ambient.rain.heavy":
+	{
+		"category": "weather",
+		"subtitle": "subtitle.weather2.ambient.rain.heavy",
+		"sounds":
+		[
+			{"name": "weather2:env/heavy_rain"},
+			{"name": "weather2:env/heavy_rain_1"},
+			{"name": "weather2:env/heavy_rain_2"},
+			{"name": "weather2:env/heavy_rain_3"},
+			{"name": "weather2:env/heavy_rain_4"}
+		]
+	},
 	"weather.debris":
 	{
 		"category": "weather",

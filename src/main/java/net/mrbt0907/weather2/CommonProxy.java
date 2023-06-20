@@ -33,6 +33,11 @@ public class CommonProxy
 		RecipeRegistry.postInit();
 	}
 
+	public void postPostInit()
+	{
+		
+	}
+
 	@SubscribeEvent
 	public static void registerItems(RegistryEvent.Register<Item> event)
 	{

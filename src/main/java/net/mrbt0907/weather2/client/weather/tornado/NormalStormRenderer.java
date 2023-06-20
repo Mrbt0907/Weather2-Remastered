@@ -18,7 +18,6 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.api.weather.AbstractStormRenderer;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.client.NewSceneEnhancer;
-import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.entity.particle.ExtendedEntityRotFX;
 import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
 import net.mrbt0907.weather2.config.ConfigParticle;
@@ -72,7 +71,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		{
 			if (!ConfigCoroUtil.optimizedCloudRendering && state.getBlock().equals(Blocks.AIR))
 			{
-				state = Blocks.DIRT.getDefaultState();
+				state = storm.isSpout ? Blocks.WATER.getDefaultState() : Blocks.DIRT.getDefaultState();
 				material = state.getMaterial();
 			}
 				
@@ -153,7 +152,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 				{
 					if (listParticlesCloud.size() < (storm.size + extraSpawning) / 1F) {
 						double spawnRad = storm.size * 1.2D;
-						Vec3 tryPos = new Vec3(storm.pos.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), storm.getLayerHeight() + (rand.nextDouble() * 40.0F) + (storm.stage >= Stage.RAIN.getStage() ? 40.0F : 0.0D), storm.pos.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
+						Vec3 tryPos = new Vec3(storm.pos.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), storm.getLayerHeight() + (rand.nextDouble() * 40.0F) + (storm.stage >= Stage.RAIN.getStage() ? 30.0F : 60.0D), storm.pos.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
 						if (tryPos.distance(playerAdjPos) < maxRenderDistance) {
 							if (storm.getAvoidAngleIfTerrainAtOrAheadOfPosition(storm.getAngle(), tryPos) == 0) {
 								ExtendedEntityRotFX particle;
@@ -177,7 +176,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 								}
 
 								particle.rotationPitch = Maths.random(70.0F, 110.0F);
-								particle.setScale(1000.0F * sizeCloudMult);
+								particle.setScale(700.0F * sizeCloudMult);
 								listParticlesCloud.add(particle);
 							}
 						}
@@ -193,7 +192,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 			{
 				for (int i = 0; i < 3 && shouldSpawn(2); i++)
 				{
-					double spawnRad = storm.funnelSize + 150.0D;
+					double spawnRad = storm.funnelSize + 50.0D;
 						
 					Vec3 tryPos = new Vec3(storm.pos_funnel_base.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), storm.pos_funnel_base.posY, storm.pos_funnel_base.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
 					if (tryPos.distance(playerAdjPos) < maxRenderDistance)
@@ -209,10 +208,10 @@ public class NormalStormRenderer extends AbstractStormRenderer
 						particle.setTicksFadeInMax(40);
 						particle.setTicksFadeOutMax(80);
 						particle.setGravity(0.01F);
-						particle.setMaxAge(100);
-						particle.setScale(250.0F * sizeFunnelMult);
+						particle.setMaxAge(80);
+						particle.setScale(300.0F * sizeFunnelMult);
 						particle.rotationYaw = rand.nextInt(360);
-						particle.rotationPitch = rand.nextInt(80);
+						particle.rotationPitch = 30.0F + rand.nextInt(60);
 							
 						listParticlesGround.add(particle);
 					}
@@ -241,11 +240,11 @@ public class NormalStormRenderer extends AbstractStormRenderer
 						ExtendedEntityRotFX particle;
 						if (!storm.isFirenado)
 							if (WeatherUtil.isAprilFoolsDay())
-								particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2, ParticleRegistry.potato);
+								particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, 2);
 							else
-								particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2, net.mrbt0907.weather2.registry.ParticleRegistry.tornado256);
+								particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, 2, net.mrbt0907.weather2.registry.ParticleRegistry.tornado256);
 						else
-							particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, listParticlesRain.size() > 100 ? 1 : 2, net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_fire);
+							particle = spawnParticle(tryPos.posX, storm.pos_funnel_base.posY, tryPos.posZ, 2, net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_fire);
 						if (particle == null) break;
 							
 							//move these to a damn profile damnit!
@@ -256,23 +255,19 @@ public class NormalStormRenderer extends AbstractStormRenderer
 							
 						//highwind aka spout in this current code location
 						if (storm.stage == Stage.SEVERE.getStage())
+							particle.setScale(100.0F * sizeFunnelMult);
+						else
+							particle.setScale(500.0F * sizeFunnelMult);
+
+						if (r >= 0.0F)
 						{
-							particle.setScale(250.0F * sizeFunnelMult);
-							particle.setColor(finalBright, finalBright, finalBright);
+							particle.setColor(r, g, b);
+							particle.setFinalColor(0.0F, finalBright, finalBright, finalBright);
+							particle.setColorFade(0.75F);
 						}
 						else
-						{
-							particle.setScale(800.0F * sizeFunnelMult);
-							if (r >= 0.0F)
-							{
-								particle.setColor(r, g, b);
-								particle.setFinalColor(1.0F - storm.formingStrength, finalBright, finalBright, finalBright);
-								particle.setColorFade(0.75F);
-							}
-							else
-								particle.setColor(finalBright, finalBright, finalBright);
-						}
-
+							particle.setColor(finalBright, finalBright, finalBright);
+						
 						if (storm.isFirenado)
 						{
 							particle.setRBGColorF(1F, 1F, 1F);

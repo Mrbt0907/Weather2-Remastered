@@ -1,5 +1,6 @@
 package net.mrbt0907.weather2;
 
+import extendedrenderer.ExtendedRenderer;
 import extendedrenderer.shader.IShaderListener;
 import extendedrenderer.shader.ShaderListenerRegistry;
 import net.minecraft.client.Minecraft;
@@ -31,6 +32,7 @@ import net.mrbt0907.weather2.client.entity.RenderLightningBoltCustom;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.foliage.FoliageEnhancerShader;
 import net.mrbt0907.weather2.client.gui.GuiWeather;
+import net.mrbt0907.weather2.client.rendering.ParticleManagerEX;
 import net.mrbt0907.weather2.entity.EntityIceBall;
 import net.mrbt0907.weather2.entity.EntityLightningBolt;
 import net.mrbt0907.weather2.entity.EntityLightningBoltCustom;
@@ -98,4 +100,12 @@ public class ClientProxy extends CommonProxy
 		WeatherAPI.refreshRenders(true);
 		MinecraftForge.EVENT_BUS.register(guiWeather);
 	}
+	
+	@Override
+	public void postPostInit()
+	{
+		super.postPostInit();
+		ExtendedRenderer.rotEffRenderer = new ParticleManagerEX(Minecraft.getMinecraft().world, Minecraft.getMinecraft().renderEngine);
+	}
+	
 }

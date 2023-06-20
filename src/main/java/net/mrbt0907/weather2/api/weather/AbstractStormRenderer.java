@@ -187,7 +187,7 @@ public abstract class AbstractStormRenderer
 		Random rand = new Random();
 		ExtendedEntityRotFX entityfx = new ExtendedEntityRotFX(ClientTickHandler.weatherManager.getWorld(), x, y, z, (rand.nextDouble() - rand.nextDouble()) * speed, 0.0D, (rand.nextDouble() - rand.nextDouble()) * speed, tex);
 		entityfx.pb = particleBehaviorFog;
-		entityfx.renderOrder = parRenderOrder;
+		entityfx.renderOrder = 0;
 		particleBehaviorFog.initParticle(entityfx);
 		
 		entityfx.setCanCollide(false);

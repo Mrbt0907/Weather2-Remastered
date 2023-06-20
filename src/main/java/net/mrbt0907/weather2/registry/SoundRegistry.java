@@ -30,6 +30,11 @@ public class SoundRegistry
 	public static SoundEvent windSlow;
 	/*Sound that plays when the wind speed is 5MPH and higher*/
 	public static SoundEvent windBreeze;
+
+	/*Sound that plays when it is drizzling*/
+	public static SoundEvent rainLight;
+	/*Sound that plays when rain is pouring*/
+	public static SoundEvent rainHeavy;
 	
 	//Weather
 	/*Sound that plays when a cyclone is damaging blocks nearby*/
@@ -50,6 +55,8 @@ public class SoundRegistry
 		waterfall = register("ambient.waterfall");
 		windFast = register("ambient.wind.fast");
 		wind = register("ambient.wind");
+		rainLight = register("ambient.rain.light");
+		rainHeavy = register("ambient.rain.heavy");
 		debris = register("weather.debris");
 		sandstormFast = register("weather.sandstorm.fast");
 		sandstorm = register("weather.sandstorm");
