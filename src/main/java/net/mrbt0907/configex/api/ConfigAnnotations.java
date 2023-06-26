@@ -46,11 +46,12 @@ public class ConfigAnnotations
 		int value();
 	}
 	
-	/**Hides this variable to all players who do not have permission to edit this variable*/
+	/**Hides this variable from all players who do not have permission to edit this variable*/
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
 	public static @interface Hidden {}
 	
+	/**Limits the range of the variable to a specified minimum and maximum integer value*/
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
 	public static @interface IntegerRange
@@ -59,6 +60,7 @@ public class ConfigAnnotations
 		int max() default Integer.MAX_VALUE;
 	}
 	
+	/**Limits the range of the variable to a specified minimum and maximum short value*/
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
 	public static @interface ShortRange
@@ -67,6 +69,7 @@ public class ConfigAnnotations
 		short max() default Short.MAX_VALUE;
 	}
 	
+	/**Limits the range of the variable to a specified minimum and maximum long value*/
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
 	public static @interface LongRange
@@ -75,6 +78,7 @@ public class ConfigAnnotations
 		long max() default Long.MAX_VALUE;
 	}
 
+	/**Limits the range of the variable to a specified minimum and maximum float value*/
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
 	public static @interface FloatRange
@@ -83,6 +87,7 @@ public class ConfigAnnotations
 		float max() default Float.MAX_VALUE;
 	}
 	
+	/**Limits the range of the variable to a specified minimum and maximum double value*/
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
 	public static @interface DoubleRange
