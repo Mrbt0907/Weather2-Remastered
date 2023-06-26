@@ -16,7 +16,7 @@ import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WeatherAPI;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.config.ConfigStorm;
-import net.mrbt0907.weather2.network.packets.PacketSound;
+import net.mrbt0907.weather2.network.packets.PacketRefresh;
 import net.mrbt0907.weather2.network.packets.PacketVolcanoObject;
 import net.mrbt0907.weather2.network.packets.PacketWeatherObject;
 import net.mrbt0907.weather2.server.event.ServerTickHandler;
@@ -44,9 +44,15 @@ public class CommandWeather2 extends CommandBase
 	}
 	
 	@Override
+	public boolean checkPermission(MinecraftServer server, ICommandSender sender)
+    {
+		return true;
+    }
+	
+	@Override
 	public int getRequiredPermissionLevel()
 	{
-		return 2;
+		return 0;
 	}
 	
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
@@ -73,7 +79,7 @@ public class CommandWeather2 extends CommandBase
 				switch(args[0])
 				{
 					case "config":
-						return getListOfStringsMatchingLastWord(args, new String[] {"all", "dimensionlist", "grablist", "replacelist", "stagelist", "windlist", "sounds"});
+						return getListOfStringsMatchingLastWord(args, new String[] {"all", "dimensionlist", "grablist", "replacelist", "stagelist", "windlist", "sounds", "scene"});
 					case "create":
 						return getListOfStringsMatchingLastWord(args, new String[] {"~"});
 					default:
@@ -119,7 +125,7 @@ public class CommandWeather2 extends CommandBase
 										case "all":
 											WeatherAPI.refreshDimensionRules();
 											WeatherAPI.refreshGrabRules();
-											PacketSound.reset((EntityPlayerMP)sender);
+											PacketRefresh.resetSounds((EntityPlayerMP)sender);
 											say(sender, "config.refresh.all.success");
 											break;
 										case "dimensionlist":
@@ -145,11 +151,20 @@ public class CommandWeather2 extends CommandBase
 										case "sounds": case "sound":
 											if (sender instanceof EntityPlayerMP)
 											{
-												PacketSound.reset((EntityPlayerMP)sender);
+												PacketRefresh.resetSounds((EntityPlayerMP)sender);
 												say(sender, "config.refresh.sounds.success");
 											}
 											else
 												say(sender, "config.refresh.sounds.fail");
+											break;
+										case "scene": case "sceneenhancer":
+											if (sender instanceof EntityPlayerMP)
+											{
+												PacketRefresh.resetSceneEnhancer((EntityPlayerMP)sender);
+												say(sender, "config.refresh.sceneenhancer.success");
+											}
+											else
+												say(sender, "config.refresh.sceneenhancer.fail");
 											break;
 										default:
 											say(sender, "config.refresh.usage");
@@ -164,6 +179,12 @@ public class CommandWeather2 extends CommandBase
 						say(sender, "config.usage");
 					break;
 				case "create":
+					if (!sender.canUseCommand(2, getName()))
+					{
+						say(sender, "nopermission");
+						break;
+					}
+					
 					if (size > 1)
 					{
 						int stage = -1;
@@ -441,6 +462,11 @@ public class CommandWeather2 extends CommandBase
 						switch (args[1].toLowerCase())
 						{
 							case "all":
+								if (!sender.canUseCommand(2, getName()))
+								{
+									say(sender, "nopermission");
+									break;
+								}
 								WeatherManagerServer wm = ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
 								List<FrontObject> fronts = wm.getFronts();
 								size = wm.getWeatherObjects().size();
@@ -483,6 +509,12 @@ public class CommandWeather2 extends CommandBase
 						say(sender, "view.fail");	
 					break;
 				case "test":
+					if (!sender.canUseCommand(2, getName()))
+					{
+						say(sender, "nopermission");
+						break;
+					}
+					
 					if (size > 1)
 						switch (args[1].toLowerCase())
 						{

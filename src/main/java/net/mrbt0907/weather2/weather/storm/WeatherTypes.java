@@ -23,9 +23,9 @@ public class WeatherTypes
 		//5 = Hurricane C1
 		//water spout
 		sConf.tornadoInitialSpeed = 0.2F;
-		sConf.tornadoPullRate = 0.04F;
-		sConf.tornadoLiftRate = 0.05F;
-		sConf.relTornadoSize = 0;
+		sConf.tornadoPullRate = 0.05F;
+		sConf.tornadoLiftRate = 0.175F;
+		sConf.relTornadoSize = -10;
 		sConf.tornadoBaseSize = 3;
 		sConf.tornadoWidthScale = 1.0F;
 		sConf.grabDist = 40D;

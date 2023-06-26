@@ -10,12 +10,12 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.weather.AbstractStormRenderer;
 import net.mrbt0907.weather2.client.entity.particle.ExtendedEntityRotFX;
 import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
 import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.registry.ParticleRegistry;
-import net.mrbt0907.weather2.util.ChunkUtils;
 import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.weather.storm.StormObject;
 
@@ -65,9 +65,9 @@ public class LegacyStormRenderer extends AbstractStormRenderer
 				{
 					double tryX2 = storm.pos_funnel_base.posX + Maths.random(storm.tornadoHelper.getTornadoBaseSize() * 2) - storm.tornadoHelper.getTornadoBaseSize();
 					double tryZ2 = storm.pos_funnel_base.posZ + Maths.random(storm.tornadoHelper.getTornadoBaseSize() * 2) - storm.tornadoHelper.getTornadoBaseSize();
-					Block blockID = ChunkUtils.getBlockState(manager.getWorld(), (int)tryX2, (int)storm.pos_funnel_base.posY - 1, (int)tryZ2).getBlock();
-					Block blockIDUp = ChunkUtils.getBlockState(manager.getWorld(), (int)tryX2, (int)storm.pos_funnel_base.posY, (int)tryZ2).getBlock();
-					Block blockIDDown = ChunkUtils.getBlockState(manager.getWorld(), (int)tryX2, (int)storm.pos_funnel_base.posY - 2, (int)tryZ2).getBlock();
+					Block blockID = Weather2.clientChunkUtil.getBlockState(manager.getWorld(), (int)tryX2, (int)storm.pos_funnel_base.posY - 1, (int)tryZ2).getBlock();
+					Block blockIDUp = Weather2.clientChunkUtil.getBlockState(manager.getWorld(), (int)tryX2, (int)storm.pos_funnel_base.posY, (int)tryZ2).getBlock();
+					Block blockIDDown = Weather2.clientChunkUtil.getBlockState(manager.getWorld(), (int)tryX2, (int)storm.pos_funnel_base.posY - 2, (int)tryZ2).getBlock();
 					int colorID = 0;
 			
 					if (ConfigParticle.enable_tornado_block_colors)
@@ -150,7 +150,7 @@ public class LegacyStormRenderer extends AbstractStormRenderer
 		                //rotations!
 		                double var16 = storm.pos_funnel_base.posX - var30.posX;
 		                double var18 = storm.pos_funnel_base.posZ - var30.posZ;
-		                ((EntityRotFX)var30).rotationYaw = (float)(Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
+		                ((EntityRotFX)var30).rotationYaw = (float)(Maths.fastATan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
 		                ((EntityRotFX)var30).rotationPitch = -30F;
 	            	}
 	            	
@@ -174,7 +174,7 @@ public class LegacyStormRenderer extends AbstractStormRenderer
 		                //rotations!
 		                double var16 = storm.pos_funnel_base.posX - var30.posX;
 		                double var18 = storm.pos_funnel_base.posZ - var30.posZ;
-		                ((EntityRotFX)var30).rotationYaw = (float)(Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
+		                ((EntityRotFX)var30).rotationYaw = (float)(Maths.fastATan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
 		                ((EntityRotFX)var30).rotationPitch = 90F;
 	            	}
 	            	

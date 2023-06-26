@@ -31,7 +31,7 @@ public class BlockSnapshot
 	
 	public double distance(double x, double y, double z)
 	{
-		return Maths.distance(this.x, this.y, this.z, x, y, z);
+		return Maths.distanceSq(this.x, this.y, this.z, x, y, z);
 	}
 	
 	public int hashCode()

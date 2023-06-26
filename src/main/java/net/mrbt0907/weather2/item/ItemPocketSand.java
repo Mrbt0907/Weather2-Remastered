@@ -23,6 +23,7 @@ import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.entity.particle.ParticleSandstorm;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.registry.BlockRegistry;
+import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.util.WeatherUtilBlock;
 
@@ -76,10 +77,10 @@ public class ItemPocketSand extends Item
         TextureAtlasSprite sprite = ParticleRegistry.cloud256;
 
         double distCast = 10;
-        double xzAdj = Math.cos(Math.toRadians(player.rotationPitch));
-        double vecYCast = (-Math.sin(Math.toRadians(player.rotationPitch)) * (distCast));
-        double vecXCast = (-Math.sin(Math.toRadians(player.rotationYawHead)) * (distCast)) * xzAdj;
-        double vecZCast = (Math.cos(Math.toRadians(player.rotationYawHead)) * (distCast)) * xzAdj;
+        double xzAdj = Maths.fastCos(Math.toRadians(player.rotationPitch));
+        double vecYCast = (-Maths.fastSin(Math.toRadians(player.rotationPitch)) * (distCast));
+        double vecXCast = (-Maths.fastSin(Math.toRadians(player.rotationYawHead)) * (distCast)) * xzAdj;
+        double vecZCast = (Maths.fastCos(Math.toRadians(player.rotationYawHead)) * (distCast)) * xzAdj;
 
         BlockPos pos = new BlockPos(player.posX + vecXCast, player.posY + vecYCast, player.posZ + vecZCast);
         //pos = new BlockPos(player.getLookVec().add(new Vec3d(player.posX, player.posY, player.posZ)));
@@ -100,14 +101,14 @@ public class ItemPocketSand extends Item
             double speed = 0.6F;
             double randSize = 20;
             double randAngle = player.world.rand.nextDouble() * randSize - player.world.rand.nextDouble() * randSize;
-            double vecX = (-Math.sin(Math.toRadians(player.rotationYawHead + randAngle)) * (speed));
+            double vecX = (-Maths.fastSin(Math.toRadians(player.rotationYawHead + randAngle)) * (speed));
             randAngle = player.world.rand.nextDouble() * randSize - player.world.rand.nextDouble() * randSize;
-            double vecZ = (Math.cos(Math.toRadians(player.rotationYawHead + randAngle)) * (speed));
+            double vecZ = (Maths.fastCos(Math.toRadians(player.rotationYawHead + randAngle)) * (speed));
             randAngle = player.world.rand.nextDouble() * randSize - player.world.rand.nextDouble() * randSize;
 
-            //double xzAdj = Math.cos(Math.toRadians(player.rotationPitch));
+            //double xzAdj = Maths.fastCos(Math.toRadians(player.rotationPitch));
 
-            double vecY = (-Math.sin(Math.toRadians(player.rotationPitch + randAngle)) * (speed));
+            double vecY = (-Maths.fastSin(Math.toRadians(player.rotationPitch + randAngle)) * (speed));
 
             //System.out.println("?:" + xzAdj);
 

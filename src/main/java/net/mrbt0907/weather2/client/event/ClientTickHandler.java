@@ -11,13 +11,11 @@ import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.EntityRenderer;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WindReader;
 import net.mrbt0907.weather2.client.NewSceneEnhancer;
-import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.foliage.FoliageEnhancerShader;
 import net.mrbt0907.weather2.client.gui.GuiEZConfig;
 import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
@@ -26,6 +24,7 @@ import net.mrbt0907.weather2.config.ConfigFoliage;
 import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.network.packets.PacketData;
 import net.mrbt0907.weather2.network.packets.PacketEZGUI;
+import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import net.mrbt0907.weather2.util.WeatherUtilSound;
 import net.mrbt0907.weather2.weather.EntityRendererEX;
@@ -122,12 +121,12 @@ public class ClientTickHandler
 		if (world != null)
 		{
 			checkClientWeather();
-
 			weatherManager.tick();
-
-			if (!clientConfigData.aestheticMode && ConfigMisc.enable_forced_clouds_off && world.provider.getDimension() == 0) {
+			
+			Weather2.clientChunkUtil.tick();
+			
+			if (!clientConfigData.aestheticMode && ConfigMisc.enable_forced_clouds_off && world.provider.getDimension() == 0)
 				mc.gameSettings.clouds = 0;
-			}
 			
 			if (WeatherUtilConfig.isEffectsEnabled(world.provider.getDimension()))
 				NewSceneEnhancer.instance().tick();
@@ -144,7 +143,7 @@ public class ClientTickHandler
 				if (smoothAngle > 180) smoothAngle -= 360;
 				if (smoothAngle < -180) smoothAngle += 360;
 
-				float bestMove = MathHelper.wrapDegrees(windDir - smoothAngle);
+				float bestMove = Maths.wrapDegrees(windDir - smoothAngle);
 
 				smoothAngleAdj = windSpeed;//0.2F;
 
@@ -217,6 +216,7 @@ public class ClientTickHandler
 		if (weatherManager != null) {
 			Weather2.debug("Weather2: Detected old WeatherManagerClient with unloaded world, clearing its data");
 			WeatherUtilSound.reset();
+			Weather2.clientChunkUtil.clearCache();
 			weatherManager.reset();
 			weatherManager = null;
 		}

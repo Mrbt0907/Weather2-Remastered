@@ -4,7 +4,6 @@ import java.util.Calendar;
 
 import CoroUtil.util.CoroUtilCompatibility;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -78,6 +77,6 @@ public class WeatherUtil {
 	{
 		float a = getTemperature(world, pos);
 		float b = CoroUtilCompatibility.getAdjustedTemperature(world, world.getBiome(pos), pos);
-		return Math.max((a / b) - MathHelper.clamp(a - 1.0F, 0.0F, 1.0F), 0.0F);
+		return Math.max((a / b) - Maths.clamp(a - 1.0F, 0.0F, 1.0F), 0.0F);
 	}
 }

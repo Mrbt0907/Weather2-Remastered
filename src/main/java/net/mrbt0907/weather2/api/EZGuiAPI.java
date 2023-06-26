@@ -70,6 +70,7 @@ public class EZGuiAPI
 	public static final String BA_SHADER = "a_shader";
 	public static final String BA_FOLIAGE = "a_foliage";
 	public static final String BA_RENDER_DISTANCE = "a_render_distance";
+	public static final String BA_FANCY_RENDERING = "a_fancy_rendering";
 	public static final String BB_GLOBAL = "b_global";
 	public static final String BB_RADAR = "b_radar";
 	public static final String BC_ENABLE_TORNADO = "c_tornado";
@@ -115,6 +116,7 @@ public class EZGuiAPI
 		options.put(BA_SHADER, BL_SHADERS, 0);
 		options.put(BA_FOLIAGE, BL_TOGGLE, 0);
 		options.put(BA_RENDER_DISTANCE, BL_STR_ALT, 0);
+		options.put(BA_FANCY_RENDERING, BL_TOGGLE, 0);
 		options.put(BB_GLOBAL, BL_TOGGLE, 0);
 		options.put(BB_RADAR, BL_TOGGLE, 0);
 		options.put(BC_ENABLE_TORNADO, BL_TOGGLE, 1);

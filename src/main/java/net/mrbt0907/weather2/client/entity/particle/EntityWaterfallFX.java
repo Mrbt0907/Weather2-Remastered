@@ -15,6 +15,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.util.Maths;
 import CoroUtil.api.weather.IWindHandler;
 import extendedrenderer.particle.entity.EntityRotFX;
 @SideOnly(Side.CLIENT)
@@ -136,8 +137,8 @@ public class EntityWaterfallFX extends EntityRotFX implements IWindHandler
         this.prevPosZ = this.posZ;
         
         //float adj = 0.08F * rand.nextFloat();
-        //this.motionX += adj * Math.sin(world.getWorldTime());
-        //this.motionZ += adj * Math.sin(world.getWorldTime());
+        //this.motionX += adj * Maths.fastSin(world.getWorldTime());
+        //this.motionZ += adj * Maths.fastSin(world.getWorldTime());
         //this.motionY += adj * Math.cos(world.getWorldTime());
 
         if (particleRed < 255) particleRed += 0.01F;
@@ -168,7 +169,7 @@ public class EntityWaterfallFX extends EntityRotFX implements IWindHandler
         	Vec3d vec3 = Blocks.FLOWING_WATER.modifyAcceleration(world, pos, null, new Vec3d(0, 0, 0));
         	double dir = -1000;
         	if (vec3.x != 0 && vec3.z != 0) {
-        		dir = Math.atan2(vec3.z, vec3.x) - (Math.PI / 2D);
+        		dir = Maths.fastATan2(vec3.z, vec3.x) - (Math.PI / 2D);
         	}
         	
         	
@@ -179,8 +180,8 @@ public class EntityWaterfallFX extends EntityRotFX implements IWindHandler
         		
         		float speed = 0.005F;
         		
-        		this.motionX -= Math.sin(dir) * speed;
-        		this.motionZ += Math.cos(dir) * speed;
+        		this.motionX -= Maths.fastSin(dir) * speed;
+        		this.motionZ += Maths.fastCos(dir) * speed;
             }
         	
         	float range = 0.03F;

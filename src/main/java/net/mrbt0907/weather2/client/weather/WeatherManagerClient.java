@@ -208,7 +208,7 @@ public class WeatherManagerClient extends WeatherManager
 				{
 					Minecraft mc = Minecraft.getMinecraft(); 
 					int x = mainNBT.getInteger("posX"), y = mainNBT.getInteger("posY"), z = mainNBT.getInteger("posZ");
-					if (mc.player != null && Maths.distance(mc.player.posX, mc.player.posY, mc.player.posZ, x, y, z) <= ConfigStorm.max_lightning_bolt_distance)
+					if (mc.player != null && Maths.distanceSq(mc.player.posX, mc.player.posY, mc.player.posZ, x, y, z) <= ConfigStorm.max_lightning_bolt_distance)
 					{
 						world.setLastLightningBolt(4);
 						world.playSound(x, y, z, SoundEvents.ENTITY_LIGHTNING_THUNDER, SoundCategory.WEATHER, 64.0F * (float)ConfigVolume.lightning, Maths.random(0.65F, 0.75F), false);
@@ -294,7 +294,7 @@ public class WeatherManagerClient extends WeatherManager
 		EntityPlayerSP player = Minecraft.getMinecraft().player;
 		
 		for (WeatherObject system : this.systems.values())
-			if (system.pos.distance(player.posX, system.pos.posY, player.posZ) < SceneEnhancer.fogDistance)
+			if (system.pos.distanceSq(player.posX, system.pos.posY, player.posZ) < SceneEnhancer.fogDistance)
 				systems++;
 		
 		if (systems == 0) systems = 1;

@@ -15,6 +15,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.weather.AbstractStormRenderer;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.client.NewSceneEnhancer;
@@ -22,7 +23,6 @@ import net.mrbt0907.weather2.client.entity.particle.ExtendedEntityRotFX;
 import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
 import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.config.ConfigStorm;
-import net.mrbt0907.weather2.util.ChunkUtils;
 import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.util.WeatherUtil;
 import net.mrbt0907.weather2.util.WeatherUtilBlock;
@@ -57,14 +57,14 @@ public class NormalStormRenderer extends AbstractStormRenderer
 	public void onTick(WeatherManagerClient manager)
 	{
 		EntityPlayer entP = Minecraft.getMinecraft().player;
-		IBlockState state = ConfigCoroUtil.optimizedCloudRendering ? Blocks.AIR.getDefaultState() : ChunkUtils.getBlockState(manager.getWorld(), (int) storm.pos_funnel_base.posX, (int) storm.pos_funnel_base.posY - 1, (int) storm.pos_funnel_base.posZ);
+		IBlockState state = ConfigCoroUtil.optimizedCloudRendering ? Blocks.AIR.getDefaultState() : Weather2.clientChunkUtil.getBlockState(manager.getWorld(), (int) storm.pos_funnel_base.posX, (int) storm.pos_funnel_base.posY - 1, (int) storm.pos_funnel_base.posZ);
 		Material material = state.getMaterial();
 		double maxRenderDistance = NewSceneEnhancer.instance().renderDistance + 64.0D;
-		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0016F, 0.5F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.04F);
-		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.005F, 0.3F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.004F);
-		float sizeOtherMult = Math.min(Math.max(storm.size * 0.003F, 0.5F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.035F);
-		float heightMult = storm.getLayerHeight() * 0.00290625F;
-		float rotationMult = Math.max(heightMult * 0.45F, 1.0F);
+		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0016F, 0.45F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.02F);
+		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.01F, 0.25F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.005F);
+		float sizeOtherMult = Math.min(Math.max(storm.size * 0.003F, 0.45F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.035F);
+		float heightMult = storm.getLayerHeight() * 0.0064F;
+		float rotationMult = Math.max(heightMult * 0.55F, 1.0F);
 		float r = -1.0F, g = -1.0F, b = -1.0F;
 
 		if (ConfigParticle.enable_tornado_block_colors)
@@ -140,7 +140,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 				}
 
 				particle.setColor(finalBright, finalBright, finalBright);
-				particle.setScale(750.0F * sizeCloudMult);
+				particle.setScale(400.0F * sizeCloudMult);
 				particle.setMaxAge(120);
 				listParticlesCloud.add(particle);
 			}
@@ -153,7 +153,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 					if (listParticlesCloud.size() < (storm.size + extraSpawning) / 1F) {
 						double spawnRad = storm.size * 1.2D;
 						Vec3 tryPos = new Vec3(storm.pos.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), storm.getLayerHeight() + (rand.nextDouble() * 40.0F) + (storm.stage >= Stage.RAIN.getStage() ? 30.0F : 60.0D), storm.pos.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
-						if (tryPos.distance(playerAdjPos) < maxRenderDistance) {
+						if (tryPos.distanceSq(playerAdjPos) < maxRenderDistance) {
 							if (storm.getAvoidAngleIfTerrainAtOrAheadOfPosition(storm.getAngle(), tryPos) == 0) {
 								ExtendedEntityRotFX particle;
 								if (WeatherUtil.isAprilFoolsDay()) {
@@ -176,7 +176,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 								}
 
 								particle.rotationPitch = Maths.random(70.0F, 110.0F);
-								particle.setScale(700.0F * sizeCloudMult);
+								particle.setScale(1250.0F * sizeCloudMult);
 								listParticlesCloud.add(particle);
 							}
 						}
@@ -192,10 +192,10 @@ public class NormalStormRenderer extends AbstractStormRenderer
 			{
 				for (int i = 0; i < 3 && shouldSpawn(2); i++)
 				{
-					double spawnRad = storm.funnelSize + 50.0D;
+					double spawnRad = storm.funnelSize + 5.0D;
 						
 					Vec3 tryPos = new Vec3(storm.pos_funnel_base.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), storm.pos_funnel_base.posY, storm.pos_funnel_base.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
-					if (tryPos.distance(playerAdjPos) < maxRenderDistance)
+					if (tryPos.distanceSq(playerAdjPos) < maxRenderDistance)
 					{
 						int groundY = WeatherUtilBlock.getPrecipitationHeightSafe(manager.getWorld(), new BlockPos((int)tryPos.posX, 0, (int)tryPos.posZ)).getY();
 						ExtendedEntityRotFX particle;
@@ -209,7 +209,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 						particle.setTicksFadeOutMax(80);
 						particle.setGravity(0.01F);
 						particle.setMaxAge(80);
-						particle.setScale(300.0F * sizeFunnelMult);
+						particle.setScale(200.0F * sizeFunnelMult);
 						particle.rotationYaw = rand.nextInt(360);
 						particle.rotationPitch = 30.0F + rand.nextInt(60);
 							
@@ -235,7 +235,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 				{
 					Vec3 tryPos = new Vec3(storm.pos_funnel_base.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), storm.pos.posY, storm.pos_funnel_base.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
 
-					if (tryPos.distance(playerAdjPos) < maxRenderDistance)
+					if (tryPos.distanceSq(playerAdjPos) < maxRenderDistance)
 					{
 						ExtendedEntityRotFX particle;
 						if (!storm.isFirenado)
@@ -248,7 +248,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 						if (particle == null) break;
 							
 							//move these to a damn profile damnit!
-						particle.setMaxAge(150 + ((storm.stage-1) * 10) + rand.nextInt(100));
+						particle.setMaxAge(120 + ((storm.stage-1) * 10) + rand.nextInt(100));
 						particle.rotationYaw = rand.nextInt(360);
 							
 						float finalBright = Math.min(0.6F, 0.4F + (rand.nextFloat() * 0.2F));
@@ -257,7 +257,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 						if (storm.stage == Stage.SEVERE.getStage())
 							particle.setScale(100.0F * sizeFunnelMult);
 						else
-							particle.setScale(500.0F * sizeFunnelMult);
+							particle.setScale(450.0F * sizeFunnelMult);
 
 						if (r >= 0.0F)
 						{
@@ -289,7 +289,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 			{
 				double spawnRad2 = storm.size;
 				Vec3 tryPos = new Vec3(storm.pos.posX + (rand.nextDouble()*spawnRad2) - (rand.nextDouble()*spawnRad2), storm.pos.posY + rand.nextInt(50), storm.pos.posZ + (rand.nextDouble()*spawnRad2) - (rand.nextDouble()*spawnRad2));
-				if (tryPos.distance(playerAdjPos) < maxRenderDistance)
+				if (tryPos.distanceSq(playerAdjPos) < maxRenderDistance)
 				{
 					ExtendedEntityRotFX particle;
 					float finalBright = Math.min(0.7F, 0.5F + (rand.nextFloat() * 0.2F)) + (storm.stage >= Stage.RAIN.getStage() ? -0.2F : 0.0F );
@@ -317,7 +317,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 			{
 				 double var16 = storm.pos.posX - ent.getPosX();
 				 double var18 = storm.pos.posZ - ent.getPosZ();
-				 ent.rotationYaw = (float)(Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
+				 ent.rotationYaw = (float)(Maths.fastATan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
 				 ent.rotationYaw += ent.getEntityId() % 90;
 				 ent.rotationPitch = -30F;
 				 
@@ -351,7 +351,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 					
 					double vecX = ent.getPosX() - storm.pos.posX;
 					double vecZ = ent.getPosZ() - storm.pos.posZ;
-					float angle = (float)(Math.atan2(vecZ, vecX) * 180.0D / Math.PI);
+					float angle = (float)(Maths.fastATan2(vecZ, vecX) * 180.0D / Math.PI);
 					
 					//fix speed causing inner part of formation to have a gap
 					angle += speed * 50D;
@@ -367,41 +367,42 @@ public class NormalStormRenderer extends AbstractStormRenderer
 					}
 					
 					//keep some near always - this is the lower formation part
-					if (ent.getEntityId() % 40 < 5) {
-						if (storm.stage >= Stage.TORNADO.getStage()) {
-							if (storm.stormType == StormType.WATER.ordinal()) {
+					if (ent.getEntityId() % 40 < 10)
+					{
+						if (ent.posY > storm.getLayerHeight() + 10.0D)
+							ent.setPosition(ent.posX, storm.getLayerHeight() + 10.0D, ent.posZ);
+						if (storm.stage >= Stage.TORNADO.getStage())
+						{
+							if (storm.stormType == StormType.WATER.ordinal())
+							{
 								angle += 40 + ((ent.getEntityId() % 5) * 4);
-								if (curDist > 150 + ((storm.stage-Stage.TORNADO.getStage()+1) * 30)) {
+								if (curDist > 150 + ((storm.stage-Stage.TORNADO.getStage()+1) * 30)) 
 									angle += 10;
-								}
-							} else {
+							}
+							else
 								angle += 30 + ((ent.getEntityId() % 5) * 4);
-							}
 							
-						} else {
-							//make a wider spinning lower area of cloud, for high wind
-							if (curDist > 150) {
-								angle += 50 + ((ent.getEntityId() % 5) * 4);
-							}
 						}
+						else if (curDist > 150) //make a wider spinning lower area of cloud, for high wind
+								angle += 50 + ((ent.getEntityId() % 5) * 4);
 						
 						double var16 = storm.pos.posX - ent.getPosX();
 						double var18 = storm.pos.posZ - ent.getPosZ();
-						ent.rotationYaw = (float)(Math.atan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
+						ent.rotationYaw = (float)(Maths.fastATan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
 						ent.rotationPitch = -30F - (ent.getEntityId() % 10); //meso clouds
-						
+						ent.setScale(400.0F * sizeCloudMult);
 					}
 					else
 					{
 						ent.rotationPitch = (float) (90.0F - (90.0f * Math.min(ent.getPosY() / (storm.getLayerHeight() + ent.getScale() * 0.75F), 1.0F)));
 						if (ConfigParticle.enable_extended_render_distance)
-							ent.setScale(2000.0F * sizeCloudMult);
+							ent.setScale(1500.0F * sizeCloudMult);
 					}
 					
 					if (curSpeed < speed * 20D)
 					{
-						ent.setMotionX(ent.getMotionX() + -Math.sin(Math.toRadians(angle)) * speed);
-						ent.setMotionZ(ent.getMotionZ() + Math.cos(Math.toRadians(angle)) * speed);
+						ent.setMotionX(ent.getMotionX() + -Maths.fastSin(Math.toRadians(angle)) * speed);
+						ent.setMotionZ(ent.getMotionZ() + Maths.fastCos(Math.toRadians(angle)) * speed);
 					}
 				}
 				else
@@ -425,8 +426,8 @@ public class NormalStormRenderer extends AbstractStormRenderer
 					
 					if (curSpeed < speed * 1D)
 					{
-						ent.setMotionX(ent.getMotionX() + -Math.sin(Math.toRadians(angle)) * speed);
-						ent.setMotionZ(ent.getMotionZ() + Math.cos(Math.toRadians(angle)) * speed);
+						ent.setMotionX(ent.getMotionX() + -Maths.fastSin(Math.toRadians(angle)) * speed);
+						ent.setMotionZ(ent.getMotionZ() + Maths.fastCos(Math.toRadians(angle)) * speed);
 					}
 				}
 				
@@ -461,7 +462,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 			double spin = storm.spin + 0.04F;
 			double vecX = ent.getPosX() - storm.pos.posX;
 			double vecZ = ent.getPosZ() - storm.pos.posZ;
-			float angle = (float)(Math.atan2(vecZ, vecX) * 180.0D / Math.PI);
+			float angle = (float)(Maths.fastATan2(vecZ, vecX) * 180.0D / Math.PI);
 			ent.rotationPitch = 0.0F;
 			ent.rotationYaw = angle + 90;
 			
@@ -469,8 +470,8 @@ public class NormalStormRenderer extends AbstractStormRenderer
 				ent.setAlphaF(ent.getAlphaF() + 0.01F);
 			if (speed < spin * 15.0D * rotationMult)
 			{
-				ent.setMotionX(ent.getMotionX() + -Math.sin(Math.toRadians(angle)) * spin);
-				ent.setMotionZ(ent.getMotionZ() + Math.cos(Math.toRadians(angle)) * spin);
+				ent.setMotionX(ent.getMotionX() + -Maths.fastSin(Math.toRadians(angle)) * spin);
+				ent.setMotionZ(ent.getMotionZ() + Maths.fastCos(Math.toRadians(angle)) * spin);
 			}
 		}
 		
@@ -490,10 +491,10 @@ public class NormalStormRenderer extends AbstractStormRenderer
 	@Override
 	public void onParticleLimitRefresh(WeatherManagerClient manager, int newParticleLimit)
 	{
-		particleLimitCloud = (int) (newParticleLimit * 0.4F);
+		particleLimitCloud = (int) (newParticleLimit * 0.2F);
 		particleLimitGround = (int) (newParticleLimit * 0.05F);
-		particleLimitRain = (int) (newParticleLimit * 0.05F);
-		particleLimitFunnel = (int) (newParticleLimit * 0.5F);
+		particleLimitRain = (int) (newParticleLimit * 0.1F);
+		particleLimitFunnel = (int) (newParticleLimit * 0.6F);
 	}
 	
 	@Override

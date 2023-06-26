@@ -3,7 +3,6 @@ package net.mrbt0907.weather2.util;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.Gui;
-import net.minecraft.util.math.MathHelper;
 
 public class WeatherUtilGui extends Gui
 {
@@ -39,26 +38,26 @@ public class WeatherUtilGui extends Gui
 
 		protected void drawBar(int x, int y, int u, int v, int width, int height, int cu, int cv, float amount)
 		{
-			amount = MathHelper.clamp(amount, 0.0F, 1.0F);
+			amount = Maths.clamp(amount, 0.0F, 1.0F);
 			drawModalRectWithCustomSizedTexture(x, y, u, v, (int)(width * amount), height, cu, cv);
 		}
 
 		protected void drawMirroredBar(int x, int y, int u, int v, int width, int height, int cu, int cv, float amount)
 		{
-			amount = MathHelper.clamp(amount, 0.0F, 1.0F);
+			amount = Maths.clamp(amount, 0.0F, 1.0F);
 			drawModalRectWithCustomSizedTexture(x + (int)(width - (width * amount)), y, u + (int)(width - (width * amount)), v, (int)(width * amount), height, cu, cv);
 			drawModalRectWithCustomSizedTexture(x + width, y, width, v, (int)(width * amount), height, cu, cv);
 		}
 		
 		protected void drawBar(int x, int y, int u, int v, int width, int height, float amount)
 		{
-			amount = MathHelper.clamp(amount, 0.0F, 1.0F);
+			amount = Maths.clamp(amount, 0.0F, 1.0F);
 			drawTexturedModalRect(x, y, u, v, (int)(width * amount), height);
 		}
 
 		protected void drawMirroredBar(int x, int y, int u, int v, int width, int height, float amount)
 		{
-			amount = MathHelper.clamp(amount, 0.0F, 1.0F);
+			amount = Maths.clamp(amount, 0.0F, 1.0F);
 			drawTexturedModalRect(x + (int)(width - (width * amount)), y, u + (int)(width - (width * amount)), v, (int)(width * amount), height);
 			drawTexturedModalRect(x + width, y, width, v, (int)(width * amount), height);
 		}
@@ -76,6 +75,6 @@ public class WeatherUtilGui extends Gui
 
 			else
 			break;
-			GL11.glColor4f(MathHelper.clamp(rgba[0] / 255.0F, 0.0F, 1.0F), MathHelper.clamp(rgba[1] / 255.0F, 0.0F, 1.0F), MathHelper.clamp(rgba[2] / 255.0F, 0.0F, 1.0F), MathHelper.clamp(rgba[3] / 255.0F, 0.0F, 1.0F));
+			GL11.glColor4f(Maths.clamp(rgba[0] / 255.0F, 0.0F, 1.0F), Maths.clamp(rgba[1] / 255.0F, 0.0F, 1.0F), Maths.clamp(rgba[2] / 255.0F, 0.0F, 1.0F), Maths.clamp(rgba[3] / 255.0F, 0.0F, 1.0F));
 		}
 }

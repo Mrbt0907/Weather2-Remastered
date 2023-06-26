@@ -1,5 +1,6 @@
 package net.mrbt0907.weather2.util;
 
+import net.minecraft.client.particle.Particle;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityBoat;
@@ -8,14 +9,11 @@ import net.minecraft.entity.item.EntityMinecart;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityFishHook;
-import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
-import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WeatherUtilData;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.entity.EntityMovingBlock;
@@ -38,8 +36,8 @@ public class WeatherUtilEntity {
 
 		if (entity instanceof IWindHandler)
 			return ((IWindHandler) entity).getWindWeight();
-		else if (entity instanceof EntityRotFX)
-			return WeatherUtilParticle.getParticleWeight((EntityRotFX)entity);
+		else if (world.isRemote && entity instanceof Particle)
+			return WeatherUtilParticle.getParticleWeight((Particle) entity);
 		else if (entity instanceof EntityMovingBlock)
 			return 1F + ((EntityMovingBlock) entity).age * 0.005F;
 		else if (entity instanceof EntitySquid)
@@ -60,7 +58,6 @@ public class WeatherUtilEntity {
 					if (!stack.isEmpty() && stack.getMaxDamage() > 0)
 						extraWeight += stack.getMaxDamage() * 0.0025F;
 
-				
 			return 5.0F + extraWeight + playerInAirTime * 0.0025F;
 		}
 		else if (entity instanceof EntityLivingBase)
@@ -106,8 +103,8 @@ public class WeatherUtilEntity {
 		WindManager windMan = ClientTickHandler.weatherManager.windManager;
 		
 		double speed = 10.0D;
-		int startX = (int)(ent.posX - speed * (double)(-MathHelper.sin(windMan.windAngle / 180.0F * (float)Math.PI) * MathHelper.cos(0F / 180.0F * (float)Math.PI)));
-		int startZ = (int)(ent.posZ - speed * (double)(MathHelper.cos(windMan.windAngle / 180.0F * (float)Math.PI) * MathHelper.cos(0F / 180.0F * (float)Math.PI)));
+		int startX = (int)(ent.posX - speed * (double)(-Maths.fastSin(windMan.windAngle / 180.0F * (float)Math.PI) * Maths.fastCos(0F / 180.0F * (float)Math.PI)));
+		int startZ = (int)(ent.posZ - speed * (double)(Maths.fastCos(windMan.windAngle / 180.0F * (float)Math.PI) * Maths.fastCos(0F / 180.0F * (float)Math.PI)));
 
 		return ent.world.rayTraceBlocks((new Vec3(ent.posX, ent.posY + (double)ent.getEyeHeight(), ent.posZ)).toVec3MC(), (new Vec3(startX, ent.posY + (double)ent.getEyeHeight(), startZ)).toVec3MC()) == null;
 	}

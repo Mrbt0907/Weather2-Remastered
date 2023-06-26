@@ -51,6 +51,7 @@ public class ParticleManagerEX extends RotatingParticleManager
 	private final Minecraft mc = Minecraft.getMinecraft();
 	public final Comparator<? super Particle> COMPARE_DISTANCE = (pA, pB) ->
 	{
+		if (pB == null) return 0;
 		double a = Maths.distance(mc.player.posX, mc.player.posY, mc.player.posZ, pA.posX, pA.posY, pA.posZ);
 		double b = Maths.distance(mc.player.posX, mc.player.posY, mc.player.posZ, pB.posX, pB.posY, pB.posZ);
 		return a > b ? -1 : a == b ? 0 : 1;
@@ -123,7 +124,7 @@ public class ParticleManagerEX extends RotatingParticleManager
 	@Override
 	public void renderParticles(Entity entityIn, float partialTicks)
 	{
-		if (ConfigParticle.enableLegacyRendering)
+		if (ConfigParticle.enable_legacy_rendering)
 		{
 			super.renderParticles(entityIn, partialTicks);
 			return;
@@ -250,6 +251,30 @@ public class ParticleManagerEX extends RotatingParticleManager
 		
 
 		GlStateManager.pushMatrix();
+		if (!layerA.isEmpty())
+		{
+			GlStateManager.depthMask(true);
+			renderer.bindTexture(PARTICLE_TEXTURES);
+			layerA.sort(COMPARE_DISTANCE);
+			
+			render(entityIn, partialTicks, viewMatrix, transformation, layerA, layerMesh, useParticleShaders);
+		}
+		if (!layerB.isEmpty())
+		{
+			GlStateManager.depthMask(true);
+			renderer.bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+			layerB.sort(COMPARE_DISTANCE);
+			
+			render(entityIn, partialTicks, viewMatrix, transformation, layerB, layerMesh, useParticleShaders);
+		}
+		if (!layerC.isEmpty())
+		{
+			GlStateManager.depthMask(false);
+			renderer.bindTexture(PARTICLE_TEXTURES);
+			layerC.sort(COMPARE_DISTANCE);
+			
+			render(entityIn, partialTicks, viewMatrix, transformation, layerC, layerMesh, useParticleShaders);
+		}
 		if (!layerD.isEmpty())
 		{
 			GlStateManager.depthMask(false);

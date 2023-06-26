@@ -65,8 +65,8 @@ public class FrontObject implements IWeatherDetectable
 		this.layer = layer;
 		size = Maths.random(ConfigStorm.min_storm_size, ConfigFront.max_front_size);
 		angle = manager.windManager.windAngle;
-		float vecX = (float) -Math.sin(Math.toRadians(angle));
-		float vecZ = (float) Math.cos(Math.toRadians(angle));
+		float vecX = (float) -Maths.fastSin(Math.toRadians(angle));
+		float vecZ = (float) Maths.fastCos(Math.toRadians(angle));
 		float speed = (manager.windManager.windSpeed * 0.1F) + 0.02F;
 		motion = new Vec3(vecX * speed, 0.0D, vecZ * speed);
 		
@@ -128,8 +128,8 @@ public class FrontObject implements IWeatherDetectable
 				float mult = (type == 0 ? 0.25F : type == 1 ? 1.25F : 1.0F) * frontMultiplier;
 				angle = CoroUtilMisc.adjVal(angle, manager.windManager.windAngle, 0.001F * (float)ConfigFront.angle_change_mult * mult);
 				
-				float vecX = (float) -Math.sin(Math.toRadians(angle));
-				float vecZ = (float) Math.cos(Math.toRadians(angle));
+				float vecX = (float) -Maths.fastSin(Math.toRadians(angle));
+				float vecZ = (float) Maths.fastCos(Math.toRadians(angle));
 				float cloudSpeed = 0.2F;
 				float speed = ((manager.windManager.windSpeed * cloudSpeed) + (type == 1 ? 0.2F : 0.02F)) * (type == 0 ? 0.1F : 1.0F);
 				motion.posX = CoroUtilMisc.adjVal((float)motion.posX, vecX * speed, (float)ConfigFront.speed_change_mult * mult);
@@ -163,7 +163,7 @@ public class FrontObject implements IWeatherDetectable
 				if (type == 1)
 					for (FrontObject front : manager.getFronts())
 					{
-						if (!front.equals(this) && front.type == 2 && front.pos.distance(this.pos) - (front.size * 0.25F) <= 0.0F)
+						if (!front.equals(this) && front.type == 2 && front.pos.distanceSq(this.pos) - (front.size * 0.25F) <= 0.0F)
 						{
 							activeStorms += front.activeStorms;
 							maxStorms += front.maxStorms;
@@ -318,7 +318,7 @@ public class FrontObject implements IWeatherDetectable
 		
 		if (entP != null)
 		{
-			float yaw = -(float)(Math.atan2(entP.posX - pos.posX, entP.posZ - pos.posZ) * 180.0D / Math.PI);
+			float yaw = -(float)(Maths.fastATan2(entP.posX - pos.posX, entP.posZ - pos.posZ) * 180.0D / Math.PI);
 			int size = ConfigStorm.storm_aim_accuracy_in_angle;
 			if (size > 0)
 				yaw += Maths.random(size) - (size / 2);
@@ -502,6 +502,6 @@ public class FrontObject implements IWeatherDetectable
 	@Override
 	public float getSpeed()
 	{
-		return (float) motion.speed();
+		return (float) motion.speedSq();
 	}
 }

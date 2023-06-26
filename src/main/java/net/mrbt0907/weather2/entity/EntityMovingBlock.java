@@ -2,6 +2,7 @@ package net.mrbt0907.weather2.entity;
 
 import io.netty.buffer.ByteBuf;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.block.Block;
@@ -24,8 +25,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
+import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.config.ConfigGrab;
-import net.mrbt0907.weather2.util.ChunkUtils;
+import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.weather.storm.StormObject;
 
 public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnData
@@ -140,20 +142,20 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 				var2 = new Vec3d(var3.hitVec.x, var3.hitVec.y, var3.hitVec.z);
 
 			Entity var4 = null;
-			List<Entity> var5 = null;
+			List<Entity> var5 = new ArrayList<Entity>(), entities = new ArrayList<Entity>(world.loadedEntityList);
 
 			if (age > gravityDelay / 4)
-				var5 = this.world.getEntitiesWithinAABBExcludingEntity(this, this.getEntityBoundingBox().grow(this.motionX, this.motionY, this.motionZ));
+				for (Entity entity : entities)
+					if (!entity.equals(this) && entity.getDistance(posX, posY, posZ) < height * Maths.speedSq(motionX, motionY, motionZ))
+						var5.add(entity);
 
 			double var6 = 0.0D;
 			int var8;
 			int var9;
 			int var11;
 
-			for (var8 = 0; var5 != null && var8 < var5.size() && var8 < 5; ++var8)
+			for (Entity var10 : var5)
 			{
-				Entity var10 = var5.get(var8);
-
 				if (!(var10 instanceof EntityMovingBlock) && var10.canBeCollidedWith() && this.canEntityBeSeen(var10))
 				{
 					if (!(var10 instanceof EntityPlayer) || !((EntityPlayer)var10).capabilities.isCreativeMode) {
@@ -326,11 +328,11 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 		try
 		{		
 			BlockPos pos = new BlockPos(x, y, z);
-			IBlockState state = ChunkUtils.getBlockState(world, pos);
+			IBlockState state = Weather2.getChunkUtil(world).getBlockState(world, pos);
 	
 			if (tileentity != null || ConfigGrab.Storm_Tornado_rarityOfBreakOnFall > 0 && rand.nextInt(ConfigGrab.Storm_Tornado_rarityOfBreakOnFall + 1) != 0)
-				if (!state.getMaterial().isLiquid() && ChunkUtils.isValidPos(world, y))
-					ChunkUtils.setBlockState(world, x, y, z, this.state);
+				if (!state.getMaterial().isLiquid() && Weather2.getChunkUtil(world).isValidPos(world, y))
+					Weather2.getChunkUtil(world).setBlockState(world, x, y, z, this.state);
 		}
 		catch (Exception e)
 		{

@@ -246,55 +246,68 @@ public class WeatherUtilConfig
 							ConfigParticle.sandstorm_dust_particle_rate = 0.0D;
 							ConfigParticle.funnel_particle_delay = 666999;
 							ConfigParticle.ground_debris_particle_delay = 666999;
+							ConfigParticle.enable_tornado_block_colors = false;
+							ConfigParticle.enable_tornado_debris = false;
 							break;
 						case 1:
 							ConfigParticle.sandstorm_debris_particle_rate = 0.025D;
 							ConfigParticle.sandstorm_dust_particle_rate = 0.05D;
 							ConfigParticle.funnel_particle_delay = 45;
 							ConfigParticle.ground_debris_particle_delay = 20;
+							ConfigParticle.enable_tornado_block_colors = false;
+							ConfigParticle.enable_tornado_debris = false;
 							break;
 						case 2:
 							ConfigParticle.sandstorm_debris_particle_rate = 0.05D;
 							ConfigParticle.sandstorm_dust_particle_rate = 0.1D;
 							ConfigParticle.funnel_particle_delay = 20;
 							ConfigParticle.ground_debris_particle_delay = 10;
+							ConfigParticle.enable_tornado_block_colors = false;
+							ConfigParticle.enable_tornado_debris = false;
 							break;
 						case 3:
 							ConfigParticle.sandstorm_debris_particle_rate = 0.1D;
 							ConfigParticle.sandstorm_dust_particle_rate = 0.15D;
 							ConfigParticle.funnel_particle_delay = 10;
 							ConfigParticle.ground_debris_particle_delay = 5;
+							ConfigParticle.enable_tornado_block_colors = false;
+							ConfigParticle.enable_tornado_debris = false;
 							break;
 						case 4:
 							ConfigParticle.sandstorm_debris_particle_rate = 0.15D;
 							ConfigParticle.sandstorm_dust_particle_rate = 0.4D;
 							ConfigParticle.funnel_particle_delay = 5;
 							ConfigParticle.ground_debris_particle_delay = 5;
+							ConfigParticle.enable_tornado_block_colors = true;
+							ConfigParticle.enable_tornado_debris = false;
 							break;
 						case 5:
 							ConfigParticle.sandstorm_debris_particle_rate = 0.25D;
 							ConfigParticle.sandstorm_dust_particle_rate = 0.6D;
 							ConfigParticle.funnel_particle_delay = 2;
 							ConfigParticle.ground_debris_particle_delay = 3;
+							ConfigParticle.enable_tornado_block_colors = true;
+							ConfigParticle.enable_tornado_debris = true;
 								break;
 						case 6:
 							ConfigParticle.sandstorm_debris_particle_rate = 0.5D;
 							ConfigParticle.sandstorm_dust_particle_rate = 1.0D;
 							ConfigParticle.funnel_particle_delay = 0;
 							ConfigParticle.ground_debris_particle_delay = 0;
+							ConfigParticle.enable_tornado_block_colors = true;
+							ConfigParticle.enable_tornado_debris = true;
 							break;
 					}
 					break;
 				case EZGuiAPI.BA_PRECIPITATION:
-					ConfigParticle.particle_multiplier = 1.0D;
 					switch(value)
 					{
 						case 0:
 							ConfigParticle.enable_precipitation = true;
 							ConfigParticle.enable_precipitation_splash = false;
 							ConfigParticle.enable_heavy_precipitation = false;
-							ConfigParticle.use_vanilla_rain_and_thunder = false;
-							ConfigParticle.precipitation_particle_rate = 0.00000000000001D;
+							ConfigParticle.enable_vanilla_rain = false;
+							ConfigParticle.precipitation_particle_rate = 0.0D;
 							ConfigParticle.enable_distant_downfall = false;
 							ConfigParticle.distant_downfall_particle_rate = 0.0F;
 							break;
@@ -302,7 +315,7 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_precipitation = false;
 							ConfigParticle.enable_precipitation_splash = false;
 							ConfigParticle.enable_heavy_precipitation = false;
-							ConfigParticle.use_vanilla_rain_and_thunder = true;
+							ConfigParticle.enable_vanilla_rain = true;
 							ConfigParticle.precipitation_particle_rate = 0.05D;
 							ConfigParticle.enable_distant_downfall = false;
 							ConfigParticle.distant_downfall_particle_rate = 0.4F;
@@ -311,7 +324,7 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_precipitation = true;
 							ConfigParticle.enable_precipitation_splash = false;
 							ConfigParticle.enable_heavy_precipitation = false;
-							ConfigParticle.use_vanilla_rain_and_thunder = false;
+							ConfigParticle.enable_vanilla_rain = false;
 							ConfigParticle.precipitation_particle_rate = 0.2D;
 							ConfigParticle.enable_distant_downfall = false;
 							ConfigParticle.distant_downfall_particle_rate = 0.2F;
@@ -320,7 +333,7 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_precipitation = true;
 							ConfigParticle.enable_precipitation_splash = true;
 							ConfigParticle.enable_heavy_precipitation = false;
-							ConfigParticle.use_vanilla_rain_and_thunder = false;
+							ConfigParticle.enable_vanilla_rain = false;
 							ConfigParticle.precipitation_particle_rate = 0.40D;
 							ConfigParticle.enable_distant_downfall = false;
 							ConfigParticle.distant_downfall_particle_rate = 0.2F;
@@ -329,7 +342,7 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_precipitation = true;
 							ConfigParticle.enable_precipitation_splash = true;
 							ConfigParticle.enable_heavy_precipitation = true;
-							ConfigParticle.use_vanilla_rain_and_thunder = false;
+							ConfigParticle.enable_vanilla_rain = false;
 							ConfigParticle.precipitation_particle_rate = 0.65D;
 							ConfigParticle.enable_distant_downfall = true;
 							ConfigParticle.distant_downfall_particle_rate = 0.4F;
@@ -338,7 +351,7 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_precipitation = true;
 							ConfigParticle.enable_precipitation_splash = true;
 							ConfigParticle.enable_heavy_precipitation = true;
-							ConfigParticle.use_vanilla_rain_and_thunder = false;
+							ConfigParticle.enable_vanilla_rain = false;
 							ConfigParticle.precipitation_particle_rate = 1.0D;
 							ConfigParticle.enable_distant_downfall = true;
 							ConfigParticle.distant_downfall_particle_rate = 0.6F;
@@ -347,7 +360,7 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_precipitation = true;
 							ConfigParticle.enable_precipitation_splash = true;
 							ConfigParticle.enable_heavy_precipitation = true;
-							ConfigParticle.use_vanilla_rain_and_thunder = false;
+							ConfigParticle.enable_vanilla_rain = false;
 							ConfigParticle.precipitation_particle_rate = 1.4D;
 							ConfigParticle.enable_distant_downfall = true;
 							ConfigParticle.distant_downfall_particle_rate = 1.0F;
@@ -356,7 +369,7 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_precipitation = true;
 							ConfigParticle.enable_precipitation_splash = true;
 							ConfigParticle.enable_heavy_precipitation = true;
-							ConfigParticle.use_vanilla_rain_and_thunder = false;
+							ConfigParticle.enable_vanilla_rain = false;
 							ConfigParticle.precipitation_particle_rate = 2.0D;
 							ConfigParticle.enable_distant_downfall = true;
 							ConfigParticle.distant_downfall_particle_rate = 2.0F;
@@ -364,7 +377,6 @@ public class WeatherUtilConfig
 					}
 					break;
 				case EZGuiAPI.BA_EFFECT:
-					ConfigParticle.particle_multiplier = 0.5D;
 					switch(value)
 					{
 						case 0:
@@ -374,6 +386,8 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_wind_particle = false;
 							ConfigParticle.wind_particle_rate = 0.0D;
 							ConfigParticle.ambient_particle_rate = 0.0D;
+							ConfigParticle.fog_mult = 0.0D;
+							ConfigParticle.camera_shake_mult = 0.0D;
 							break;
 						case 1:
 							ConfigParticle.enable_falling_leaves = true;
@@ -382,6 +396,8 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_wind_particle = false;
 							ConfigParticle.wind_particle_rate = 0.0D;
 							ConfigParticle.ambient_particle_rate = 0.1D;
+							ConfigParticle.fog_mult = 0.0D;
+							ConfigParticle.camera_shake_mult = 0.0D;
 							break;
 						case 2:
 							ConfigParticle.enable_falling_leaves = true;
@@ -390,6 +406,8 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_wind_particle = false;
 							ConfigParticle.wind_particle_rate = 0.0D;
 							ConfigParticle.ambient_particle_rate = 0.2D;
+							ConfigParticle.fog_mult = 0.0D;
+							ConfigParticle.camera_shake_mult = 0.0D;
 							break;
 						case 3:
 							ConfigParticle.enable_falling_leaves = true;
@@ -398,6 +416,8 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_wind_particle = true;
 							ConfigParticle.wind_particle_rate = 0.1D;
 							ConfigParticle.ambient_particle_rate = 0.35D;
+							ConfigParticle.fog_mult = 0.15D;
+							ConfigParticle.camera_shake_mult = 0.25D;
 							break;
 						case 4:
 							ConfigParticle.enable_falling_leaves = true;
@@ -406,6 +426,8 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_wind_particle = true;
 							ConfigParticle.wind_particle_rate = 0.2D;
 							ConfigParticle.ambient_particle_rate = 0.6D;
+							ConfigParticle.fog_mult = 0.25D;
+							ConfigParticle.camera_shake_mult = 0.5D;
 							break;
 						case 5:
 							ConfigParticle.enable_falling_leaves = true;
@@ -414,6 +436,8 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_wind_particle = true;
 							ConfigParticle.wind_particle_rate = 0.25D;
 							ConfigParticle.ambient_particle_rate = 1.0D;
+							ConfigParticle.fog_mult = 0.6D;
+							ConfigParticle.camera_shake_mult = 1.0D;
 							break;
 						case 6:
 							ConfigParticle.enable_falling_leaves = true;
@@ -422,6 +446,8 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_wind_particle = true;
 							ConfigParticle.wind_particle_rate = 0.3D;
 							ConfigParticle.ambient_particle_rate = 2.0D;
+							ConfigParticle.fog_mult = 1.0D;
+							ConfigParticle.camera_shake_mult = 1.0D;
 							break;
 						case 7:
 							ConfigParticle.enable_falling_leaves = true;
@@ -430,6 +456,8 @@ public class WeatherUtilConfig
 							ConfigParticle.enable_wind_particle = true;
 							ConfigParticle.wind_particle_rate = 0.5D;
 							ConfigParticle.ambient_particle_rate = 4.0D;
+							ConfigParticle.fog_mult = 1.0D;
+							ConfigParticle.camera_shake_mult = 1.0D;
 							break;
 					}
 					break;
@@ -549,6 +577,10 @@ public class WeatherUtilConfig
 							ConfigParticle.max_particles = -1;
 							break;
 					}
+
+				case EZGuiAPI.BA_FANCY_RENDERING:
+					ConfigParticle.enable_legacy_rendering = value == 0;
+					break;
 				}
 			
 				if (!key.equals("dimData"))

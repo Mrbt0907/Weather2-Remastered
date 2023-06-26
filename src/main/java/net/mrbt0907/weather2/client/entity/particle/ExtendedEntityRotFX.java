@@ -2,8 +2,8 @@ package net.mrbt0907.weather2.client.entity.particle;
 
 import extendedrenderer.particle.entity.EntityRotFX;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.mrbt0907.weather2.util.Maths;
 
 public class ExtendedEntityRotFX extends EntityRotFX
 {
@@ -57,7 +57,7 @@ public class ExtendedEntityRotFX extends EntityRotFX
 
 	public void setColorFade(float percent)
 	{
-		startMult = MathHelper.clamp(percent, 0.0F, 1.0F);
+		startMult = Maths.clamp(percent, 0.0F, 1.0F);
 	}
 	
     @Override

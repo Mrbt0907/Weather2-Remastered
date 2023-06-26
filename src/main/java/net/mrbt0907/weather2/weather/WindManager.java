@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
@@ -94,7 +94,7 @@ public class WindManager
 						entity = entities[i];
 						if (!entity.isDead && entity instanceof EntityLivingBase && WeatherUtilEntity.isEntityOutside(entity, true))
 						{
-							Vec3 a = getWindVectors(new Vec3(entity.posX, entity.posY, entity.posZ), new Vec3(entity.motionX, entity.motionY, entity.motionZ), (float) (WeatherUtilEntity.getWeight(entity) * 1F * ConfigWind.windEntityWeightMult * (entity.isInWater() ? ConfigWind.windSwimmingWeightMult : 1.0F)), 0.05F, 5.0F);
+							Vec3 a = getWindVectors(new Vec3(entity.posX, entity.posY, entity.posZ), new Vec3(entity.motionX, entity.motionY, entity.motionZ), (float) (WeatherUtilEntity.getWeight(entity) * 8F * ConfigWind.windEntityWeightMult * (entity.isInWater() ? ConfigWind.windSwimmingWeightMult : 1.0F)), 0.05F, 5.0F);
 							entity.motionX = a.posX;
 							entity.motionY = a.posY;
 							entity.motionZ = a.posZ;
@@ -125,9 +125,11 @@ public class WindManager
 		if (manager.world.getTotalWorldTime() % 200L == 0L)
 			cache.clear();
 		
-		if (ClientTickHandler.clientConfigData.enableWindAffectsEntities && mc.player != null && mc.player instanceof EntityLivingBase && WeatherUtilEntity.isEntityOutside(mc.player, true) && mc.player.hurtResistantTime == 0)
+		if (ClientTickHandler.clientConfigData.enableWindAffectsEntities && mc.player != null && WeatherUtilEntity.isEntityOutside(mc.player, true))
 		{
 			Vec3 a = getWindVectors(new Vec3(mc.player.posX, mc.player.posY, mc.player.posZ), new Vec3(mc.player.motionX, mc.player.motionY, mc.player.motionZ), (float) (WeatherUtilEntity.getWeight(mc.player) * 8.0F * ClientTickHandler.clientConfigData.windPlayerWeightMult * (mc.player.isInWater() ? ClientTickHandler.clientConfigData.windSwimmingWeightMult : 1.0F)), 0.05F, 5.0F);
+
+	    	//Weather2.debug(a.toString());
 			mc.player.setVelocity(a.posX, a.posY, a.posZ);
 		}
 		mc.profiler.endSection();
@@ -253,7 +255,7 @@ public class WindManager
 	 */
 	public void getEntityWindVectors(Object ent, float multiplier, float maxSpeed) {
 
-		Vec3 pos = new Vec3(CoroUtilEntOrParticle.getPosX(ent), CoroUtilEntOrParticle.getPosY(ent), CoroUtilEntOrParticle.getPosZ(ent));
+		Vec3 pos = manager.world.isRemote ? new Vec3(FMLClientHandler.instance().getClientPlayerEntity().getPosition()) : new Vec3(CoroUtilEntOrParticle.getPosX(ent), CoroUtilEntOrParticle.getPosY(ent), CoroUtilEntOrParticle.getPosZ(ent));
 		Vec3 motion = getWindVectors(pos, new Vec3(CoroUtilEntOrParticle.getMotionX(ent), CoroUtilEntOrParticle.getMotionY(ent), CoroUtilEntOrParticle.getMotionZ(ent)), WeatherUtilEntity.getWeight(ent), multiplier, maxSpeed);
 		
 		CoroUtilEntOrParticle.setMotionX(ent, motion.posX);
@@ -278,14 +280,15 @@ public class WindManager
 		float windAngle = getWindAngle(pos);
 		float windSpeed = getWindSpeed(pos);
 		
-    	float windX = (float) -Math.sin(Math.toRadians(windAngle)) * windSpeed;
-    	float windZ = (float) Math.cos(Math.toRadians(windAngle)) * windSpeed;
+    	float windX = (float) -Maths.fastSin(Math.toRadians(windAngle)) * windSpeed;
+    	float windZ = (float) Maths.fastCos(Math.toRadians(windAngle)) * windSpeed;
     	
     	float objX = (float) motion.posX;
     	float objZ = (float) motion.posZ;
 		
     	float windWeight = 1F;
     	float objWeight = weight;
+    	
     	
     	//divide by zero protection
     	if (objWeight == 0.0F)
@@ -306,8 +309,8 @@ public class WindManager
     	
     	//copy over existing motion data
     	Vec3 newMotion = motion.copy();
-        newMotion.posX = MathHelper.clamp(objX - vecX, -maxSpeed, maxSpeed);
-        newMotion.posZ = MathHelper.clamp(objZ - vecZ, -maxSpeed, maxSpeed);
+        newMotion.posX = Maths.clamp(objX - vecX, -maxSpeed, maxSpeed);
+        newMotion.posZ = Maths.clamp(objZ - vecZ, -maxSpeed, maxSpeed);
         return newMotion;
 	}
 	
@@ -320,7 +323,7 @@ public class WindManager
         if (wo != null)
         {
         	float size = (wo.size * 0.90F);
-			return Math.max(manager.windManager.windSpeed, (float)((wo instanceof SandstormObject ? 7.5F : ((StormObject)wo).windSpeed) * Math.min((size - wo.pos.distance(pos) + (wo instanceof SandstormObject ? size : ((StormObject)wo).funnelSize)) / size, 1.0F)));
+			return Math.max(manager.windManager.windSpeed, (float)((wo instanceof SandstormObject ? 7.5F : ((StormObject)wo).windSpeed) * Math.min((size - wo.pos.distanceSq(pos) + (wo instanceof SandstormObject ? size : ((StormObject)wo).funnelSize)) / size, 1.0F)));
         }
         else
         	return manager.windManager.windSpeed;
@@ -329,15 +332,12 @@ public class WindManager
 	public float getWindAngle(Vec3 pos)
 	{
 		if (pos == null) return manager.windManager.windAngle;
+		
         WeatherObject wo = getWeatherObject(pos);
     	if (wo != null)
     	{
-            float yaw = (-((float)Math.atan2(wo.posGround.posX - pos.posX, wo.posGround.posZ - pos.posZ)) * 180.0F / (float)Math.PI) + 360.0F;
-
-			if (yaw > 360.0F) yaw -= 360.0F;
-			if (yaw < 0.0F) yaw += 360.0F;
-			
-			return yaw;
+            float yaw = (-((float)Maths.fastATan2(wo.posGround.posX - pos.posX, wo.posGround.posZ - pos.posZ)) * 180.0F / (float)Math.PI) + 360.0F;
+			return yaw % 360.0F;
     	}
     	else
     		return manager.windManager.windAngle;
@@ -345,8 +345,8 @@ public class WindManager
 	
 	public Vec3 getWindForce()
 	{
-		float windX = (float) -Math.sin(Math.toRadians(windAngle)) * windSpeed;
-		float windZ = (float) Math.cos(Math.toRadians(windAngle)) * windSpeed;
+		float windX = (float) -Maths.fastSin(Math.toRadians(windAngle)) * windSpeed;
+		float windZ = (float) Maths.fastCos(Math.toRadians(windAngle)) * windSpeed;
 		return new Vec3(windX, 0, windZ);
 	}
 
@@ -354,7 +354,7 @@ public class WindManager
 	{
 		for (Entry<Vec3, WeatherObject> entry : cache.entrySet())
 		{
-			if (pos.distance(entry.getKey()) < 300.0D)
+			if (pos.distanceSq(entry.getKey()) < 300.0D)
 				return entry.getValue();
 		}
 		

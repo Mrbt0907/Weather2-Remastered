@@ -129,14 +129,14 @@ public class TileRadar extends TileEntity implements ITickable
 				for (FrontObject front : net.mrbt0907.weather2.client.event.ClientTickHandler.weatherManager.getFronts())
 					if (!front.isGlobal())
 					{
-						if (Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), front.pos.posX, getPos().getY(), front.pos.posZ) <= pingRange)
+						if (Maths.distanceSq(getPos().getX(), getPos().getY(), getPos().getZ(), front.pos.posX, getPos().getY(), front.pos.posZ) <= pingRange)
 						{
 							systems.add(new GuiRadarObject(front));
-							front.getWeatherObjects().forEach(so -> {if (Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
+							front.getWeatherObjects().forEach(so -> {if (Maths.distanceSq(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
 						}
 					}
 					else
-						front.getWeatherObjects().forEach(so -> {if (Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
+						front.getWeatherObjects().forEach(so -> {if (Maths.distanceSq(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
 			}
 			else
 			{
@@ -144,14 +144,14 @@ public class TileRadar extends TileEntity implements ITickable
 				for (FrontObject front : net.mrbt0907.weather2.client.event.ClientTickHandler.weatherManager.getFronts())
 					if (!front.isGlobal())
 					{
-						if (Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), front.pos.posX, getPos().getY(), front.pos.posZ) <= pingRange)
+						if (Maths.distanceSq(getPos().getX(), getPos().getY(), getPos().getZ(), front.pos.posX, getPos().getY(), front.pos.posZ) <= pingRange)
 						{
 							systems.add(new GuiRadarObject(front));
-							front.getWeatherObjects().forEach(so -> {if (!so.type.equals(Type.CLOUD) && Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
+							front.getWeatherObjects().forEach(so -> {if (!so.type.equals(Type.CLOUD) && Maths.distanceSq(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
 						}
 					}
 					else
-						front.getWeatherObjects().forEach(so -> {if (!so.type.equals(Type.CLOUD) && Maths.distance(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
+						front.getWeatherObjects().forEach(so -> {if (!so.type.equals(Type.CLOUD) && Maths.distanceSq(getPos().getX(), getPos().getY(), getPos().getZ(), so.pos.posX, getPos().getY(), so.pos.posZ) <= pingRange) systems.add(new GuiRadarObject(so));});
 			}
 			
 			pingLength = pingMaxLength;

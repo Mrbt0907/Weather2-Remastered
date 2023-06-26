@@ -4,9 +4,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.api.WindReader;
 import net.mrbt0907.weather2.util.WeatherUtilEntity;
@@ -44,7 +44,7 @@ public class TileWindVane extends TileEntity implements ITickable
 	    		if (smoothAngle > 180) smoothAngle-=360;
 	    		if (smoothAngle < -180) smoothAngle+=360;
 	    		
-	    		float bestMove = MathHelper.wrapDegrees(targetAngle - smoothAngle);
+	    		float bestMove = Maths.wrapDegrees(targetAngle - smoothAngle);
 	    		
 	    		//float diff = ((targetAngle + 360 + 180) - (smoothAngle + 360 + 180));
 	    		

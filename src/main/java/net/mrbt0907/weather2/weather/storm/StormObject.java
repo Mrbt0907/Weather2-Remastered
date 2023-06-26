@@ -291,7 +291,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 				else
 				{
 					//make it so storms touchdown at 0.5F intensity instead of 1 then instantly start going back up, keeps them down for a full 1F worth of intensity val
-					float intensityAdj = Math.min(1F, (intensity % 1.0F) * 2F);
+					float intensityAdj = Math.min(1F, intensity - Stage.SEVERE.getStage());
 					//shouldnt this just be intensityAdj?
 					float val = (stage + intensityAdj) - Stage.TORNADO.getStage();
 					formingStrength = val;
@@ -327,8 +327,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		
 				//avoid large obstacles
 				double scanDist = 50;
-				double scanX = this.pos.posX + (-Math.sin(Math.toRadians(angle)) * scanDist);
-				double scanZ = this.pos.posZ + (Math.cos(Math.toRadians(angle)) * scanDist);
+				double scanX = this.pos.posX + (-Maths.fastSin(Math.toRadians(angle)) * scanDist);
+				double scanZ = this.pos.posZ + (Maths.fastCos(Math.toRadians(angle)) * scanDist);
 				int height = WeatherUtilBlock.getPrecipitationHeightSafe(this.manager.getWorld(), new BlockPos(scanX, 0, scanZ)).getY();
 		
 				if (this.pos.posY < height)
@@ -341,8 +341,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			if (!overrideMotion)
 			{
 				float finalSpeed;
-				double vecX = -Math.sin(Math.toRadians(angle));
-				double vecZ = Math.cos(Math.toRadians(angle));
+				double vecX = -Maths.fastSin(Math.toRadians(angle));
+				double vecZ = Maths.fastCos(Math.toRadians(angle));
 				float cloudSpeedAmp = 0.2F;
 				
 				if (stage > Stage.SEVERE.getStage() + 1)
@@ -384,13 +384,13 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	{
 		World world = manager.getWorld();
 		EntityPlayer player;
-		int amount = (int)MathHelper.clamp(ConfigStorm.hail_stones_per_tick * hail * 0.0001F, 1.0F, ConfigStorm.hail_stones_per_tick);
+		int amount = (int)Maths.clamp(ConfigStorm.hail_stones_per_tick * hail * 0.0001F, 1.0F, ConfigStorm.hail_stones_per_tick);
 		currentTopYBlock = WeatherUtilBlock.getPrecipitationHeightSafe(world, new BlockPos(MathHelper.floor(pos.posX), 0, MathHelper.floor(pos.posZ))).getY();
 		
 		for (int i = 0; i < world.playerEntities.size(); i++)
 		{
-			player = world.playerEntities.get(Maths.random(0, world.playerEntities.size()));
-			if (pos.distance(player.posX, pos.posY, player.posZ) < size)
+			player = world.playerEntities.get(Maths.random(0, world.playerEntities.size() - 1));
+			if (pos.distanceSq(player.posX, pos.posY, player.posZ) < size)
 			{
 				if (isHailing())
 				{
@@ -579,7 +579,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		{
 			if (par2 >= 0 && par2 < 256 && world.getLightFor(EnumSkyBlock.BLOCK, pos) < 10)
 			{
-				IBlockState iblockstate1 = ChunkUtils.getBlockState(world, pos);
+				IBlockState iblockstate1 = Weather2.getChunkUtil(world).getBlockState(world, pos);
 				if ((iblockstate1.getBlock().isAir(iblockstate1, world, pos) || iblockstate1.getBlock() == Blocks.SNOW_LAYER) && Blocks.SNOW_LAYER.canPlaceBlockAt(world, pos))
 					return true;
 			}
@@ -606,7 +606,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			else if(funnelSize != 14.0F)
 				funnelSize = 14.0F;
 			
-			size = (int) MathHelper.clamp((funnelSize + ConfigStorm.min_storm_size) * (stormType == StormType.LAND.ordinal() ? 1.5F : 3.0F), ConfigStorm.min_storm_size, ConfigStorm.max_storm_size);
+			size = (int) Maths.clamp((funnelSize + ConfigStorm.min_storm_size) * (stormType == StormType.LAND.ordinal() ? 1.5F : 3.0F), ConfigStorm.min_storm_size, ConfigStorm.max_storm_size);
 			windSpeed = Math.max(6.73F + (stormType == StormType.WATER.ordinal() ? 1.7F : 2.8F) * (intensity - 3.0F), 0.0F);
 			
 			//temperature scan
@@ -733,7 +733,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	
 	public WeatherEntityConfig getWeatherEntityConfigForStorm()
 	{
-		return WeatherTypes.weatherEntTypes.get(MathHelper.clamp(stage - Stage.TORNADO.getStage(), 0, 6));
+		return WeatherTypes.weatherEntTypes.get(Maths.clamp(stage - Stage.TORNADO.getStage(), 0, 6));
 	}
 	
 	public void updateType()
@@ -918,7 +918,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	@Override
 	public float getSpeed()
 	{
-		return overrideMotion ? (float) motion.speed() : manager.windManager.windSpeed;
+		return overrideMotion ? (float) motion.speedSq() : manager.windManager.windSpeed;
 	}
 	
 	@Override
@@ -937,7 +937,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		else
 			targetYaw = 0;
 		
-		float bestMove = MathHelper.wrapDegrees(targetYaw - angle);
+		float bestMove = Maths.wrapDegrees(targetYaw - angle);
 		
 		if (Math.abs(bestMove) < 180)
 		{
@@ -952,8 +952,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		double scanDistMax = 120;
 		for (int scanAngle = -20; scanAngle < 20; scanAngle += 10) {
 			for (double scanDistRange = 20; scanDistRange < scanDistMax; scanDistRange += 10) {
-				double scanX = pos.posX + (-Math.sin(Math.toRadians(angle + scanAngle)) * scanDistRange);
-				double scanZ = pos.posZ + (Math.cos(Math.toRadians(angle + scanAngle)) * scanDistRange);
+				double scanX = pos.posX + (-Maths.fastSin(Math.toRadians(angle + scanAngle)) * scanDistRange);
+				double scanZ = pos.posZ + (Maths.fastCos(Math.toRadians(angle + scanAngle)) * scanDistRange);
 
 				int height = WeatherUtilBlock.getPrecipitationHeightSafe(this.manager.getWorld(), new BlockPos(scanX, 0, scanZ)).getY();
 
@@ -976,8 +976,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		
 		StormObject entity = this;
 		WeatherEntityConfig conf = getWeatherEntityConfigForStorm();
-		float heightMult = getLayerHeight() * 0.00290625F;
-		float rotationMult = heightMult * 0.45F * ((isViolent ? 3.1F : 1.55F) + Math.min((stage - 5.0F) / 3.0F, 2.0F));
+		float heightMult = getLayerHeight() * (world.isRemote && obj instanceof Particle ? 0.0064F : 0.0034F);
+		float rotationMult = heightMult * 0.25F * ((isViolent ? 3.1F : 1.55F) + Math.min((stage - 5.0F) / 3.0F, 2.0F));
 		World world = CoroUtilEntOrParticle.getWorld(obj);
 		long worldTime = world.getTotalWorldTime();
 		
@@ -992,15 +992,15 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		
 		if (conf.type == WeatherEntityConfig.TYPE_SPOUT)
 		{
-			float range = 30F * (float) Math.sin((Math.toRadians(((worldTime * 0.5F)) % 360)));
+			float range = 30F * (float) Maths.fastSin((Math.toRadians(((worldTime * 0.5F)) % 360)));
 			float heightPercent = (float) (1F - ((CoroUtilEntOrParticle.getPosY(obj) - posGround.posY) / (pos.posY - posGround.posY)));
-			float posOffsetX = (float) Math.sin((Math.toRadians(heightPercent * 360F)));
-			float posOffsetZ = (float) -Math.cos((Math.toRadians(heightPercent * 360F)));
+			float posOffsetX = (float) Maths.fastSin((Math.toRadians(heightPercent * 360F)));
+			float posOffsetZ = (float) -Maths.fastCos((Math.toRadians(heightPercent * 360F)));
 			d1 += range*posOffsetX;
 			d2 += range*posOffsetZ;
 		}
 		
-		float f = (float)((Math.atan2(d2, d1) * 180D) / Math.PI) - 90F;
+		float f = (float)((Maths.fastATan2(d2, d1) * 180D) / Math.PI) - 90F;
 
 		for (; f < -180F; f += 360F);
 		for (; f >= 180F; f -= 360F);
@@ -1045,23 +1045,21 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		}
 		
 		if (airTime > 0.0D)
-			grab = grab - MathHelper.clamp(10D * (((float)(airTime / 400D))), -50.0D, 50.0D);
+			grab = grab - Maths.clamp(10D * (((float)(airTime / 400D))), -50.0D, 50.0D);
 		
 		grab += conf.relTornadoSize;
 		double profileAngle = Math.max(1, (75D + grab - (10D * scale)));
 		
 		f = (float)((double)f + profileAngle);
-		float f3 = (float)Math.cos(-f * 0.01745329F - (float)Math.PI);
-		float f4 = (float)Math.sin(-f * 0.01745329F - (float)Math.PI);
+		float f3 = (float)Maths.fastCos(-f * 0.01745329F - (float)Math.PI);
+		float f4 = (float)Maths.fastSin(-f * 0.01745329F - (float)Math.PI);
 		float f5 = conf.tornadoPullRate * 1.5F;
 
 		//if (obj instanceof EntityLivingBase)
 		//	f5 /= (weight * ((distXZ + 1D) / radius));
 		
 		//if player and not spout
-		if (obj instanceof EntityPlayer && conf.type != 0)
-			f5 *= ent.onGround ? 2F : 7.0F;
-		else if (obj instanceof EntityLivingBase && conf.type != 0)
+		if (conf.type != 0 && (obj instanceof EntityLivingBase))
 			f5 *= ent.onGround ? 2F : 7.0F;
 		
 		if (obj instanceof EntityLivingBase)
@@ -1089,10 +1087,10 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			str *= 0.55F;
 			pullY = Math.min(pullY , 0.0275F);
 		}
-		if (obj instanceof Particle)
+		if (world.isRemote && obj instanceof Particle)
 			pullY *= str * 0.01F;
 		else
-			pullY *= str * 0.1F;
+			pullY *= str * 0.085F;
 		
 		//prevent double+ pull on entities
 		if (obj instanceof Entity)
@@ -1145,7 +1143,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		
 		if (entP != null)
 		{
-			float yaw = -(float)(Math.atan2(entP.posX - pos.posX, entP.posZ - pos.posZ) * 180.0D / Math.PI);
+			float yaw = -(float)(Maths.fastATan2(entP.posX - pos.posX, entP.posZ - pos.posZ) * 180.0D / Math.PI);
 			int size = ConfigStorm.storm_aim_accuracy_in_angle;
 			if (size > 0)
 				yaw += Maths.random(size) - (size / 2);
@@ -1186,8 +1184,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	public void setSpeed(float speed)
 	{
 		overrideMotion = true;
-		motion.posX = -Math.sin(Math.toRadians(angle)) * speed;
-		motion.posZ = Math.cos(Math.toRadians(angle)) * speed;
+		motion.posX = -Maths.fastSin(Math.toRadians(angle)) * speed;
+		motion.posZ = Maths.fastCos(Math.toRadians(angle)) * speed;
 	}
 
 	public void setStage(int stage)
@@ -1298,7 +1296,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			case TROPICAL_STORM:
 				return (isHailing ? "Hailing " : "") + "Tropical Storm " + name;
 			case TORNADO:
-				return (truth ? "" : name + " ") + (ConfigStorm.enable_ef_scale ? "EF" + (stage - Stage.TORNADO.getStage()) : "F" + (int)MathHelper.clamp(Math.floor(funnelSize * 0.0206611570247933884297520661157F), 0, stageMax - 4)) + " " + (isHailing ? "Hailing " : "") + "Tornado";
+				return (truth ? "" : name + " ") + (ConfigStorm.enable_ef_scale ? "EF" + (stage - Stage.TORNADO.getStage()) : "F" + (int)Maths.clamp(Math.floor(funnelSize * 0.0206611570247933884297520661157F), 0, Integer.MAX_VALUE)) + " " + (isHailing ? "Hailing " : "") + "Tornado";
 			case HURRICANE:
 				return (isHailing ? "Hailing " : "") + "Hurricane " + name + " - Category " + (stage - Stage.TORNADO.getStage());
 			default:
@@ -1314,7 +1312,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		switch(type)
 		{
 			case TORNADO:
-				return (truth ? "" : name + " ") + (ConfigStorm.enable_ef_scale ? "EF" + (stage - Stage.TORNADO.getStage()) : "F" + (int)MathHelper.clamp(Math.floor(funnelSize * 0.0206611570247933884297520661157F), 0, stageMax - Stage.TORNADO.getStage()));
+				return (truth ? "" : name + " ") + (ConfigStorm.enable_ef_scale ? "EF" + (stage - Stage.TORNADO.getStage()) : "F" + (int)Maths.clamp(Math.floor(funnelSize * 0.0206611570247933884297520661157F), 0, stageMax - Stage.TORNADO.getStage()));
 			case HURRICANE:
 				return name + " C" + (stage - Stage.TORNADO.getStage());
 			case TROPICAL_DISTURBANCE:

@@ -13,7 +13,6 @@ import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -70,6 +69,7 @@ public class TornadoHelper
 	
 	public static void tickProcess(World world)
 	{
+		ChunkUtils util = Weather2.getChunkUtil(world);
 		if (!snapshots.isEmpty())
 		{
 			snapshots.forEach(snapshot ->
@@ -82,7 +82,7 @@ public class TornadoHelper
 					}
 					else
 					{
-						ChunkUtils.setBlockState(world, snapshot.pos.getX(), snapshot.pos.getY(), snapshot.pos.getZ(), AIR, snapshot.state);
+						util.setBlockState(world, snapshot.pos.getX(), snapshot.pos.getY(), snapshot.pos.getZ(), AIR, snapshot.state);
 						EntityMovingBlock entity = new EntityMovingBlock(world, snapshot.pos.getX(), snapshot.pos.getY(), snapshot.pos.getZ(), snapshot.state, snapshot.storm);
 						entity.motionX += (world.rand.nextDouble() - world.rand.nextDouble()) * 1.0D;
 						entity.motionZ += (world.rand.nextDouble() - world.rand.nextDouble()) * 1.0D;
@@ -93,7 +93,7 @@ public class TornadoHelper
 				}
 				else
 				{
-					ChunkUtils.setBlockState(world, snapshot.pos.getX(), snapshot.pos.getY(), snapshot.pos.getZ(), snapshot.newState, snapshot.state);
+					util.setBlockState(world, snapshot.pos.getX(), snapshot.pos.getY(), snapshot.pos.getZ(), snapshot.newState, snapshot.state);
 					putToCache(world, -1, true);
 				}
 			});
@@ -125,7 +125,7 @@ public class TornadoHelper
 	{
 		world.profiler.startSection("tornadoHelperTick");
 		float size = getTornadoBaseSize();
-		forceRotate(world, size);
+		forceRotate(world, size * 0.85F + 32.0F);
 		int firesPerTickMax = 1;
 		int loopAmount;
 		double loopSize;
@@ -141,6 +141,7 @@ public class TornadoHelper
 		
 		if (!world.isRemote)
 		{
+			ChunkUtils util = Weather2.getChunkUtil(world);
 			world.profiler.startSection("tickGrabBlocks");
 			if (ConfigGrab.grab_blocks && world.getTotalWorldTime() % (ConfigGrab.grab_process_delay > 0 ? ConfigGrab.grab_process_delay : 1) == 0)
 			{
@@ -157,7 +158,7 @@ public class TornadoHelper
 						z = (int)(storm.pos_funnel_base.posZ + Maths.random(-loopSize, loopSize));
 							
 						pos = new BlockPos(x, y, z);
-						state = ChunkUtils.getBlockState(world, x, y, z);
+						state = util.getBlockState(world, x, y, z);
 
 						if (!isBlockGrabbingBlocked(world, state, pos))
 						{
@@ -186,7 +187,7 @@ public class TornadoHelper
 				if (storm.stage >= Stage.TORNADO.getStage() + 1)
 				for (int i = 0; i < firesPerTickMax; i++) {
 					BlockPos posUp = new BlockPos(storm.posGround.posX, storm.posGround.posY + Maths.random(30), storm.posGround.posZ);
-					state = ChunkUtils.getBlockState(world, posUp);
+					state = util.getBlockState(world, posUp);
 					if (CoroUtilBlock.isAir(state.getBlock())) {
 						EntityMovingBlock mBlock = new EntityMovingBlock(world, posUp.getX(), posUp.getY(), posUp.getZ(), Blocks.FIRE.getDefaultState(), storm);
 						mBlock.metadata = 15;
@@ -213,13 +214,13 @@ public class TornadoHelper
 
 				if (dist < size/2 + randSize/2 && getGrabbed(world) < 300) {
 					pos = new BlockPos(tryX, tryY, tryZ);
-					Block block = ChunkUtils.getBlockState(world, pos).getBlock();
+					Block block = util.getBlockState(world, pos).getBlock();
 					BlockPos posUp = new BlockPos(tryX, tryY+1, tryZ);
-					Block blockUp = ChunkUtils.getBlockState(world, posUp).getBlock();
+					Block blockUp = util.getBlockState(world, posUp).getBlock();
 
 					if (!CoroUtilBlock.isAir(block) && CoroUtilBlock.isAir(blockUp))
 					{
-						ChunkUtils.setBlockState(world, posUp, Blocks.FIRE.getDefaultState());
+						util.setBlockState(world, posUp, Blocks.FIRE.getDefaultState());
 					}
 				}
 			}
@@ -278,7 +279,7 @@ public class TornadoHelper
 				if ((ConfigGrab.replace_list_strength_matches && WeatherUtilBlock.checkResistance(storm, id) || !ConfigGrab.replace_list_strength_matches))
 				{
 					putToCache(world, 1, true);
-					snapshots.add(new BlockReplaceSnapshot(storm, Block.getBlockFromName((String) list[Maths.random(0, list.length)]).getDefaultState(), state, pos));
+					snapshots.add(new BlockReplaceSnapshot(storm, Block.getBlockFromName((String) list[Maths.random(0, list.length - 1)]).getDefaultState(), state, pos));
 					return true;
 				}
 			}
@@ -358,31 +359,18 @@ public class TornadoHelper
 	
 	public boolean forceRotate(World parWorld, float size)
 	{
-		
-		AxisAlignedBB aabb = new AxisAlignedBB(storm.pos.posX, storm.currentTopYBlock, storm.pos.posZ, storm.pos.posX, storm.currentTopYBlock, storm.pos.posZ);
-		aabb = aabb.grow(size, this.storm.maxHeight * 3, size);
-		List<Entity> list = parWorld.getEntitiesWithinAABB(Entity.class, aabb);
 		boolean foundEnt = false;
-
-		if (list != null)
-		{
-			for (int i = 0; i < list.size(); i++)
+		List<Entity> entities = new ArrayList<Entity>(parWorld.loadedEntityList);
+		for (Entity entity : entities)
+			if (canGrabEntity(entity) && getDistanceXZ(storm.pos_funnel_base, entity.posX, entity.posY, entity.posZ) < size)
 			{
-				Entity entity1 = (Entity)list.get(i);
-				if (canGrabEntity(entity1))
+				if ((entity instanceof EntityMovingBlock && !((EntityMovingBlock)entity).collideFalling) || WeatherUtilEntity.isEntityOutside(entity, !(entity instanceof EntityPlayer)))
 				{
-					if (getDistanceXZ(storm.pos_funnel_base, entity1.posX, entity1.posY, entity1.posZ) < size)
-					{
-						if ((entity1 instanceof EntityMovingBlock && !((EntityMovingBlock)entity1).collideFalling) || WeatherUtilEntity.isEntityOutside(entity1, !(entity1 instanceof EntityPlayer)))
-						{
-								//trying only server side to fix warp back issue (which might mean client and server are mismatching for some rules)
-								storm.spinEntity(entity1);
-								foundEnt = true;
-						}
-					}
+					//trying only server side to fix warp back issue (which might mean client and server are mismatching for some rules)
+					storm.spinEntity(entity);
+					foundEnt = true;
 				}
 			}
-		}
 
 		return foundEnt;
 	}
@@ -422,7 +410,7 @@ public class TornadoHelper
 
 		if (perform)
 		{
-			List<Entity> entities = world.loadedEntityList;
+			List<Entity> entities = new ArrayList<Entity>(world.loadedEntityList);
 			for (int i = 0; i < entities.size(); i++)
 			{
 				Entity ent = entities.get(i);

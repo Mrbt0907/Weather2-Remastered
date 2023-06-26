@@ -9,7 +9,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.mrbt0907.weather2.util.Maths;
@@ -36,9 +35,9 @@ public class EntityIceBall extends EntityThrowableUsefull implements IWindHandle
 		float f = 0.4F;
 		float size = Maths.random(0.1F, 0.6F);
 		setSize(size, size);
-        this.motionX = (double)(-MathHelper.sin(-this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(-this.rotationPitch / 180.0F * (float)Math.PI) * f);
-        this.motionZ = (double)(MathHelper.cos(-this.rotationYaw / 180.0F * (float)Math.PI) * MathHelper.cos(-this.rotationPitch / 180.0F * (float)Math.PI) * f);
-        this.motionY = (double)(-MathHelper.sin((-this.rotationPitch + this.func_70183_g()) / 180.0F * (float)Math.PI) * f);
+        this.motionX = (double)(-Maths.fastSin(-this.rotationYaw / 180.0F * (float)Math.PI) * Maths.fastCos(-this.rotationPitch / 180.0F * (float)Math.PI) * f);
+        this.motionZ = (double)(Maths.fastCos(-this.rotationYaw / 180.0F * (float)Math.PI) * Maths.fastCos(-this.rotationPitch / 180.0F * (float)Math.PI) * f);
+        this.motionY = (double)(-Maths.fastSin((-this.rotationPitch + this.func_70183_g()) / 180.0F * (float)Math.PI) * f);
 		ticksMaxAlive = Integer.MAX_VALUE;
 		
 	}

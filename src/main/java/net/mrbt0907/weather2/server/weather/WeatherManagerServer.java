@@ -222,7 +222,7 @@ public class WeatherManagerServer extends WeatherManager
 
 		//tick partial cloud cover variation0
 		if (ticks % 200 == 0)
-			cloudIntensity = ConfigMisc.overcast_mode && isRaining ? 1.0F : cloudIntensity + (float) MathHelper.clamp(Maths.random(ConfigParticle.cloud_coverage_change_amount) - Maths.random(ConfigParticle.cloud_coverage_change_amount), ConfigParticle.min_cloud_coverage_perc * 0.01D, ConfigParticle.max_cloud_coverage_perc * 0.01D);
+			cloudIntensity = ConfigMisc.overcast_mode && isRaining ? 1.0F : cloudIntensity + (float) Maths.clamp(Maths.random(ConfigParticle.cloud_coverage_change_amount) - Maths.random(ConfigParticle.cloud_coverage_change_amount), ConfigParticle.min_cloud_coverage_perc * 0.01D, ConfigParticle.max_cloud_coverage_perc * 0.01D);
 				//force full cloudIntensity if server side raining
 				//note: storms also revert to clouded storms for same condition
 	}
@@ -444,8 +444,8 @@ public class WeatherManagerServer extends WeatherManager
 		double angle = windManager.windAngle;
 		
 		//-1 for upwind
-		double dirX = -Math.sin(Math.toRadians(angle));
-		double dirZ = Math.cos(Math.toRadians(angle));
+		double dirX = -Maths.fastSin(Math.toRadians(angle));
+		double dirZ = Maths.fastCos(Math.toRadians(angle));
 		double vecX = dirX * searchRadius/2 * -1;
 		double vecZ = dirZ * searchRadius/2 * -1;
 		
@@ -471,10 +471,10 @@ public class WeatherManagerServer extends WeatherManager
 				//break;
 				
 				//check left and right about 20 blocks, if its not still desert, force retry
-				double dirXLeft = -Math.sin(Math.toRadians(angle-90));
-				double dirZLeft = Math.cos(Math.toRadians(angle-90));
-				double dirXRight = -Math.sin(Math.toRadians(angle+90));
-				double dirZRight = Math.cos(Math.toRadians(angle+90));
+				double dirXLeft = -Maths.fastSin(Math.toRadians(angle-90));
+				double dirZLeft = Maths.fastCos(Math.toRadians(angle-90));
+				double dirXRight = -Maths.fastSin(Math.toRadians(angle+90));
+				double dirZRight = Maths.fastCos(Math.toRadians(angle+90));
 				
 				double distLeftRight = 20;
 				BlockPos posLeft = new BlockPos(foundPos.getX() + (dirXLeft * distLeftRight), 0, foundPos.getZ() + (dirZLeft * distLeftRight));

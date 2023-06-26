@@ -20,6 +20,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
+import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.util.WeatherUtil;
 import net.mrbt0907.weather2.util.WeatherUtilBlock;
 import net.mrbt0907.weather2.weather.WeatherManager;
@@ -499,7 +500,7 @@ public class VolcanoObject
 				double vecX = ent.getPosX() - pos.xCoord;
 		        double vecZ = ent.getPosZ() - pos.zCoord;
 		        @SuppressWarnings("unused")
-				float angle = (float)(Math.atan2(vecZ, vecX) * 180.0D / Math.PI);
+				float angle = (float)(Maths.fastATan2(vecZ, vecX) * 180.0D / Math.PI);
 		        //System.out.println("angle: " + angle);
 		        angle += 50;
 		        

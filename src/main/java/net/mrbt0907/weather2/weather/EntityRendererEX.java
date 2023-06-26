@@ -5,7 +5,6 @@ import extendedrenderer.EventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.resources.IResourceManager;
-import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.config.ConfigParticle;
 
 public class EntityRendererEX extends EntityRenderer
@@ -28,17 +27,15 @@ public class EntityRendererEX extends EntityRenderer
 		if (ConfigCoroUtil.useEntityRenderHookForShaders)
 			EventHandler.hookRenderShaders(par1);
 		
-		if (!ConfigMisc.proxy_render_override)
-			super.renderRainSnow(par1);
-		else if (!ConfigParticle.enable_precipitation) //note, the overcast effect change will effect vanilla non particle rain distance too, particle rain for life!
-			super.renderRainSnow(par1);
+		if (ConfigParticle.enable_vanilla_rain)
+			super.renderRainSnow(par1); //note, the overcast effect change will effect vanilla non particle rain distance too, particle rain for life!
 	}
 	
 	/**Removes the rain splash*/
 	@Override
 	public void addRainParticles()
 	{
-		if (ConfigParticle.use_vanilla_rain_and_thunder)
+		if (ConfigParticle.enable_vanilla_rain)
 			super.addRainParticles();
 	}
 }

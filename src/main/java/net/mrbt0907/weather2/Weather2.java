@@ -4,6 +4,7 @@ import modconfig.ConfigMod;
 import modconfig.IConfigCategory;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Mod;
@@ -13,7 +14,6 @@ import net.minecraftforge.fml.common.network.FMLEventChannel;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.mrbt0907.weather2.api.WeatherAPI;
-import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.config.*;
 import net.mrbt0907.weather2.event.EventHandlerFML;
 import net.mrbt0907.weather2.event.EventHandlerForge;
@@ -23,19 +23,20 @@ import net.mrbt0907.weather2.registry.BlockRegistry;
 import net.mrbt0907.weather2.server.command.CommandWeather2;
 import net.mrbt0907.weather2.server.event.ServerTickHandler;
 import net.mrbt0907.weather2.server.weather.WeatherManagerServer;
+import net.mrbt0907.weather2.util.ChunkUtils;
 import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Weather2.MODID, name=Weather2.MOD, version=Weather2.VERSION, acceptedMinecraftVersions="[1.12.2]", dependencies="required-after:coroutil@[1.12.1-1.2.37,);required-after:forge@[14.23.5.2860,);")
+@Mod(modid = Weather2.MODID, name=Weather2.MOD, version=Weather2.VERSION, acceptedMinecraftVersions="[1.12.2]", dependencies="required-after:coroutil@[1.12.1-1.2.37,);required-after:configex@[1.0,);required-after:forge@[14.23.5.2860,);")
 public class Weather2
 {
 	public static final String MOD = "Weather 2 - Remastered";
 	public static final String MODID = "weather2remaster";
 	public static final String OLD_MODID = "weather2";
-	public static final String VERSION = "2.8.6-alpha";
+	public static final String VERSION = "2.8.5.8-alpha";
 	public static final FMLEventChannel event_channel = NetworkRegistry.INSTANCE.newEventDrivenChannel(MODID);
 	public static final CreativeTabs TAB = new CreativeTabs(MODID) {@Override public ItemStack createIcon() {return new ItemStack(BlockRegistry.tornado_sensor);}};
 	@Mod.Instance( value = Weather2.MODID )
@@ -43,7 +44,8 @@ public class Weather2
 	public static Logger log;
 	public static List<IConfigCategory> configs = new ArrayList<>();
 	public static boolean initProperNeededForWorld = true;
-	
+	public static ChunkUtils clientChunkUtil;
+	public static ChunkUtils serverChunkUtil;
 	
 	@SidedProxy(modId = Weather2.MODID, clientSide = "net.mrbt0907.weather2.ClientProxy", serverSide = "net.mrbt0907.weather2.CommonProxy")
 	public static CommonProxy proxy;
@@ -68,6 +70,10 @@ public class Weather2
 		ConfigMod.addConfigFile(event, addConfig(new ConfigFoliage()));
 		WeatherUtilConfig.loadNBT();
 		info("Starting Weather2 - Remastered...");
+		if (FMLCommonHandler.instance().getSide().equals(Side.CLIENT))
+			clientChunkUtil = new ChunkUtils();
+		else
+			serverChunkUtil = new ChunkUtils();
 		debug("Running preInit...");
 		proxy.preInit();
 		debug("Finished preInit");
@@ -103,6 +109,8 @@ public class Weather2
 	{
 		event.registerServerCommand(new CommandWeather2());
 		WeatherAPI.refreshDimensionRules();
+		if (serverChunkUtil == null)
+			serverChunkUtil = new ChunkUtils();
 	}
 	
 	@Mod.EventHandler
@@ -114,6 +122,8 @@ public class Weather2
 		writeOutData(true);
 		ServerTickHandler.reset();
 		initProperNeededForWorld = true;
+		serverChunkUtil.clearCache();
+		serverChunkUtil = null;
 	}
 	
 	/**
@@ -145,6 +155,11 @@ public class Weather2
 		}
 	}
 
+	public static ChunkUtils getChunkUtil(World world)
+	{
+		return world.isRemote ? clientChunkUtil : serverChunkUtil;
+	}
+	
 	public static void info(Object message)
 	{
 		log.info(message);
@@ -180,7 +195,7 @@ public class Weather2
 		}
 	}
 	
-	public static void fatal(Object message) throws Exception
+	public static void fatal(Object message)
 	{
 		Error error;
 		

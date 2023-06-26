@@ -33,9 +33,8 @@ public class EventHandlerFML {
 	public void tickServer(ServerTickEvent event)
 	{
 
-		if (event.phase == Phase.START) {
+		if (event.phase == Phase.START)
 			ServerTickHandler.onTickInGame();
-		}
 
 		if (ConfigMisc.disable_rain_reset_upon_sleep) {
 			WorldServer world = DimensionManager.getWorld(0);

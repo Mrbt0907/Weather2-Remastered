@@ -4,6 +4,7 @@ import extendedrenderer.particle.entity.ParticleTexLeafColor;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.World;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
+import net.mrbt0907.weather2.util.Maths;
 
 /**
  * Renders only when near player
@@ -27,6 +28,6 @@ public class ParticleTallGrass extends ParticleTexLeafColor {
         super.onUpdate();
         float windSpeed = ClientTickHandler.weatherManager.windManager.windSpeed;
         this.rotationPitch = windSpeed * 60F;
-        this.rotationPitch = (float)Math.toDegrees(Math.sin(this.getAge() * 0.1F) * 0.2F);
+        this.rotationPitch = (float)Math.toDegrees(Maths.fastSin(this.getAge() * 0.1F) * 0.2F);
     }
 }

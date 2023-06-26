@@ -12,7 +12,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.mrbt0907.weather2.Weather2;
@@ -60,7 +59,7 @@ public class BlockNewSensor extends BlockMachine
 					if (so != null) 
 		    		{
 		    			if (so instanceof StormObject)
-		    				power = MathHelper.clamp(((StormObject)so).stage, 0, 15);
+		    				power = Maths.clamp(((StormObject)so).stage, 0, 15);
 		    			else if (so instanceof SandstormObject)
 		    				power = 5;
 		    			
@@ -76,7 +75,7 @@ public class BlockNewSensor extends BlockMachine
 						
 						for (WeatherObject wo : wos)
 						{
-							if (wo instanceof StormObject && ((StormObject) wo).hasDownfall() && wo.pos.distance(new Maths.Vec3(pos)) < wo.size)
+							if (wo instanceof StormObject && ((StormObject) wo).hasDownfall() && wo.pos.distanceSq(new Maths.Vec3(pos)) < wo.size)
 							{
 								power = 15;
 								break;
@@ -84,16 +83,16 @@ public class BlockNewSensor extends BlockMachine
 						}
 					break;
 				case 3:
-					power = (int) MathHelper.clamp(WeatherUtil.getTemperature(world, pos) * 15.0F * 0.7F, 0.0F, 15.0F);
+					power = (int) Maths.clamp(WeatherUtil.getTemperature(world, pos) * 15.0F * 0.7F, 0.0F, 15.0F);
 					break;
 				case 4:
 					power = (int)Math.min(((manager.windManager.windSpeed > manager.windManager.windSpeedGust ? manager.windManager.windSpeed : manager.windManager.windSpeedGust) * 0.072F) * 15.0F, 15.0F);
 					break;
 				case 5:
-					power = (int) MathHelper.clamp((WeatherUtil.getPressure(world, pos) - 900.0F) * 0.12F, 0.0F, 15.0F);
+					power = (int) Maths.clamp((WeatherUtil.getPressure(world, pos) - 900.0F) * 0.12F, 0.0F, 15.0F);
 					break;
 			}
-            world.setBlockState(pos, state.withProperty(POWER, MathHelper.clamp(power, 0, 15)), 3);
+            world.setBlockState(pos, state.withProperty(POWER, Maths.clamp(power, 0, 15)), 3);
     	}
         
         world.scheduleBlockUpdate(pos, this, 100, 1);

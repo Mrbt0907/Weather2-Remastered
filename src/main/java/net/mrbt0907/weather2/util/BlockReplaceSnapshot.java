@@ -15,6 +15,12 @@ public class BlockReplaceSnapshot extends BlockSnapshot
 	{
 		super(oldState, pos);
 		this.storm = storm;
-		newState = oldState;
+		newState = state;
 	}
+	
+	@Override
+	public String toString()
+    {
+        return "BlockReplaceSnapshot{block=" + block.getRegistryName() + ", replacement=" + (state == null ? "grab" : state.getBlock().getRegistryName()) + ", x=" + x + ", y=" + y + ", z=" + z + '}';
+    }
 }

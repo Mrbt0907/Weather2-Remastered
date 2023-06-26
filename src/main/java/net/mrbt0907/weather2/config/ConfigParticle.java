@@ -40,8 +40,6 @@ public class ConfigParticle implements IConfigCategory
     public static boolean enable_tornado_block_colors = true;
 	@ConfigComment("Enables dust particles to kick up in high wind situations")
     public static boolean enable_wind_particle = true;
-	@ConfigComment("Enables vanilla rain and thunder only")
-	public static boolean use_vanilla_rain_and_thunder = false;
 	@ConfigComment("Particle rates for rain, downfall, and ground splash particle types")
 	public static double precipitation_particle_rate = 0.65D;
 	@ConfigComment("Particle rates for bush, and sand particle types")
@@ -56,8 +54,6 @@ public class ConfigParticle implements IConfigCategory
 	public static int ground_debris_particle_delay = 5;
 	@ConfigComment("Particle delay in ticks for storm particles\n(Tornado or hurricane particles)")
 	public static int funnel_particle_delay = 10;
-	@ConfigComment("Particle multiplier used to increase or decrease particle rates")
-	public static double particle_multiplier = 1.0D;
 	@ConfigComment("The delay in ticks for the particle thread")
 	public static int scene_enhancer_thread_delay = 400;
 	@ConfigComment("Maximum percent of cloud coverage, supports over 100% for extended full cloud sky coverage")
@@ -78,14 +74,17 @@ public class ConfigParticle implements IConfigCategory
 	public static double particle_scale_mult = 1.0D;
 	@ConfigComment("Fog multiplier that adjusts how foggy storms can be")
 	public static double fog_mult = 1.0D;
-	
+	@ConfigComment("Fog change rate that adjusts how fast fog changes states")
+	public static double fog_change_rate = 1.0D;
+	@ConfigComment("Camera shake multiplier that adjusts how intense camera shaking can be")
+	public static double camera_shake_mult = 1.0D;
 	//clouds
 	@ConfigComment("How many ticks between cloud particle spawning")
 	public static int cloud_particle_delay = 3;
-	@ConfigComment("Should rain show up?")
+	@ConfigComment("Should vanilla rain show up when proxy override is true?")
 	public static boolean enable_vanilla_rain = false;
 	@ConfigComment("Enables rendering based on layers rather than based on player distance for all weather2 particles")
-	public static boolean enableLegacyRendering = false;
+	public static boolean enable_legacy_rendering = true;
 
     @Override
     public String getName() {

@@ -497,7 +497,7 @@ public class SceneEnhancer implements Runnable
 
 			double particleAmp = 1F;
 			if (RotatingParticleManager.useShaders && ConfigCoroUtil.particleShaders)
-				particleAmp = ConfigParticle.particle_multiplier;
+				particleAmp = 1.0F;
 
 			if (funnel == null)
 			{
@@ -821,7 +821,7 @@ public class SceneEnhancer implements Runnable
 				if (forOvercast)
 					sizeToUse *= 2F;
 				
-				stormDist = Math.max(storm.pos.distance(plPos) - sizeToUse, 0.0D);
+				stormDist = Math.max(storm.pos.distanceSq(plPos) - sizeToUse, 0.0D);
 				double overcastIntensity = 1.0F - Math.min(stormDist / 100.0F, 1.0F);
 				curOvercastStrTarget = (float) overcastIntensity;
 				
@@ -1067,7 +1067,7 @@ public class SceneEnhancer implements Runnable
 
 		double particleAmp = 1F;
 		if (RotatingParticleManager.useShaders && ConfigCoroUtil.particleShaders)
-			particleAmp = ConfigParticle.particle_multiplier * 2D;
+			particleAmp = 1.0F * 2D;
 
 		spawnRate = (int)((double)spawnRate / particleAmp);
 		
@@ -1355,7 +1355,7 @@ public class SceneEnhancer implements Runnable
 					for (Particle entity1 : WeatherUtilParticle.fxLayers[layer][i])
 					{
 						
-						if (ConfigParticle.use_vanilla_rain_and_thunder)
+						if (ConfigParticle.enable_vanilla_rain)
 						{
 							String className = entity1.getClass().getName();
 							if (className.contains("net.minecraft.") || className.contains("weather2.")) {
@@ -1820,14 +1820,14 @@ public class SceneEnhancer implements Runnable
 			wo = weather.get(i);
 			if (wo instanceof StormObject && success < 3)
 			{
-				if (((StormObject)wo).isDeadly() && ((StormObject)wo).pos_funnel_base.distance(pos) - wo.size + 200.0D <= 0.0D)
+				if (((StormObject)wo).isDeadly() && ((StormObject)wo).pos_funnel_base.distanceSq(pos) - wo.size + 200.0D <= 0.0D)
 				{
 					WeatherUtilSound.play2DSound(SoundRegistry.windFast, SoundCategory.WEATHER, ((StormObject)wo).pos_funnel_base, 1000 + i, (float) ConfigVolume.cyclone, ((StormObject)wo).isViolent ? 0.7F : 0.8F, ((StormObject)wo).funnelSize + 350.0F, false);
 					WeatherUtilSound.play2DSound(SoundRegistry.debris, SoundCategory.WEATHER, ((StormObject)wo).pos_funnel_base, 2000 + i, (float) ConfigVolume.debris, 1.0F, ((StormObject)wo).funnelSize + 150.0F, false);
 					success += 2;
 				}
 			}
-			else if (wo.pos.distance(pos) - wo.size + 100.0D <= 0.0D)
+			else if (wo.pos.distanceSq(pos) - wo.size + 100.0D <= 0.0D)
 			{
 				WeatherUtilSound.play2DSound(SoundRegistry.sandstorm, SoundCategory.WEATHER, wo, 3000 + i, (float) ConfigVolume.cyclone, 1.0F, wo.size + 100.0F, false);
 				success++;

@@ -253,7 +253,7 @@ public class WeatherManager
 		
 		for (WeatherObject weather : list.keySet())
 		{
-			curDist = weather.pos.distance(pos) - weather.size;
+			curDist = weather.pos.distanceSq(pos) - weather.size;
 			if (curDist < dist)
 			{
 				dist = curDist;
@@ -314,7 +314,7 @@ public class WeatherManager
 				}
 			}
 			
-			if (truth && weather.pos.distance(pos) - weather.size < distance)
+			if (truth && weather.pos.distanceSq(pos) - weather.size < distance)
 			{
 				if (weather instanceof IWeatherStaged)
 					stage = ((IWeatherStaged)weather).getStage();
@@ -346,7 +346,7 @@ public class WeatherManager
 			if (wo instanceof SandstormObject) {
 				SandstormObject storm = (SandstormObject) wo;
 				if (storm == null || storm.isDead) continue;
-				double dist = storm.pos.distance(parPos);
+				double dist = storm.pos.distanceSq(parPos);
 				if (dist < closestDist && dist <= maxDist)
 				{
 					closestStorm = storm;
@@ -415,7 +415,7 @@ public class WeatherManager
 			if (system instanceof SandstormObject) 
 			{
 				SandstormObject storm = (SandstormObject) system;
-				if (!storm.isDead && storm.pos.distance(parPos) <= maxDist) 
+				if (!storm.isDead && storm.pos.distanceSq(parPos) <= maxDist) 
 					sandstorms.add(storm);
 			}
 

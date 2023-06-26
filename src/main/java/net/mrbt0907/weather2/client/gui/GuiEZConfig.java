@@ -13,9 +13,10 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextComponentTranslation;
+import net.mrbt0907.configex.gui.GuiConfigEditor;
 import net.mrbt0907.weather2.ClientProxy;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.EZGuiAPI;
@@ -24,11 +25,8 @@ import net.mrbt0907.weather2.client.gui.elements.GuiButtonCycle;
 import net.mrbt0907.weather2.network.packets.PacketEZGUI;
 import net.mrbt0907.weather2.util.TriMapEx;
 import net.mrbt0907.weather2.util.WeatherUtilConfig;
-
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
-
-import modconfig.gui.GuiConfigEditor;
 
 public class GuiEZConfig extends GuiScreen
 {
@@ -115,7 +113,8 @@ public class GuiEZConfig extends GuiScreen
 		int x = (width - xSize) / 2;
 		int y = (height - ySize) / 2;
 		String title = format("title") + " - " + format(PAGEL[page]);
-		
+
+		drawWorldBackground(0);
 		drawScaledCustomSizeModalRect(x, y, 0.0F, 0.0F, 1, 1, 256, 256, 1.0F, 1.0F);
 		drawString(this.fontRenderer, title, (int) ((xStart + 128) - this.fontRenderer.getStringWidth(title) * 0.5), yStart+15, 16777215);
 	}
@@ -219,7 +218,7 @@ public class GuiEZConfig extends GuiScreen
 		maxSubPages = 1;
 		
 		addButton(new GuiButton(0, xStart + 193, yStart + buttonRowCY, buttonWidth, buttonHeight, format(EZGuiAPI.BUTTON_LIST[4])));
-		if (ClientProxy.clientTickHandler.op) addButton(new GuiButton(1, xStart + 110, yStart + buttonRowCY, buttonWidth + 20, buttonHeight, format(EZGuiAPI.BUTTON_LIST[5])));
+		addButton(new GuiButton(1, xStart + 110, yStart + buttonRowCY, buttonWidth + 20, buttonHeight, format(EZGuiAPI.BUTTON_LIST[5])));
 		addButton(new GuiButton(2, xStart + 8, yStart + buttonRowAY, buttonWidth, buttonHeight, format(EZGuiAPI.BUTTON_LIST[25])));
 		addButton(new GuiButton(3, xStart + 69, yStart + buttonRowAY, buttonWidth, buttonHeight, format(EZGuiAPI.BUTTON_LIST[26])));
 		addButton(new GuiButton(4, xStart + 130, yStart + buttonRowAY, buttonWidth, buttonHeight, format(EZGuiAPI.BUTTON_LIST[27])));
@@ -351,7 +350,7 @@ public class GuiEZConfig extends GuiScreen
 			case 1:
 				if (send)
 					send();
-				if (ClientProxy.clientTickHandler.op) Minecraft.getMinecraft().displayGuiScreen(new GuiConfigEditor());
+				mc.displayGuiScreen(new GuiConfigEditor());
 				break;
 			case 2: case 3: case 4: case 5:
 				page = button.id == 2 ? 0 : button.id == 3 ? 1 : button.id == 4 ? 2 : 3; 
@@ -426,6 +425,6 @@ public class GuiEZConfig extends GuiScreen
 	
 	private String format(String local, Object... args)
 	{
-		return new TextComponentTranslation("config.ezgui." + local, args).getFormattedText();
+		return I18n.format("config.ezgui." + local, args);
 	}
 }

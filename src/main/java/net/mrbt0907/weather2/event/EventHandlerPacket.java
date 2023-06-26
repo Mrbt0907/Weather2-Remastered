@@ -7,8 +7,6 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.ClientProxy;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.client.NewSceneEnhancer;
@@ -18,7 +16,6 @@ import net.mrbt0907.weather2.server.event.ServerTickHandler;
 import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import net.mrbt0907.weather2.util.WeatherUtilSound;
 import CoroUtil.packet.PacketHelper;
-import CoroUtil.util.CoroUtilEntity;
 
 public class EventHandlerPacket {
 	
@@ -48,6 +45,7 @@ public class EventHandlerPacket {
 					case 0: case 1: case 2: case 3:case 4: case 5: case 6: case 7:
 						ClientTickHandler.checkClientWeather();
 						//this line still gets NPE's despite it checking if its null right before it, wtf
+						//Fixed it, your welcome
 						ClientTickHandler.weatherManager.nbtSyncFromServer(nbt);
 						break;
 					case 9:
@@ -65,10 +63,14 @@ public class EventHandlerPacket {
 						break;
 					case 15:
 						WeatherUtilSound.reset();
-						Weather2.error("Refreshed weather2 sound system");
+						Weather2.debug("Refreshed weather2 sound system");
 						break;
 					case 16:
 						ClientProxy.clientTickHandler.op = nbt.getBoolean("op");
+						break;
+					case 17:
+						NewSceneEnhancer.instance().reset();
+						NewSceneEnhancer.instance().enable();
 						break;
 					default:
 						Weather2.error("Recieved an invalid network packet from the server");
@@ -85,11 +87,13 @@ public class EventHandlerPacket {
 	public void onPacketFromClient(FMLNetworkEvent.ServerCustomPacketEvent event) {
 		final EntityPlayerMP entP = ((NetHandlerPlayServer)event.getHandler()).player;
 		
-		try {
+		try
+		{
 			NBTTagCompound nbt = PacketHelper.readNBTTagCompound(event.getPacket().payload());
 			int command = nbt.getInteger("command");
 
-			entP.server.addScheduledTask(() -> {
+			entP.server.addScheduledTask(() ->
+			{
 				switch(command)
 				{
 					case 8:
@@ -118,10 +122,4 @@ public class EventHandlerPacket {
 			ex.printStackTrace();
 		}
 	}
-	
-	@SideOnly(Side.CLIENT)
-	public String getSelfUsername() {
-		return CoroUtilEntity.getName(Minecraft.getMinecraft().player);
-	}
-	
 }

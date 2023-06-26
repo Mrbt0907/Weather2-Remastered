@@ -9,8 +9,12 @@ import java.io.File;
 
 public class ConfigGrab implements IConfigCategory
 {
-	//@ConfigComment("Should weather2 use the old getters and setters for blocks?")
-	//public static boolean disableGrabOptimizations = true;
+	@ConfigComment("Should weather2 use the old getters and setters for blocks?")
+	public static boolean disableGrabOptimizations = true;
+	@ConfigComment("Should weather2 use the old getters and setters for blocks?")
+	public static boolean disableCheapOptimizations = true;
+	@ConfigComment("How long should the internal chunk cache keep a chunk in memory? Lower values may decrease memory usage at the cost of performance with grab optimizations enabled")
+	public static int chunk_cache_lifetime = 200;
 	@ConfigComment("Should storms grab players?")
 	public static boolean grab_players = true;
 	@ConfigComment("Should storms grab mobs?")

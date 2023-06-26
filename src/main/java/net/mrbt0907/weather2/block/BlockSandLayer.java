@@ -24,8 +24,8 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.registry.ItemRegistry;
-import net.mrbt0907.weather2.util.ChunkUtils;
 
 public class BlockSandLayer extends Block
 {
@@ -183,7 +183,7 @@ public class BlockSandLayer extends Block
 	@Override
 	public boolean isReplaceable(IBlockAccess worldIn, BlockPos pos)
 	{
-		IBlockState state = ChunkUtils.getBlockState((World) worldIn, pos);
+		IBlockState state = Weather2.getChunkUtil((World) worldIn).getBlockState((World) worldIn, pos);
 		try
 		{
 			return state.getPropertyKeys().contains(LAYERS) ? ((Integer)state.getValue(LAYERS)).intValue() == 1 : false;

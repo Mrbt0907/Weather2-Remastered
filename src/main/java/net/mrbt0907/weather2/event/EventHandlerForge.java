@@ -3,7 +3,6 @@ package net.mrbt0907.weather2.event;
 import extendedrenderer.render.FoliageRenderer;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.GlStateManager.FogMode;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.EntityAIMoveIndoors;
 import net.minecraft.entity.passive.EntityVillager;
@@ -16,7 +15,6 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.world.WorldEvent.Save;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
@@ -319,17 +317,45 @@ public class EventHandlerForge
     public void onFogColors(FogColors event)
 	{
 		if (ConfigMisc.toaster_pc_mode) return;
+		NewSceneEnhancer scene = NewSceneEnhancer.instance();
 		
-        if (false && SceneEnhancer.isFogOverridding())
+        if (scene.shouldChangeFogColor())
         {
 			//backup original fog colors that are actively being adjusted based on time of day
-			SceneEnhancer.fogRedOrig = event.getRed();
-			SceneEnhancer.fogGreenOrig = event.getGreen();
-			SceneEnhancer.fogBlueOrig = event.getBlue();
-        	event.setRed(SceneEnhancer.fogRed);
-        	event.setGreen(SceneEnhancer.fogGreen);
-        	event.setBlue(SceneEnhancer.fogBlue);
-			GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
+        	float red = event.getRed(), green = event.getGreen(), blue = event.getBlue();
+        	
+        	if (scene.seesWeatherObject() && scene.fogMult > 0.0025F)
+        	{
+        		if (scene.fogRed < 0.0F)
+            		scene.fogRed = red;
+            	if (scene.fogGreen < 0.0F)
+            		scene.fogGreen = green;
+            	if (scene.fogBlue < 0.0F)
+            		scene.fogBlue = blue;
+        	}
+        	else
+        	{
+        		if (scene.fogRedTarget >= 0.0F && scene.fogRedTarget != red)
+            		scene.fogRedTarget = red;
+            	if (scene.fogGreenTarget >= 0.0F && scene.fogGreenTarget != green)
+            		scene.fogGreenTarget = green;
+            	if (scene.fogBlueTarget >= 0.0F && scene.fogBlueTarget != blue)
+            		scene.fogBlueTarget = blue;
+            	
+            	if (scene.fogRed != -1.0F && scene.fogRed == red)
+            		scene.fogRed = -1.0F;
+				if (scene.fogGreen != -1.0F && scene.fogGreen == green)
+					scene.fogGreen = -1.0F;
+				if (scene.fogBlue != -1.0F && scene.fogBlue == blue)
+					scene.fogBlue = -1.0F;
+        	}
+        	
+        	if (scene.fogRed >= 0.0F && scene.fogGreen >= 0.0F && scene.fogBlue >= 0.0F)
+        	{
+	        	event.setRed(scene.fogRed);
+	        	event.setGreen(scene.fogGreen);
+	        	event.setBlue(scene.fogBlue);
+        	}
         }
 	}
 	
@@ -354,7 +380,7 @@ public class EventHandlerForge
 		
 		scene.renderDistance = farplane;
 		
-		if (scene.changeFog())
+		if (scene.shouldChangeFog())
 		{
 			GlStateManager.setFog(GlStateManager.FogMode.EXP);
 			GlStateManager.setFogDensity(scene.fogMult);
