@@ -83,7 +83,7 @@ public class ConfigAnnotations
 	@Target(ElementType.FIELD)
 	public static @interface FloatRange
 	{
-		float min() default Float.MIN_VALUE;
+		float min() default -Float.MAX_VALUE;
 		float max() default Float.MAX_VALUE;
 	}
 	
@@ -92,7 +92,7 @@ public class ConfigAnnotations
 	@Target(ElementType.FIELD)
 	public static @interface DoubleRange
 	{
-		double min() default Double.MIN_VALUE;
+		double min() default -Double.MAX_VALUE;
 		double max() default Double.MAX_VALUE;
 	}
 }
