@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 public class ConfigAnnotations
 {
-	/**Tells the compiler to ignore this field when getting variables for the config*/
+	/**Tells the compiler to ignore this variable when getting variables for the config*/
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
 	public static @interface Ignore {}
