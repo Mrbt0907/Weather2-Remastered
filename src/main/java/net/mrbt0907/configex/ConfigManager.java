@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.management.PlayerList;
@@ -14,6 +15,7 @@ import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.configex.api.IConfigEX;
 import net.mrbt0907.configex.event.ClientHandler;
 import net.mrbt0907.configex.manager.ConfigInstance;
@@ -247,13 +249,20 @@ public class ConfigManager
 		} 
 	}
 	
+	@SideOnly(Side.CLIENT)
+	public static boolean isSinglePlayer()
+	{
+		Minecraft mc = Minecraft.getMinecraft();
+		return mc.isSingleplayer() || mc.world == null;
+	}
+	
 	public static String[] getFieldIDs()
 	{
 		List<String> ids = new ArrayList<String>();
 		String[] output;
 		for (ConfigInstance config : configs.values())
 			for(FieldInstance field : config.getFields())
-				ids.add(config.registryName + ":" + field.registryName);
+				ids.add(field.registryName);
 		output = new String[ids.size()];
 		output = ids.toArray(output);
 		return output;

@@ -128,7 +128,7 @@ public class CommandConfigEX extends CommandBase
 		{
 			if (toServer && !ConfigManager.isRemote)
 			{
-				FieldInstance field = ConfigManager.getFieldInstance(registryNames[0], registryNames[1]);
+				FieldInstance field = ConfigManager.getFieldInstance(registryNames[0], registryName);
 				
 				if (field == null)
 					say(sender, TextFormatting.RED + registryName + " does not exist");
@@ -146,7 +146,7 @@ public class CommandConfigEX extends CommandBase
 			{
 				NBTTagCompound nbt = new NBTTagCompound();
 				nbt.setString("config", registryNames[0]);
-				nbt.setString("field", registryNames[1]);
+				nbt.setString("field", registryName);
 				sendPacket(3, nbt, sender);
 			}
 		}
@@ -164,7 +164,7 @@ public class CommandConfigEX extends CommandBase
 		{
 			if (toServer)
 			{
-				FieldInstance field = ConfigManager.getFieldInstance(registryNames[0], registryNames[1]);
+				FieldInstance field = ConfigManager.getFieldInstance(registryNames[0], registryName);
 				
 				if (field == null)
 					say(sender, TextFormatting.RED + registryName + " does not exist");
@@ -184,7 +184,7 @@ public class CommandConfigEX extends CommandBase
 			{
 				NBTTagCompound nbt = new NBTTagCompound();
 				nbt.setString("config", registryNames[0]);
-				nbt.setString("field", registryNames[1]);
+				nbt.setString("field", registryName);
 				nbt.setString("value", value);
 				sendPacket(2, nbt, sender);
 			}
@@ -202,7 +202,7 @@ public class CommandConfigEX extends CommandBase
 		{
 			if (fromServer)
 			{
-				FieldInstance field = ConfigManager.getFieldInstance(registryNames[0], registryNames[1]);
+				FieldInstance field = ConfigManager.getFieldInstance(registryNames[0], registryName);
 				if (field == null)
 					say(sender,TextFormatting.RED + registryName + " does not exist");
 				else
@@ -215,7 +215,7 @@ public class CommandConfigEX extends CommandBase
 			{
 				NBTTagCompound nbt = new NBTTagCompound();
 				nbt.setString("config", registryNames[0]);
-				nbt.setString("field", registryNames[1]);
+				nbt.setString("field", registryName);
 				sendPacket(1, nbt, sender);
 			}
 		}

@@ -2,6 +2,8 @@ package net.mrbt0907.configex.manager;
 
 import java.lang.reflect.Field;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 import net.minecraftforge.common.config.Property;
 import net.mrbt0907.configex.ConfigManager;
 import net.mrbt0907.configex.ConfigModEX;
@@ -45,7 +47,7 @@ public class FieldInstance
 		name = field.getName();
 		registryName = ConfigManager.formatRegistryName(instance.getName() + ":" + name);
 		Name nameAnnotation = field.getAnnotation(Name.class);
-		displayName = nameAnnotation == null || nameAnnotation.value().trim().isEmpty() ? name.replace('_', ' ') : nameAnnotation.value().trim();
+		displayName = nameAnnotation == null || nameAnnotation.value().trim().isEmpty() ? WordUtils.capitalize(name.replace('_', ' ')) : nameAnnotation.value().trim();
 		Comment commentAnnotation = field.getAnnotation(Comment.class);
 		comment = commentAnnotation == null ? "" : ConfigManager.formatComment(commentAnnotation.value());
 		enforce = field.isAnnotationPresent(Enforce.class);

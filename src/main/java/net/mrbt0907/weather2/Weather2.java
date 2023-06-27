@@ -30,7 +30,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = Weather2.MODID, name=Weather2.MOD, version=Weather2.VERSION, acceptedMinecraftVersions="[1.12.2]", dependencies="required-after:coroutil@[1.12.1-1.2.37,);required-after:configex@[1.0,);required-after:forge@[14.23.5.2860,);")
+@Mod(modid = Weather2.MODID, name=Weather2.MOD, version=Weather2.VERSION, acceptedMinecraftVersions="[1.12.2]", dependencies="required-after:coroutil@[1.12.1-1.2.37,);required-after:configex@[1.0,);required-after:forge@[14.23.5.2860,);", guiFactory = "net.mrbt0907.configex.gui.AdvancedGuiFactory")
 public class Weather2
 {
 	public static final String MOD = "Weather 2 - Remastered";

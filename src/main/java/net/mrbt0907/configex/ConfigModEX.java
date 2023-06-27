@@ -9,6 +9,7 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.mrbt0907.configex.api.IConfigEX;
 import net.mrbt0907.configex.command.CommandConfigEX;
 import net.mrbt0907.configex.config.ConfigMaster;
+import net.mrbt0907.configex.config.ConfigStorm;
 import net.mrbt0907.configex.event.EventHandler;
 import net.mrbt0907.configex.network.NetworkHandler;
 
@@ -16,7 +17,7 @@ import java.io.File;
 
 import org.apache.logging.log4j.Logger;
 
-@Mod(modid = ConfigModEX.MODID, name=ConfigModEX.MOD, version=ConfigModEX.VERSION, acceptedMinecraftVersions="[1.12.2]", dependencies="required-after:forge@[14.23.5.2860,);")
+@Mod(modid = ConfigModEX.MODID, name=ConfigModEX.MOD, version=ConfigModEX.VERSION, acceptedMinecraftVersions="[1.12.2]", dependencies="required-after:forge@[14.23.5.2860,);", guiFactory = "net.mrbt0907.configex.gui.AdvancedGuiFactory")
 public class ConfigModEX
 {
 	public static final String MODID = "configex";
@@ -30,6 +31,7 @@ public class ConfigModEX
 	{
 		log = event.getModLog();
 		register(new ConfigMaster());
+		register(new ConfigStorm());
 		MinecraftForge.EVENT_BUS.register(EventHandler.class);
 		NetworkHandler.preInit();
 	}

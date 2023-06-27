@@ -20,6 +20,7 @@ public class GuiConfigEntry
 	public final int type;
 	public final double min;
 	public final double max;
+	public final boolean hasPermission;
 	
 	public GuiConfigEntry(FieldInstance field, boolean serverValue)
 	{
@@ -31,8 +32,8 @@ public class GuiConfigEntry
 		defaultValue = String.valueOf(field.defaultValue);
 		textField = new GuiBetterTextField(MC.fontRenderer, 0, 0, 130, 16, value);
 		textField.isEnabled = field.hasPermission();
-		boolean hasPermission = field.hasPermission();
-		textField.setVisible((!(!hasPermission && field.hide) || hasPermission) && (field.enforce && (GuiConfigEditor.serverMode || Minecraft.getMinecraft().isSingleplayer()) || !field.enforce));
+		hasPermission = field.hasPermission();
+		textField.setVisible((!(!hasPermission && field.hide) || hasPermission) && (field.enforce && (GuiConfigEditor.serverMode || ConfigManager.isSinglePlayer()) || !field.enforce));
 		type = field.type;
 		min = field.min;
 		max = field.max;

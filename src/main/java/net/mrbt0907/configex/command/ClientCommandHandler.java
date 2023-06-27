@@ -42,13 +42,16 @@ public class ClientCommandHandler
 						say(TextFormatting.RED + args[0] + ":" + args[1] + " does not exist");
 					else
 						if (field.hasPermission())
-							if (field.setClientValue(value))
-							{
-								ConfigManager.sync(field.config.getName(), field.registryName);
-								say(field.name + " was set successfully! Client Value: " + field.getRealClientValue() + ", Server Value: " + field.getRealCachedValue());
-							}
+							if (!(field.enforce && !ConfigManager.isSinglePlayer()))
+								if (field.setClientValue(value))
+								{
+									ConfigManager.sync(field.config.getName(), field.registryName);
+									say(field.name + " was set successfully! Client Value: " + field.getRealClientValue() + ", Server Value: " + field.getRealCachedValue());
+								}
+								else
+									say(TextFormatting.RED + field.name + " was not set successfully");
 							else
-								say(TextFormatting.RED + field.name + " was not set successfully");
+								say(TextFormatting.RED + field.name + " cannot be set client side while in the server");
 						else
 							say(TextFormatting.RED + field.name + " requires a higher permission level to set");
 					break;
@@ -59,11 +62,14 @@ public class ClientCommandHandler
 						say(TextFormatting.RED + args[0] + ":" + args[1] + " does not exist");
 					else
 						if (field.hasPermission())
-						{
-							field.setToDefault();
-							ConfigManager.sync(field.config.getName(), field.registryName);
-							say(field.name + " was set to default successfully! Client Value: " + field.getRealClientValue() + ", Server Value: " + field.getRealCachedValue());
-						}
+							if (!(field.enforce && !MC.isSingleplayer()))
+							{
+								field.setToDefault();
+								ConfigManager.sync(field.config.getName(), field.registryName);
+								say(field.name + " was set to default successfully! Client Value: " + field.getRealClientValue() + ", Server Value: " + field.getRealCachedValue());
+							}
+							else
+								say(TextFormatting.RED + field.name + " cannot be set to default client side while in the server");
 						else
 							say(TextFormatting.RED + field.name + " requires a higher permission level to set");
 					break;

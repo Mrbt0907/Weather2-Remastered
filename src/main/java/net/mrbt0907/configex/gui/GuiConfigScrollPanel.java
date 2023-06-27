@@ -16,11 +16,13 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.configex.ConfigManager;
 import net.mrbt0907.configex.ConfigModEX;
 import net.mrbt0907.configex.manager.ConfigInstance;
+
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 @SideOnly(Side.CLIENT)
-public class GuiConfigScrollPanel extends GuiBetterSlot
+public class GuiConfigScrollPanel extends GuiScrollPanel
 {
 	private GuiConfigEditor config;
 	public final List<ConfigInstance> configs;
@@ -29,21 +31,26 @@ public class GuiConfigScrollPanel extends GuiBetterSlot
 	private int mouseY;
 	private int selected = -1;
 
-	public GuiConfigScrollPanel(GuiConfigEditor controls, Minecraft mc, int startX, int startY, int height, int slotSize)
+	public GuiConfigScrollPanel(GuiConfigEditor controls, Minecraft mc, int scrollBarX, int width, int height, int scrollBarSize, int slotHeight)
 	{
-		super(mc, controls.width, controls.height, startX, startY, height, slotSize);
+		super(mc, controls.xStart, controls.yStart, scrollBarX, width, height, scrollBarSize, slotHeight, 7, 8);
 		this.config = controls;
 		configs = ConfigManager.getInstances();
 		options = new ArrayList<GuiConfigEntry>();
 		populateData();
 	}
 
+	public void updatePosition()
+	{
+		
+	}
+	
 	@Override
-	protected void elementClicked(int i, boolean flag)
+	protected void onSlotClicked(int i, boolean flag)
 	{
 		if (!flag)
 		{
-			selected = i;
+			selected = super.selected;
 			KeyBinding.resetKeyBindingArrayAndHash();
 		}
 	}
@@ -64,6 +71,7 @@ public class GuiConfigScrollPanel extends GuiBetterSlot
 	protected void drawForeground(Tessellator tess)
 	{
 		config.drawForegroundLayer();
+		mc.fontRenderer.drawString("Scroll: " + scrollPos + ", Slot: " + (int)(scrollPos / this.slotHeight) + ", Selected: " + selected, xStart - 90, yStart- 50, 0xFFFFFFFF);
 	}
 
 	@Override
@@ -71,32 +79,36 @@ public class GuiConfigScrollPanel extends GuiBetterSlot
 	{
 		mouseX = mX;
 		mouseY = mY;
-
+		xStart = config.xStart + 169;
+		yStart = config.yStart + 40;
+		xScrollBar = xStart + 133;
 		if (selected != -1 && !Mouse.isButtonDown(0) && Mouse.getDWheel() == 0)
-		{
 			if (Mouse.next() && Mouse.getEventButtonState())
 			{
 				selected = -1;
 				KeyBinding.resetKeyBindingArrayAndHash();
 			}
-		}
-
-		try
-		{
-			super.drawScreen(mX, mY, f);
-		}
-		catch (Exception ex) {}
+		
+		super.drawScreen(mX, mY, f);
+		selected = super.selected;
 	}
 
 	@Override
-	protected void drawSlotPre(int index, int xPosition, int yPosition, int l, Tessellator tessellator)
+	protected void drawScrollBar(Tessellator tessellator)
+	{
+		drawGradientRect(xScrollBar, yStart + ySize - (int)(scrollPos), xScrollBar + scrollBarSize, yStart + ySize, 0xAA555555, 0xAA555555);
+		drawGradientRect(xScrollBar, yStart, xScrollBar + scrollBarSize, yStart + ySize, 0xAA555555, 0xAA555555);
+	}
+
+	@Override
+	protected void drawSlotPre(Tessellator tessellatorint, int xPosition, int yPosition, int slot)
 	{
 		if (getSize() == 0) return;
 		xPosition -= 20;
 
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		
-		GuiConfigEntry entry = options.get(index);
+		GuiConfigEntry entry = options.get(slot);
 
 		int stringWidth = mc.fontRenderer.getStringWidth(entry.name);
 		config.drawString(mc.fontRenderer, entry.name, xPosition - stringWidth + 15, yPosition + 3, 0xFFFFFFFF);
@@ -109,11 +121,11 @@ public class GuiConfigScrollPanel extends GuiBetterSlot
 	}
 
 	@Override
-	protected void drawSlotPost(int index, int xPosition, int yPosition, int l, Tessellator tessellator)
+	protected void drawSlotPost(Tessellator tessellatorint, int xPosition, int yPosition, int slot)
 	{
 		if (getSize() == 0) return;
 		xPosition -= 20;
-		GuiConfigEntry entry = options.get(index);
+		GuiConfigEntry entry = options.get(slot);
 		int stringWidth = mc.fontRenderer.getStringWidth(entry.name);
 		int hover_x_min = xPosition - stringWidth + 15;
 		int hover_y_min = yPosition;
@@ -128,7 +140,7 @@ public class GuiConfigScrollPanel extends GuiBetterSlot
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			int l2 = 0;
 			int k2 = hover_y_min - 10;
-			String[] lines = ConfigManager.formatCommentForGui(entry.comment, entry.defaultValue, entry.type, entry.min, entry.max).replaceAll(Configuration.NEW_LINE, "\n").split("\\n");
+			String[] lines = (ConfigManager.formatCommentForGui(entry.comment, entry.defaultValue, entry.type, entry.min, entry.max) + (entry.hasPermission ? "" : Configuration.NEW_LINE + TextFormatting.RED + "" + TextFormatting.BOLD + "Higher permission level required")).replaceAll(Configuration.NEW_LINE, "\n").split("\\n");
 			for (int i = 0; i < lines.length; i++)
 			{
 				if (mc.fontRenderer.getStringWidth(lines[i]) > l2)
@@ -143,16 +155,42 @@ public class GuiConfigScrollPanel extends GuiBetterSlot
 
 	public boolean keyTyped(char c, int i)
 	{
-		if (selected != -1 && options.get(selected).textField.isFocused())
+		if (selected != -1)
 		{
-			if (options.get(selected).textField.textboxKeyTyped(c, i))
-				options.get(selected).textField.updateChange();
-			if (i == 28)
+			GuiConfigEntry entry = options.get(selected); 
+			if (entry.textField.isFocused())
 			{
-				selected = -1;
-				return true;
+				entry.textField.textboxKeyTyped(c, i);
+				entry.textField.updateChange();
+				if (i == Keyboard.KEY_RETURN)
+				{
+					selected = super.selected = -1;
+					entry.textField.isFocused = false;
+					return true;
+				}
+				else if (i == Keyboard.KEY_ESCAPE)
+				{
+					selected = super.selected = -1;
+					entry.textField.isFocused = false;
+				}
 			}
 			return false;
+		}
+		else
+		{
+			int height = getScrollHeight();
+			if (i == Keyboard.KEY_UP)
+				setScrollPos(-height / getSize());
+			else if (i == Keyboard.KEY_DOWN)
+				setScrollPos(height / getSize());
+			else if (i == Keyboard.KEY_NEXT)
+				setScrollPos(height / getSize() + slotHeight * 8);
+			else if (i == Keyboard.KEY_PRIOR)
+				setScrollPos(-height / getSize() - slotHeight * 8);
+			else if (i == Keyboard.KEY_HOME)
+				setScrollPos(-(getScrollHeight() - ySize));
+			else if (i == Keyboard.KEY_END)
+				setScrollPos(getScrollHeight() - ySize);
 		}
 		
 		return true;
@@ -194,6 +232,7 @@ public class GuiConfigScrollPanel extends GuiBetterSlot
 	
 	public void populateData()
 	{
+		scrollPos = 0.0F;
 		options.clear();
 		ConfigInstance config = configs.get(GuiConfigEditor.curIndex);
 		
@@ -201,7 +240,7 @@ public class GuiConfigScrollPanel extends GuiBetterSlot
 			config.getFields().forEach(field ->
 			{
 				boolean hasPermission = field.hasPermission();
-				if ((!(!hasPermission && field.hide) || hasPermission) && (field.enforce && (GuiConfigEditor.serverMode || mc.isSingleplayer()) || !field.enforce))
+				if ((!(!hasPermission && field.hide) || hasPermission) && (field.enforce && (GuiConfigEditor.serverMode || ConfigManager.isSinglePlayer()) || !field.enforce))
 					options.add(new GuiConfigEntry(field, GuiConfigEditor.serverMode));
 			});
 	}

@@ -6,6 +6,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
@@ -50,7 +51,7 @@ public class GuiConfigEditor extends GuiScreen
 	{
 		super();
 		mc = Minecraft.getMinecraft();
-		scrollPane = new GuiConfigScrollPanel(this, mc, xStart + 460, yStart + 36, yStart + ySize - 33, 20);
+		scrollPane = new GuiConfigScrollPanel(this, mc, xStart + 169, 130, 175, 8, 20);
 	}
 	
 	@Override
@@ -66,7 +67,6 @@ public class GuiConfigEditor extends GuiScreen
 		{
 			drawBackgroundLayer();
 			scrollPane.drawScreen(var1, var2, var3);
-			//drawForegroundLayer();
 		}
 		catch (Exception ex) {}
 		
@@ -118,8 +118,14 @@ public class GuiConfigEditor extends GuiScreen
 		buttonList.add(new GuiButton(G_MODPREV, xStart + 7, yStart + buttonBottomY, buttonWidth, buttonHeight, format("previous")));
 		buttonList.add(new GuiButton(G_SAVE, xStart + 252, yStart + buttonBottomY, buttonWidth + 32, buttonHeight, format("exit")));
 		
-		if (mc.isSingleplayer())
-			serverMode = false;
+		if (ConfigManager.isSinglePlayer())
+		{
+			if (serverMode)
+			{
+				serverMode = false;
+				scrollPane.populateData();
+			}
+		}
 		else
 			buttonList.add(new GuiButton(G_CONFIGMODE, xStart + 162, yStart + buttonBottomY, buttonWidth + 56, buttonHeight, serverMode ? format("clientmode") : format("servermode")));
 	}
@@ -244,15 +250,18 @@ public class GuiConfigEditor extends GuiScreen
 	@Override
 	public void drawTexturedModalRect(int x, int y, int textureX, int textureY, int width, int height)
 	{
+		GlStateManager.pushMatrix();
 		float f = 0.00390625F / 2F;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder vertexbuffer = tessellator.getBuffer();
+		GlStateManager.enableAlpha();
 		vertexbuffer.begin(7, DefaultVertexFormats.POSITION_TEX);
 		vertexbuffer.pos((double)(x + 0), (double)(y + height), (double)zLevel).tex((double)((float)(textureX + 0) * f), (double)((float)(textureY + height) * f)).endVertex();
 		vertexbuffer.pos((double)(x + width), (double)(y + height), (double)zLevel).tex((double)((float)(textureX + width) * f), (double)((float)(textureY + height) * f)).endVertex();
 		vertexbuffer.pos((double)(x + width), (double)(y + 0), (double)zLevel).tex((double)((float)(textureX + width) * f), (double)((float)(textureY + 0) * f)).endVertex();
 		vertexbuffer.pos((double)(x + 0), (double)(y + 0), (double)zLevel).tex((double)((float)(textureX + 0) * f), (double)((float)(textureY + 0) * f)).endVertex();
 		tessellator.draw();
+		GlStateManager.popMatrix();
 	}
 	
 	private String format(String local, Object... args)

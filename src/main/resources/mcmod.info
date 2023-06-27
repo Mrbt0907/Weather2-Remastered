@@ -1,6 +1,6 @@
 [
 	{
-		"modid": "weather2",
+		"modid": "weather2remaster",
 		"name": "Weather 2 - Remastered",
 		"description": "Brings a new localized weather system into your game, giving the environment around you more atmosphere while giving you storms to worry about.",
 		"version": "${version}",
@@ -9,6 +9,20 @@
 		"updateUrl": "",
 		"authorList": ["Corosus", "Mrbt0907"],
 		"credits": "A huge thanks to Corosus for developing the Weather 2 mod for all of us to enjoy, Fartsy for helping with many of the methods in the backend, Muddy Water for server testing and weather knowledge, Frisk for some really great ideas, teksturepako for a few of the item textures, dizasterman and logan for the rest of the item textures and the snow radar icon, and the rest in the community for giving me amazing ideas.",
+		"logoFile": "",
+		"screenshots": [],
+		"dependencies": []
+	},
+	{
+		"modid": "configex",
+		"name": "Config Mod - Expanded",
+		"description": "A config mod that gives a dynamic gui interface to modify configuration files in and out the game.",
+		"version": "${version}",
+		"mcversion": "${mcversion}",
+		"url": "http://Coros.us/",
+		"updateUrl": "",
+		"authorList": ["Mrbt0907"],
+		"credits": "A huge thanks to Corosus for developing the original Configmod.",
 		"logoFile": "",
 		"screenshots": [],
 		"dependencies": []
