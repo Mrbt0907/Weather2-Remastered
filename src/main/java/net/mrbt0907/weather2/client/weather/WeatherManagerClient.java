@@ -291,8 +291,8 @@ public class WeatherManagerClient extends WeatherManager
 	public void refreshParticleLimit()
 	{
 		int systems = 0;
-		EntityPlayerSP player = Minecraft.getMinecraft().player;
-		
+		final EntityPlayerSP player = Minecraft.getMinecraft().player;
+		if (player == null) return;
 		for (WeatherObject system : this.systems.values())
 			if (system.pos.distanceSq(player.posX, system.pos.posY, player.posZ) < SceneEnhancer.fogDistance)
 				systems++;

@@ -1,43 +1,42 @@
 package net.mrbt0907.weather2.config;
 
-import modconfig.ConfigComment;
-import modconfig.IConfigCategory;
+import net.mrbt0907.configex.api.ConfigAnnotations.*;
+import net.mrbt0907.configex.api.IConfigEX;
 import net.mrbt0907.weather2.Weather2;
 
 import java.io.File;
 
 
-public class ConfigSimulation implements IConfigCategory
+public class ConfigSimulation implements IConfigEX
 {
-	//@ConfigComment({"Should storms use a more realistic storm system? (Does not work rn, don't enable)"})
+	//@Comment({"Should storms use a more realistic storm system? (Does not work rn, don't enable)"})
     //public static boolean simulation_enable = false;
-	@ConfigComment("Distance storms can go to from players before they are deleted")
+	@Comment("Distance storms can go to from players before they are deleted")
 	public static int max_storm_distance = 2300;
-	@ConfigComment("Distance storms can spawn away from players")
+	@Comment("Distance storms can spawn away from players")
 	public static int max_storm_spawning_distance = 2150;
 	
     @Override
-    public String getName() {
+    public String getName()
+    {
         return "Simulation";
     }
 
     @Override
-    public String getRegistryName() {
-        return Weather2.MODID + getName();
-    }
-
-    @Override
-    public String getConfigFileName() {
+    public String getSaveLocation()
+    {
         return Weather2.MODID + File.separator + getName();
     }
 
-    @Override
-    public String getCategory() {
-        return Weather2.MODID + ":" + getName();
-    }
+	@Override
+	public String getDescription()
+	{
+		return null;
+	}
 
-    @Override
-    public void hookUpdatedValues() {
+	@Override
+	public void onConfigChanged(Phase phase, int variables) {}
 
-    }
+	@Override
+	public void onValueChanged(String variable, Object oldValue, Object newValue) {}
 }

@@ -154,7 +154,7 @@ public class GuiConfigEditor extends GuiScreen
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			ConfigModEX.error(e);
 		}
 	}
 

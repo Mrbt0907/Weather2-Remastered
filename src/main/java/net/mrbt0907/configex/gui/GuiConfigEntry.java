@@ -30,7 +30,7 @@ public class GuiConfigEntry
 		name = field.displayName;
 		registryName = field.registryName;
 		comment = field.comment;
-		value = String.valueOf(serverValue ? field.getServerValue() : field.getRealClientValue());
+		value = String.valueOf(serverValue ? field.getServerValue() : field.hasPermission() ? field.getRealClientValue() : field.getClientValue());
 		defaultValue = String.valueOf(field.defaultValue);
 		textField = new GuiBetterTextField(MC.fontRenderer, 0, 0, 130, 16, value, defaultValue);
 		textField.isEnabled = field.hasPermission();

@@ -3,15 +3,10 @@ package net.mrbt0907.configex.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.mrbt0907.configex.ConfigModEX;
-
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -122,7 +117,6 @@ public abstract class GuiScrollPanel
 	public void drawScreen(int mouseX, int mouseY, float partialTicks)
 	{
 		int size = getSize();
-		if (size < 1) return;
 		int height = getScrollHeight();
 		int slot = 0;
 		int slotHeight = 0;
@@ -131,7 +125,7 @@ public abstract class GuiScrollPanel
 		{
 			int realY = yStart + ySize;
 			slot = (int)((scrollPos + (mouseY - yStart)) / this.slotHeight);
-			if (mouseX > xStart && mouseX < xStart + xSize && mouseY > yStart && mouseY < realY)
+			if (slot < size && mouseX > xStart && mouseX < xStart + xSize && mouseY > yStart && mouseY < realY)
 				onSlotClicked(slot, false);
 			else
 				selected = -1;

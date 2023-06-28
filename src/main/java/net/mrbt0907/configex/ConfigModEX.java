@@ -23,7 +23,7 @@ public class ConfigModEX
 	public static final String MOD = "Config Manager - Expanded";
 	public static final String VERSION = "1.0";
 	private static Logger log;
-	public static final boolean enableDebug = true;
+	public static final boolean enableDebug = false;
 	
 	@Mod.EventHandler
 	public void preInit(FMLPreInitializationEvent event)

@@ -272,7 +272,7 @@ public class ConfigManager
 	
 	public static String formatRegistryName(String name)
 	{
-		return name.trim().toLowerCase().replaceAll(" ", "_").replaceAll("[^a-zA-Z0-9_\\-:]", "");
+		return name.trim().toLowerCase().replaceAll("[ _\\-]+", "_").replaceAll("[^a-zA-Z0-9_:]", "");
 	}
 	
 	public static String formatComment(String comment)
@@ -302,9 +302,20 @@ public class ConfigManager
 	}
 	
 
-	public static String formatCommentForGui(String comment, String defaultValue, int type, boolean showMin, boolean showMax, double min, double max)
+	public static String formatCommentForGui(final String comment, String defaultValue, int type, boolean showMin, boolean showMax, double min, double max)
 	{
 		if (comment == null) return null;
-		return (comment.isEmpty() ? "" : WordUtils.wrap(comment, 40) + Configuration.NEW_LINE) + (type < 6 ? (showMin ? TextFormatting.YELLOW + "Minimum: " + (type < 4 ? String.format("%d", (long) min) : min) + (showMax ? ",  " : Configuration.NEW_LINE) : "") + (showMax ? TextFormatting.YELLOW + "Maximum: " + (type < 4 ? String.format("%d", (long) max) : max) + ""  + Configuration.NEW_LINE : "") : "") + TextFormatting.GOLD + "Default: " + defaultValue;
+		String input;
+		
+		try
+		{
+			input = WordUtils.wrap(comment, 40);
+		}
+		catch(Exception e)
+		{
+			input = comment;
+		}
+		
+		return (comment.isEmpty() ? "" : input + Configuration.NEW_LINE) + (type < 6 ? (showMin ? TextFormatting.YELLOW + "Minimum: " + (type < 4 ? String.format("%d", (long) min) : min) + (showMax ? ",  " : Configuration.NEW_LINE) : "") + (showMax ? TextFormatting.YELLOW + "Maximum: " + (type < 4 ? String.format("%d", (long) max) : max) + ""  + Configuration.NEW_LINE : "") : "") + TextFormatting.GOLD + "Default: " + defaultValue;
 	}
 }

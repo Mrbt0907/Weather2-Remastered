@@ -18,7 +18,6 @@ import net.mrbt0907.configex.ConfigManager;
 import net.mrbt0907.configex.ConfigModEX;
 import net.mrbt0907.configex.manager.ConfigInstance;
 
-import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -47,7 +46,14 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 	{
 		if (!flag)
 		{
-			selected = i;
+			int size = getSize(); 
+			if (i < size)
+				selected = i;
+			else
+			{
+				ConfigModEX.warn("Index was set higher than options list. Bringing index back into range...");
+				selected = size - 1;
+			}
 			KeyBinding.resetKeyBindingArrayAndHash();
 		}
 	}
@@ -82,7 +88,7 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 		xStart = config.xStart + 169;
 		yStart = config.yStart + 40;
 		xScrollBar = xStart + 133;
-		if (selected != -1 && !Mouse.isButtonDown(0) && Mouse.getDWheel() == 0)
+		if (selected > -1 && !Mouse.isButtonDown(0) && Mouse.getDWheel() == 0)
 			if (Mouse.next() && Mouse.getEventButtonState())
 			{
 				selected = -1;
@@ -169,7 +175,7 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			int l2 = 0;
 			int k2 = hover_y_min - 10;
-			String[] lines = (entry.name + Configuration.NEW_LINE + Configuration.NEW_LINE + ConfigManager.formatCommentForGui(entry.comment, entry.defaultValue, entry.type, entry.showMin, entry.showMax, entry.min, entry.max) + (entry.hasPermission ? "" : Configuration.NEW_LINE + TextFormatting.RED + "" + TextFormatting.BOLD + "Higher permission level required") + Configuration.NEW_LINE + Configuration.NEW_LINE + TextFormatting.GRAY + "" + TextFormatting.ITALIC + "On Text Box" + Configuration.NEW_LINE + TextFormatting.GRAY + "" + TextFormatting.ITALIC + (entry.type == 7 ? "Shift & left click: Switch to true/false" : "Shift & Left Click: Reset to original value") + Configuration.NEW_LINE + TextFormatting.GRAY + "" + TextFormatting.ITALIC + "Shift & Right Click: Reset to default value").replaceAll(Configuration.NEW_LINE, "\n").split("\\n");
+			String[] lines = (entry.name + Configuration.NEW_LINE + Configuration.NEW_LINE + ConfigManager.formatCommentForGui(entry.comment, entry.defaultValue, entry.type, entry.showMin, entry.showMax, entry.min, entry.max) + (entry.hasPermission ? "" : Configuration.NEW_LINE + TextFormatting.RED + "" + TextFormatting.BOLD + "Higher permission level required") + Configuration.NEW_LINE + Configuration.NEW_LINE + TextFormatting.GRAY + "" + TextFormatting.ITALIC + "On Text Box" + Configuration.NEW_LINE + TextFormatting.GRAY + "" + TextFormatting.ITALIC + (entry.type == 7 ? "Shift & Left Click: Switch to true/false" : "Shift & Left Click: Reset to original value") + Configuration.NEW_LINE + TextFormatting.GRAY + "" + TextFormatting.ITALIC + "Shift & Right Click: Reset to default value" + Configuration.NEW_LINE  + TextFormatting.BLUE + "" + TextFormatting.ITALIC + entry.registryName).replaceAll(Configuration.NEW_LINE, "\n").split("\\n");
 			for (int i = 0; i < lines.length; i++)
 				if (mc.fontRenderer.getStringWidth(lines[i]) > l2)
 					l2 = mc.fontRenderer.getStringWidth(lines[i]);
@@ -182,7 +188,7 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 
 	public boolean keyTyped(char c, int i)
 	{
-		if (selected != -1)
+		if (selected > -1)
 		{
 			GuiConfigEntry entry = options.get(selected); 
 			if (entry.textField.isFocused())
