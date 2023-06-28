@@ -29,7 +29,7 @@ public class ClientCommandHandler
 					if (field == null)
 						say(TextFormatting.RED + args[0] + ":" + args[1] + " does not exist");
 					else
-						if (field.hasPermission())
+						if (field.hasPermission() || !field.enforce && !field.hide)
 							say("Field " + field.name + "\n-----  -----\nFrom: " + field.config.getName() + "\nDefault Value: " + field.defaultValue + "\nCurrent Value: " + String.valueOf(field.getRealCachedValue()));
 						else
 							say(TextFormatting.RED + field.name + " requires a higher permission level to access");
@@ -41,7 +41,7 @@ public class ClientCommandHandler
 					if (field == null)
 						say(TextFormatting.RED + args[0] + ":" + args[1] + " does not exist");
 					else
-						if (field.hasPermission())
+						if (field.hasPermission() || !field.enforce && !field.hide)
 							if (!(field.enforce && !ConfigManager.isSinglePlayer()))
 								if (field.setClientValue(value))
 								{
@@ -61,7 +61,7 @@ public class ClientCommandHandler
 					if (field == null)
 						say(TextFormatting.RED + args[0] + ":" + args[1] + " does not exist");
 					else
-						if (field.hasPermission())
+						if (field.hasPermission() || !field.enforce && !field.hide)
 							if (!(field.enforce && !MC.isSingleplayer()))
 							{
 								field.setToDefault();
@@ -71,7 +71,7 @@ public class ClientCommandHandler
 							else
 								say(TextFormatting.RED + field.name + " cannot be set to default client side while in the server");
 						else
-							say(TextFormatting.RED + field.name + " requires a higher permission level to set");
+							say(TextFormatting.RED + field.name + " requires a higher permission level to set to default");
 					break;
 				default:
 					ConfigModEX.warn("Client Command Handler recieved an invalid packet with index of " + index + ". Skipping...");

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.apache.commons.lang3.text.WordUtils;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -300,9 +302,9 @@ public class ConfigManager
 	}
 	
 
-	public static String formatCommentForGui(String comment, String defaultValue, int type, double min, double max)
+	public static String formatCommentForGui(String comment, String defaultValue, int type, boolean showMin, boolean showMax, double min, double max)
 	{
 		if (comment == null) return null;
-		return (comment.isEmpty() ? "" : comment + Configuration.NEW_LINE) + (type < 6 ? TextFormatting.YELLOW + "Minimum: " + (type < 4 ? String.format("%d", (long) min) : min) + ",  Maximum: " + (type < 4 ? String.format("%d", (long) max) : max) + ""  + Configuration.NEW_LINE : "") + TextFormatting.GOLD + "Default: " + defaultValue;
+		return (comment.isEmpty() ? "" : WordUtils.wrap(comment, 40) + Configuration.NEW_LINE) + (type < 6 ? (showMin ? TextFormatting.YELLOW + "Minimum: " + (type < 4 ? String.format("%d", (long) min) : min) + (showMax ? ",  " : Configuration.NEW_LINE) : "") + (showMax ? TextFormatting.YELLOW + "Maximum: " + (type < 4 ? String.format("%d", (long) max) : max) + ""  + Configuration.NEW_LINE : "") : "") + TextFormatting.GOLD + "Default: " + defaultValue;
 	}
 }

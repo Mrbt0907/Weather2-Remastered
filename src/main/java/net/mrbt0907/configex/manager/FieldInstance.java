@@ -33,6 +33,8 @@ public class FieldInstance
 	public final byte type;
 	public final double min;
 	public final double max;
+	public final boolean showMin;
+	public final boolean showMax;
 	public final Object defaultValue;
 	private Object cachedValue;
 	private Object clientValue;
@@ -65,30 +67,42 @@ public class FieldInstance
 				IntegerRange rangeI = field.getAnnotation(IntegerRange.class);
 				min = rangeI != null ? rangeI.min() : Integer.MIN_VALUE;
 				max = rangeI != null ? rangeI.max() : Integer.MAX_VALUE;
+				showMin = min != Integer.MIN_VALUE;
+				showMax = max != Integer.MAX_VALUE;
 				break;
 			case 2:
 				ShortRange rangeS = field.getAnnotation(ShortRange.class);
 				min = rangeS != null ? rangeS.min() : Short.MIN_VALUE;
 				max = rangeS != null ? rangeS.max() : Short.MAX_VALUE;
+				showMin = min != Short.MIN_VALUE;
+				showMax = max != Short.MAX_VALUE;
 				break;
 			case 3:
 				LongRange rangeL = field.getAnnotation(LongRange.class);
 				min = rangeL != null ? rangeL.min() : Long.MIN_VALUE;
 				max = rangeL != null ? rangeL.max() : Long.MAX_VALUE;
+				showMin = min != Long.MIN_VALUE;
+				showMax = max != Long.MAX_VALUE;
 				break;
 			case 4:
 				FloatRange rangeF = field.getAnnotation(FloatRange.class);
 				min = rangeF != null ? rangeF.min() : -Float.MAX_VALUE;
 				max = rangeF != null ? rangeF.max() : Float.MAX_VALUE;
+				showMin = min != -Float.MAX_VALUE;
+				showMax = max != Float.MAX_VALUE;
 				break;
 			case 5:
 				DoubleRange rangeD = field.getAnnotation(DoubleRange.class);
 				min = rangeD != null ? rangeD.min() : -Double.MAX_VALUE;
 				max = rangeD != null ? rangeD.max() : Double.MAX_VALUE;
+				showMin = min != -Double.MAX_VALUE;
+				showMax = max != Double.MAX_VALUE;
 				break;
 			default:
 				min = 0.0D;
 				max = 0.0D;
+				showMin = false;
+				showMax = false;
 		}
 		
 		if (min > max)

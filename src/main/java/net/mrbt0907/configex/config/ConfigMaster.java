@@ -14,14 +14,17 @@ public class ConfigMaster implements IConfigEX
 	
 	@Name("Enable Debug Mode")
 	@Comment("Enables the displaying of various debugging information in the console")
+	@Hidden
 	public static boolean debug_mode = false;
 	
 	@Name("Test 1")
 	@Comment("Integer Test")
 	@Permission(0)
+	@IntegerRange(max=69)
 	public static int test_1 = 1;
 	@Name("Test 2")
 	@Permission(0)
+	@ShortRange(min=50)
 	public static short test_2 = 2;
 	@Name("Test 3")
 	@Comment("Test variable")

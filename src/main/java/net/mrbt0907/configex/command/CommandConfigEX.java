@@ -133,14 +133,14 @@ public class CommandConfigEX extends CommandBase
 				if (field == null)
 					say(sender, TextFormatting.RED + registryName + " does not exist");
 				else
-					if (field.hasPermission(permissionLevel))
+					if (field.hasPermission(permissionLevel) || !field.enforce && !field.hide)
 					{
 						field.setToDefault();
 						ConfigManager.sync(field.config.getName(), field.registryName);
 						say(sender, field.name + " was set to default successfully! Value: " + field.getRealCachedValue());
 					}
 					else
-						say(sender, TextFormatting.RED + field.name + " requires a higher permission level to set");
+						say(sender, TextFormatting.RED + field.name + " requires a higher permission level to set to default");
 			}
 			else
 			{
@@ -169,7 +169,7 @@ public class CommandConfigEX extends CommandBase
 				if (field == null)
 					say(sender, TextFormatting.RED + registryName + " does not exist");
 				else
-					if (field.hasPermission(permissionLevel))
+					if (field.hasPermission(permissionLevel) || !field.enforce && !field.hide)
 						if (field.setServerValue(value))
 						{
 							ConfigManager.sync(field.config.getName(), field.registryName);
@@ -206,7 +206,7 @@ public class CommandConfigEX extends CommandBase
 				if (field == null)
 					say(sender,TextFormatting.RED + registryName + " does not exist");
 				else
-					if (field.hasPermission(permissionLevel))
+					if (field.hasPermission(permissionLevel) || !field.enforce && !field.hide)
 						say(sender, "Field " + field.name + "\n-----  -----\nFrom: " + field.config.getName() + "\nDefault Value: " + field.defaultValue + "\nCurrent Value: " + String.valueOf(field.getRealCachedValue()));
 					else
 						say(sender, TextFormatting.RED + field.name + " requires a higher permission level to access");

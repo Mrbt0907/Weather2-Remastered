@@ -108,7 +108,7 @@ public abstract class GuiScrollPanel
 
 	public void actionPerformed(GuiButton button)
 	{
-		if (button.enabled)
+		if (button.enabled && getScrollHeight() - ySize > 0)
 			if (button.id == scrollUpID)
 				adjustScrollPos(-slotHeight / getSize() * 0.75F);
 			else if (button.id == scrollDownID)
@@ -138,7 +138,7 @@ public abstract class GuiScrollPanel
 		}
 		else
 		{
-			while (!mc.gameSettings.touchscreen && Mouse.next())
+			while (!mc.gameSettings.touchscreen && getScrollHeight() - ySize > 0 && Mouse.next())
 			{
 				int l2 = Mouse.getEventDWheel();
 				if (l2 > 0)

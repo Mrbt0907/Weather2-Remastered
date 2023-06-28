@@ -21,6 +21,8 @@ public class GuiConfigEntry
 	public final double min;
 	public final double max;
 	public final boolean hasPermission;
+	public final boolean showMin;
+	public final boolean showMax;
 	
 	public GuiConfigEntry(FieldInstance field, boolean serverValue)
 	{
@@ -30,13 +32,15 @@ public class GuiConfigEntry
 		comment = field.comment;
 		value = String.valueOf(serverValue ? field.getServerValue() : field.getRealClientValue());
 		defaultValue = String.valueOf(field.defaultValue);
-		textField = new GuiBetterTextField(MC.fontRenderer, 0, 0, 130, 16, value);
+		textField = new GuiBetterTextField(MC.fontRenderer, 0, 0, 130, 16, value, defaultValue);
 		textField.isEnabled = field.hasPermission();
 		hasPermission = field.hasPermission();
 		textField.setVisible((!(!hasPermission && field.hide) || hasPermission) && (field.enforce && (GuiConfigEditor.serverMode || ConfigManager.isSinglePlayer()) || !field.enforce));
 		type = field.type;
 		min = field.min;
 		max = field.max;
+		showMin = field.showMin;
+		showMax = field.showMax;
 	}
 	
 	@SideOnly(Side.CLIENT)

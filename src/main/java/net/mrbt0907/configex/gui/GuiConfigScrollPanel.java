@@ -18,6 +18,7 @@ import net.mrbt0907.configex.ConfigManager;
 import net.mrbt0907.configex.ConfigModEX;
 import net.mrbt0907.configex.manager.ConfigInstance;
 
+import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -168,7 +169,7 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			int l2 = 0;
 			int k2 = hover_y_min - 10;
-			String[] lines = (entry.name + Configuration.NEW_LINE + Configuration.NEW_LINE + ConfigManager.formatCommentForGui(entry.comment, entry.defaultValue, entry.type, entry.min, entry.max) + (entry.hasPermission ? "" : Configuration.NEW_LINE + TextFormatting.RED + "" + TextFormatting.BOLD + "Higher permission level required")).replaceAll(Configuration.NEW_LINE, "\n").split("\\n");
+			String[] lines = (entry.name + Configuration.NEW_LINE + Configuration.NEW_LINE + ConfigManager.formatCommentForGui(entry.comment, entry.defaultValue, entry.type, entry.showMin, entry.showMax, entry.min, entry.max) + (entry.hasPermission ? "" : Configuration.NEW_LINE + TextFormatting.RED + "" + TextFormatting.BOLD + "Higher permission level required") + Configuration.NEW_LINE + Configuration.NEW_LINE + TextFormatting.GRAY + "" + TextFormatting.ITALIC + "On Text Box" + Configuration.NEW_LINE + TextFormatting.GRAY + "" + TextFormatting.ITALIC + (entry.type == 7 ? "Shift & left click: Switch to true/false" : "Shift & Left Click: Reset to original value") + Configuration.NEW_LINE + TextFormatting.GRAY + "" + TextFormatting.ITALIC + "Shift & Right Click: Reset to default value").replaceAll(Configuration.NEW_LINE, "\n").split("\\n");
 			for (int i = 0; i < lines.length; i++)
 				if (mc.fontRenderer.getStringWidth(lines[i]) > l2)
 					l2 = mc.fontRenderer.getStringWidth(lines[i]);
@@ -204,19 +205,22 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 		}
 		else
 		{
-			int height = getScrollHeight();
-			if (i == Keyboard.KEY_UP)
-				adjustScrollPos(-height / getSize());
-			else if (i == Keyboard.KEY_DOWN)
-				adjustScrollPos(height / getSize());
-			else if (i == Keyboard.KEY_NEXT)
-				adjustScrollPos(height / getSize() + slotHeight * 8);
-			else if (i == Keyboard.KEY_PRIOR)
-				adjustScrollPos(-height / getSize() - slotHeight * 8);
-			else if (i == Keyboard.KEY_HOME)
-				adjustScrollPos(-(getScrollHeight() - ySize));
-			else if (i == Keyboard.KEY_END)
-				adjustScrollPos(getScrollHeight() - ySize);
+			if (getScrollHeight() - ySize > 0)
+			{
+				int height = getScrollHeight();
+				if (i == Keyboard.KEY_UP)
+					adjustScrollPos(-height / getSize());
+				else if (i == Keyboard.KEY_DOWN)
+					adjustScrollPos(height / getSize());
+				else if (i == Keyboard.KEY_NEXT)
+					adjustScrollPos(height / getSize() + slotHeight * 8);
+				else if (i == Keyboard.KEY_PRIOR)
+					adjustScrollPos(-height / getSize() - slotHeight * 8);
+				else if (i == Keyboard.KEY_HOME)
+					adjustScrollPos(-(getScrollHeight() - ySize));
+				else if (i == Keyboard.KEY_END)
+					adjustScrollPos(getScrollHeight() - ySize);
+			}
 		}
 		
 		return true;

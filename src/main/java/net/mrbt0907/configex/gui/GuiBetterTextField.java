@@ -12,6 +12,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 @SideOnly(Side.CLIENT)
 public class GuiBetterTextField extends Gui
@@ -28,6 +29,7 @@ public class GuiBetterTextField extends Gui
 	public int height;
 
 	/** Have the current text beign edited on the textbox. */
+	public final String defaultText;
 	public final String originalText;
 	public String text = "";
 	public int maxStringLength = 10000;
@@ -58,13 +60,13 @@ public class GuiBetterTextField extends Gui
 	/** other selection position, maybe the same as the cursor */
 	public int selectionEnd = 0;
 	public int enabledColor = 14737632;
-	public int disabledColor = 0x900505;
+	public int disabledColor = 0xBB1010;
 
 	/** True if this textbox is visible */
 	public boolean visible = true;
 	public boolean hasChanged;
 	
-	public GuiBetterTextField(FontRenderer par1FontRenderer, int par2, int par3, int par4, int par5, String text)
+	public GuiBetterTextField(FontRenderer par1FontRenderer, int par2, int par3, int par4, int par5, String text, String defaultText)
 	{
 		fontRenderer = par1FontRenderer;
 		xPos = par2;
@@ -72,6 +74,7 @@ public class GuiBetterTextField extends Gui
 		width = par4;
 		height = par5;
 		this.text = originalText = text;
+		this.defaultText = defaultText;
 	}
 
 	public void updateChange()
@@ -384,7 +387,7 @@ public class GuiBetterTextField extends Gui
 		if (canLoseFocus)
 			setFocused(isEnabled && flag);
 
-		if (isFocused && eventButton == 0)
+		if (isFocused && eventButton == 0 || eventButton == 1)
 		{
 			int l = par1 - xPos;
 
@@ -396,10 +399,16 @@ public class GuiBetterTextField extends Gui
 
 			if (flag && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)))
 			{
-				if (text.equals("true"))
-					text = "false";
-				else if (text.equals("false"))
-					text = "true";
+				if (eventButton == 0)
+					if (text.equals("true"))
+						text = "false";
+					else if (text.equals("false"))
+						text = "true";
+					else
+						text = originalText;
+				else if (eventButton == 1)
+					text = defaultText;
+				
 				setCursorPosition(0);
 				updateChange();
 			}
@@ -416,11 +425,11 @@ public class GuiBetterTextField extends Gui
 			updateCursorCounter();
 			if (getEnableBackgroundDrawing())
 			{
-				drawRect(xPos - 1, yPos - 1, xPos + width + 1, yPos + height + 1, isEnabled ? isFocused ? hasChanged ? 0xFF105510 : -6250336 : hasChanged ? 0x55105510 : 0x55505050 : 0x55AA1010);
-				drawRect(xPos, yPos, xPos + width, yPos + height, isEnabled ? isFocused ? -16777216 : 0x55101010 : 0x55100000);
+				drawRect(xPos - 1, yPos - 1, xPos + width + 1, yPos + height + 1, isEnabled ? isFocused ? hasChanged ? 0xFFAACCFF : 0xFF88AADD : hasChanged ? 0xFF75AA75 : 0xFFAAAAAA : 0xFFAA6060);
+				drawRect(xPos, yPos, xPos + width, yPos + height, 0x70000000);
 			}
 
-			int i = isEnabled ? enabledColor : disabledColor;
+			int i = isEnabled ? isFocused ? hasChanged ? 0xDDDDFF : enabledColor : hasChanged ? 0x90FF90 : enabledColor : disabledColor;
 			int j = cursorPosition - lineScrollOffset;
 			int k = selectionEnd - lineScrollOffset;
 			String s = fontRenderer.trimStringToWidth(text.substring(lineScrollOffset), getWidth());
