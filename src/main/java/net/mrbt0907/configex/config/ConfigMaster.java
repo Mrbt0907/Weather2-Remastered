@@ -43,8 +43,8 @@ public class ConfigMaster implements IConfigEX
 	public static boolean test_7 = false;
 	@Comment("Test variable")
 	public static boolean test_8 = false;
-	@Comment("Test variable")
-	@Hidden
+	//@Comment("Test variable")
+	/*@Hidden
 	public static boolean test_9 = false;
 	@Comment("Test variable")
 	@Hidden
@@ -55,7 +55,7 @@ public class ConfigMaster implements IConfigEX
 	@Comment("Test variable")
 	@Enforce
 	@Hidden
-	public static boolean test_12 = false;
+	public static boolean test_12 = false;*/
 	
 	@Override
 	public String getName()

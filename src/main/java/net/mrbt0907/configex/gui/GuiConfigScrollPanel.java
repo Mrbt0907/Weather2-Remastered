@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.relauncher.Side;
@@ -29,8 +30,8 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 	public final List<GuiConfigEntry> options;
 	private int mouseX;
 	private int mouseY;
-	private int selected = -1;
-
+	protected int mouseYStart = -1;
+	
 	public GuiConfigScrollPanel(GuiConfigEditor controls, Minecraft mc, int scrollBarX, int width, int height, int scrollBarSize, int slotHeight)
 	{
 		super(mc, controls.xStart, controls.yStart, scrollBarX, width, height, scrollBarSize, slotHeight, 7, 8);
@@ -40,38 +41,36 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 		populateData();
 	}
 
-	public void updatePosition()
-	{
-		
-	}
-	
 	@Override
 	protected void onSlotClicked(int i, boolean flag)
 	{
 		if (!flag)
 		{
-			selected = super.selected;
+			selected = i;
 			KeyBinding.resetKeyBindingArrayAndHash();
 		}
 	}
 	
-	protected void mouseClicked(int par1, int par2, int eventButton)
+	protected void mouseClicked(int mouseX, int mouseY, int eventButton)
 	{
 		for (GuiConfigEntry entry : options)
-			entry.textField.mouseClicked(par1, par2, eventButton);
+			entry.textField.mouseClicked(mouseX, mouseY, eventButton);
 	}
 
 	@Override
 	protected boolean isSelected(int i) {return false;}
 
 	@Override
-	protected void drawBackground(Tessellator tess) {}
+	protected void drawBackground(Tessellator tess, int mouseX, int mouseY, float partialTicks)
+	{
+		config.drawBackgroundLayer();
+	}
 	
 	@Override
-	protected void drawForeground(Tessellator tess)
+	protected void drawForeground(Tessellator tess, int mouseX, int mouseY, float partialTicks)
 	{
 		config.drawForegroundLayer();
-		mc.fontRenderer.drawString("Scroll: " + scrollPos + ", Slot: " + (int)(scrollPos / this.slotHeight) + ", Selected: " + selected, xStart - 90, yStart- 50, 0xFFFFFFFF);
+		config.drawButtons(mouseX, mouseY, partialTicks);
 	}
 
 	@Override
@@ -90,14 +89,37 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 			}
 		
 		super.drawScreen(mX, mY, f);
-		selected = super.selected;
+		if (Mouse.isButtonDown(0))
+		{
+			if (mouseX > xScrollBar && mouseX < xScrollBar + scrollBarSize && mouseY > yStart && mouseY < yStart + ySize)
+			{
+				int yScrollMax = ySize - scrollBarSize;
+				int yScrollExtra = getScrollHeight() - ySize;
+				if (yScrollExtra > 0)
+				{
+					float percExtra = Math.min((float)yScrollExtra / (float)yScrollMax, 1.0F);
+					int yStartMax = (int)(scrollBarSize * 0.5F + (yScrollMax * (1.0F - percExtra) * 0.5F));
+					int yEndMax = (int)(yScrollMax * Math.min(percExtra, 1.0F));
+					setScrollPosPerc(MathHelper.clamp((float) ((mouseY - yStart) - yStartMax) / (float) yEndMax, 0.0F, 1.0F));
+				}
+			}
+		}
 	}
 
 	@Override
-	protected void drawScrollBar(Tessellator tessellator)
+	protected void drawScrollBar(Tessellator tessellator, int mouseX, int mouseY, float partialTicks)
 	{
-		drawGradientRect(xScrollBar, yStart + ySize - (int)(scrollPos), xScrollBar + scrollBarSize, yStart + ySize, 0xAA555555, 0xAA555555);
-		drawGradientRect(xScrollBar, yStart, xScrollBar + scrollBarSize, yStart + ySize, 0xAA555555, 0xAA555555);
+		int yScrollMax = ySize - scrollBarSize;
+		int yScrollExtra = getScrollHeight() - ySize;
+		if (yScrollExtra > 0)
+		{
+			float percScrolled = scrollPos / yScrollExtra;
+			float percExtra = MathHelper.clamp((float)yScrollExtra / (float)yScrollMax, 0.0F, 1.0F);
+			int yStartMax = (int)(yScrollMax * percExtra * percScrolled);
+			int yEndMax = (int)(yScrollMax * percExtra * (1.0F - percScrolled));
+			drawGradientRect(xScrollBar, yStart + yStartMax, xScrollBar + scrollBarSize, yStart + scrollBarSize + yScrollMax - yEndMax, 0x55000000, 0x55000000);
+			drawGradientRect(xScrollBar, yStart, xScrollBar + scrollBarSize, yStart + ySize, 0x55000000, 0x55000000);
+		}
 	}
 
 	@Override
@@ -109,9 +131,11 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		
 		GuiConfigEntry entry = options.get(slot);
-
-		int stringWidth = mc.fontRenderer.getStringWidth(entry.name);
-		config.drawString(mc.fontRenderer, entry.name, xPosition - stringWidth + 15, yPosition + 3, 0xFFFFFFFF);
+		String name = entry.name;
+		if (mc.fontRenderer.getStringWidth(name) > xSize + 18)
+			name = mc.fontRenderer.trimStringToWidth(name, xSize + 18) + "...";
+		int stringWidth = mc.fontRenderer.getStringWidth(name);
+		config.drawString(mc.fontRenderer, name, xPosition - stringWidth + 15, yPosition + 3, 0xFFFFFFFF);
 		
 		entry.textField.xPos = xPosition + 20;
 		entry.textField.yPos = yPosition;
@@ -126,7 +150,11 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 		if (getSize() == 0) return;
 		xPosition -= 20;
 		GuiConfigEntry entry = options.get(slot);
-		int stringWidth = mc.fontRenderer.getStringWidth(entry.name);
+
+		String name = entry.name;
+		if (mc.fontRenderer.getStringWidth(name) > xSize + 18)
+			name = mc.fontRenderer.trimStringToWidth(name, xSize + 18) + "...";
+		int stringWidth = mc.fontRenderer.getStringWidth(name);
 		int hover_x_min = xPosition - stringWidth + 15;
 		int hover_y_min = yPosition;
 		int hover_x_max = xPosition + 15;
@@ -140,12 +168,10 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			int l2 = 0;
 			int k2 = hover_y_min - 10;
-			String[] lines = (ConfigManager.formatCommentForGui(entry.comment, entry.defaultValue, entry.type, entry.min, entry.max) + (entry.hasPermission ? "" : Configuration.NEW_LINE + TextFormatting.RED + "" + TextFormatting.BOLD + "Higher permission level required")).replaceAll(Configuration.NEW_LINE, "\n").split("\\n");
+			String[] lines = (entry.name + Configuration.NEW_LINE + Configuration.NEW_LINE + ConfigManager.formatCommentForGui(entry.comment, entry.defaultValue, entry.type, entry.min, entry.max) + (entry.hasPermission ? "" : Configuration.NEW_LINE + TextFormatting.RED + "" + TextFormatting.BOLD + "Higher permission level required")).replaceAll(Configuration.NEW_LINE, "\n").split("\\n");
 			for (int i = 0; i < lines.length; i++)
-			{
 				if (mc.fontRenderer.getStringWidth(lines[i]) > l2)
 					l2 = mc.fontRenderer.getStringWidth(lines[i]);
-			}
 			drawGradientRect(mouseX - 3, k2 - 3, mouseX + l2 + 3, k2 + 11 + (10 * (lines.length - 1)), 0xc0000000, 0xc0000000);
 			for (int i = 0; i < lines.length; i++)
 				mc.fontRenderer.drawStringWithShadow(lines[i], mouseX, k2 + (i * (slotHeight / 2)), -1);
@@ -164,13 +190,13 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 				entry.textField.updateChange();
 				if (i == Keyboard.KEY_RETURN)
 				{
-					selected = super.selected = -1;
+					selected = -1;
 					entry.textField.isFocused = false;
 					return true;
 				}
 				else if (i == Keyboard.KEY_ESCAPE)
 				{
-					selected = super.selected = -1;
+					selected = -1;
 					entry.textField.isFocused = false;
 				}
 			}
@@ -180,17 +206,17 @@ public class GuiConfigScrollPanel extends GuiScrollPanel
 		{
 			int height = getScrollHeight();
 			if (i == Keyboard.KEY_UP)
-				setScrollPos(-height / getSize());
+				adjustScrollPos(-height / getSize());
 			else if (i == Keyboard.KEY_DOWN)
-				setScrollPos(height / getSize());
+				adjustScrollPos(height / getSize());
 			else if (i == Keyboard.KEY_NEXT)
-				setScrollPos(height / getSize() + slotHeight * 8);
+				adjustScrollPos(height / getSize() + slotHeight * 8);
 			else if (i == Keyboard.KEY_PRIOR)
-				setScrollPos(-height / getSize() - slotHeight * 8);
+				adjustScrollPos(-height / getSize() - slotHeight * 8);
 			else if (i == Keyboard.KEY_HOME)
-				setScrollPos(-(getScrollHeight() - ySize));
+				adjustScrollPos(-(getScrollHeight() - ySize));
 			else if (i == Keyboard.KEY_END)
-				setScrollPos(getScrollHeight() - ySize);
+				adjustScrollPos(getScrollHeight() - ySize);
 		}
 		
 		return true;

@@ -61,16 +61,14 @@ public class GuiConfigEditor extends GuiScreen
 	}
 
 	@Override
-	public void drawScreen(int var1, int var2, float var3)
+	public void drawScreen(int mouseX, int mouseY, float partialTicks)
 	{
-		try
-		{
-			drawBackgroundLayer();
-			scrollPane.drawScreen(var1, var2, var3);
-		}
-		catch (Exception ex) {}
-		
-		super.drawScreen(var1, var2, var3);
+		scrollPane.drawScreen(mouseX, mouseY, partialTicks);
+	}
+	
+	public void drawButtons(int mouseX, int mouseY, float partialTicks)
+	{
+		super.drawScreen(mouseX, mouseY, partialTicks);
 	}
 	
 	protected void drawForegroundLayer()
@@ -133,23 +131,16 @@ public class GuiConfigEditor extends GuiScreen
 	@Override
 	protected void keyTyped(char par1, int par2)
 	{
-		try
+		if (scrollPane.keyTyped(par1, par2))
 		{
-			if (scrollPane.keyTyped(par1, par2))
+			if (par2 == 1)
 			{
-				if (par2 == 1)
-				{
-					if (mc.player != null)
-						mc.player.sendMessage(new TextComponentTranslation("config.gui." + (changed ? "save" : "nosave")));
-					this.mc.displayGuiScreen(null);
-					if (mc.currentScreen == null)
-						mc.setIngameFocus();
-				}
+				if (mc.player != null)
+					mc.player.sendMessage(new TextComponentTranslation("config.gui." + (changed ? "save" : "nosave")));
+				this.mc.displayGuiScreen(null);
+				if (mc.currentScreen == null)
+					mc.setIngameFocus();
 			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
 		}
 	}
 	

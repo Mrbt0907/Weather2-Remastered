@@ -9,7 +9,6 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.mrbt0907.configex.api.IConfigEX;
 import net.mrbt0907.configex.command.CommandConfigEX;
 import net.mrbt0907.configex.config.ConfigMaster;
-import net.mrbt0907.configex.config.ConfigStorm;
 import net.mrbt0907.configex.event.EventHandler;
 import net.mrbt0907.configex.network.NetworkHandler;
 
@@ -31,7 +30,6 @@ public class ConfigModEX
 	{
 		log = event.getModLog();
 		register(new ConfigMaster());
-		register(new ConfigStorm());
 		MinecraftForge.EVENT_BUS.register(EventHandler.class);
 		NetworkHandler.preInit();
 	}

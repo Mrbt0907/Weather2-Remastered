@@ -70,11 +70,11 @@ public abstract class GuiScrollPanel
 	/**Return true if the slot should be selected*/
 	protected abstract boolean isSelected(int slot);
 	/**Draws a background behind all slots*/
-	protected abstract void drawBackground(Tessellator tessellator);
+	protected abstract void drawBackground(Tessellator tessellator, int mouseX, int mouseY, float partialTicks);
 	/**Draws a scroll bar behind the foreground*/
-	protected abstract void drawScrollBar(Tessellator tessellator);
+	protected abstract void drawScrollBar(Tessellator tessellator, int mouseX, int mouseY, float partialTicks);
 	/**Draws a foreground in front of all slots*/
-	protected abstract void drawForeground(Tessellator tessellator);
+	protected abstract void drawForeground(Tessellator tessellator, int mouseX, int mouseY, float partialTicks);
 	/**Draws one of the slots within the panel*/
 	protected abstract void drawSlotPre(Tessellator tessellatorint, int xPos, int yPos, int slot);
 	/**Draws one of the slots within the panel in front of the foreground*/
@@ -86,19 +86,33 @@ public abstract class GuiScrollPanel
 	{
 		return getSize() * slotHeight;
 	}
+	
 	/**Moves the scroll position by the adjustment value; This is in actual height, not percentage*/
-	protected void setScrollPos(float adjustment)
+	protected void setScrollPos(float scrollPos)
 	{
-		scrollPos = MathHelper.clamp(scrollPos + adjustment, 0.0F, getScrollHeight() - ySize);
+		this.scrollPos = MathHelper.clamp(scrollPos, 0.0F, getScrollHeight() - ySize);
+	}
+	
+	/**Moves the scroll position by the adjustment value; This is in actual height, not percentage*/
+	protected void adjustScrollPos(float adjustment)
+	{
+		setScrollPos(scrollPos + adjustment);
+	}
+	
+
+	/**Moves the scroll position by the adjustment value; This is in actual height, not percentage*/
+	protected void setScrollPosPerc(float perc)
+	{
+		setScrollPos((getScrollHeight() - ySize) * perc);
 	}
 
 	public void actionPerformed(GuiButton button)
 	{
 		if (button.enabled)
 			if (button.id == scrollUpID)
-				setScrollPos(-slotHeight / getSize() * 0.75F);
+				adjustScrollPos(-slotHeight / getSize() * 0.75F);
 			else if (button.id == scrollDownID)
-				setScrollPos(slotHeight / getSize() * 0.75F);
+				adjustScrollPos(slotHeight / getSize() * 0.75F);
 	}
 
 	/**Prepares each slot position and renders each slot and renders the scroll bar
@@ -118,14 +132,9 @@ public abstract class GuiScrollPanel
 			int realY = yStart + ySize;
 			slot = (int)((scrollPos + (mouseY - yStart)) / this.slotHeight);
 			if (mouseX > xStart && mouseX < xStart + xSize && mouseY > yStart && mouseY < realY)
-			{
-				selected = slot;
 				onSlotClicked(slot, false);
-			}
 			else
-			{
 				selected = -1;
-			}
 		}
 		else
 		{
@@ -133,9 +142,9 @@ public abstract class GuiScrollPanel
 			{
 				int l2 = Mouse.getEventDWheel();
 				if (l2 > 0)
-					setScrollPos(-height / getSize() * 0.75F);
+					adjustScrollPos(-height / getSize() * 0.75F);
 				else if (l2 < 0)
-					setScrollPos(height / getSize() * 0.75F);
+					adjustScrollPos(height / getSize() * 0.75F);
 			}
 		}
 
@@ -145,21 +154,15 @@ public abstract class GuiScrollPanel
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glDisable(GL11.GL_FOG);
 		Tessellator tessellator = Tessellator.getInstance();
-		drawBackground(tessellator);
-		//
+		drawBackground(tessellator, mouseX, mouseY, partialTicks);
 		for (int i = slot; i < size && slotHeight - scrollPos < ySize; i++, slotHeight += this.slotHeight)
-		{
 			drawSlotPre(tessellator, xStart, (int)(yStart + slotHeight - scrollPos), i);
-		}
-		drawScrollBar(tessellator);
-		drawForeground(tessellator);
+		drawScrollBar(tessellator, mouseX, mouseY, partialTicks);
+		drawForeground(tessellator, mouseX, mouseY, partialTicks);
 
 		slotHeight = slot * this.slotHeight;
-		for (int i = slot; i < size; i++, slotHeight += this.slotHeight)
-		{
+		for (int i = slot; i < size && slotHeight - scrollPos < ySize; i++, slotHeight += this.slotHeight)
 			drawSlotPost(tessellator, xStart, (int)(yStart + slotHeight - scrollPos), i);
-		}
-		//
 		GlStateManager.popMatrix();
 		/*
 		int k = getSize();
