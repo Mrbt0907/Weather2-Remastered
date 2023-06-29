@@ -59,9 +59,18 @@ public class NetworkHandler
 						ConfigModEX.warn("Network Handler recieved a config packet, but cannot be used. Skipping...");
 						return;
 					}
-					ConfigModEX.debug("Sending player " + player.getUniqueID());
+					
 					nbt.setUniqueId("player", player.getUniqueID());
 					ConfigManager.readNBT(nbt);
+					break;
+				case 1:
+					if (ConfigManager.isRemote)
+					{
+						ConfigModEX.warn("Network Handler recieved a resync config packet, but cannot be used. Skipping...");
+						return;
+					}
+					ConfigModEX.debug("Sending config data to " + player.getName());
+					sendClientPacket(0, ConfigManager.writeNBT(new NBTTagCompound()), player);
 					break;
 				default:
 					ConfigModEX.warn("Network Handler recieved an invalid packet with index of " + index + ". Skipping...");

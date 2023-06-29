@@ -7,3 +7,5 @@ config.gui.previous=Last
 config.gui.exit=Save & Exit
 config.gui.save=Config changes have been saved!
 config.gui.nosave=Config changes have been aborted.
+config.gui.entries.empty=There are no options available
+config.gui.entries.permission=You do not have permission to see these options

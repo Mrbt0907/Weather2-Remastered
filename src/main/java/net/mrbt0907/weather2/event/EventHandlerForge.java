@@ -23,7 +23,6 @@ import net.mrbt0907.weather2.api.WeatherUtilData;
 import net.mrbt0907.weather2.api.event.EventRegisterGrabLists;
 import net.mrbt0907.weather2.api.event.EventRegisterParticleRenderer;
 import net.mrbt0907.weather2.client.NewSceneEnhancer;
-import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.foliage.FoliageEnhancerShader;
 import net.mrbt0907.weather2.client.weather.tornado.LegacyStormRenderer;
@@ -292,7 +291,6 @@ public class EventHandlerForge
 
 		ClientTickHandler.checkClientWeather();
 		ClientTickHandler.weatherManager.tickRender(event.getPartialTicks());
-		SceneEnhancer.renderWorldLast(event);
 
 		FoliageRenderer.radialRange = ConfigFoliage.shader_range;
     }

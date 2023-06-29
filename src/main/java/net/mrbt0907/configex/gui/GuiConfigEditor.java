@@ -82,6 +82,12 @@ public class GuiConfigEditor extends GuiScreen
 		drawString(fontRenderer, subtitle, xStart + 160 - fontRenderer.getStringWidth(subtitle) / 2, yStart + 23, 16777215);
 		drawString(fontRenderer, title, xStart + 160 - fontRenderer.getStringWidth(title) / 2, yStart + 10, 16777215);
 		drawString(fontRenderer, (curIndex + 1) + "/" + scrollPane.configs.size(), xStart + 40, yStart + 226, 16777215);
+		
+		if (scrollPane.getSize() == 0)
+		{
+			String noEntries = TextFormatting.GRAY + format("entries." + (scrollPane.configs.get(curIndex).size() == 0 ? "empty" : "permission"));
+			drawString(fontRenderer, noEntries, xStart + 160 - fontRenderer.getStringWidth(noEntries) / 2, yStart + 120, 16777215);
+		}
 	}
 
 	protected void drawBackgroundLayer()

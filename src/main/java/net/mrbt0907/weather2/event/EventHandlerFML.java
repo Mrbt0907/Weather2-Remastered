@@ -1,6 +1,5 @@
 package net.mrbt0907.weather2.event;
 
-import CoroUtil.forge.CULog;
 import extendedrenderer.EventHandler;
 import modconfig.gui.GuiConfigEditor;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -13,6 +12,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.*;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.ClientProxy;
+import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.client.foliage.FoliageEnhancerShader;
 import net.mrbt0907.weather2.config.ConfigFoliage;
 import net.mrbt0907.weather2.config.ConfigMisc;
@@ -77,7 +77,7 @@ public class EventHandlerFML {
 				boolean hackyLiveReplace = false;
 
 				if (hackyLiveReplace && EventHandler.flagFoliageUpdate) {
-					CULog.dbg("CoroUtil detected a need to reload resource packs, initiating");
+					Weather2.debug("CoroUtil detected a need to reload resource packs, initiating");
 					EventHandler.flagFoliageUpdate = false;
 					FoliageEnhancerShader.liveReloadModels();
 				}

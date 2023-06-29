@@ -17,7 +17,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
-import net.mrbt0907.weather2.client.SceneEnhancer;
+import net.mrbt0907.weather2.client.NewSceneEnhancer;
 import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.config.ConfigVolume;
@@ -294,7 +294,7 @@ public class WeatherManagerClient extends WeatherManager
 		final EntityPlayerSP player = Minecraft.getMinecraft().player;
 		if (player == null) return;
 		for (WeatherObject system : this.systems.values())
-			if (system.pos.distanceSq(player.posX, system.pos.posY, player.posZ) < SceneEnhancer.fogDistance)
+			if (system.pos.distanceSq(player.posX, system.pos.posY, player.posZ) < NewSceneEnhancer.instance().renderDistance)
 				systems++;
 		
 		if (systems == 0) systems = 1;
@@ -313,9 +313,9 @@ public class WeatherManagerClient extends WeatherManager
 	}
 	
 	@Override
-	public void reset()
+	public void reset(boolean fullReset)
 	{
-		super.reset();
+		super.reset(fullReset);
 		effectedParticles.clear();
 		closestStormCached = null;
 	}

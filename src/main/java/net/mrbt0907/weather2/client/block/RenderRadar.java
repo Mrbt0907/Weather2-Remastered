@@ -17,9 +17,9 @@ import net.mrbt0907.weather2.api.weather.IWeatherRain;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.block.TileRadar;
 import net.mrbt0907.weather2.client.NewSceneEnhancer;
-import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
+import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.registry.ParticleRegistry;
 import net.mrbt0907.weather2.util.Maths;
@@ -61,14 +61,14 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 		float playerViewY = Minecraft.getMinecraft().getRenderManager().playerViewY;
 		renderLivingLabel("\u00A7" + '6' + "|", x, y + 1.2F, z, 1, 10, 10, playerViewY, 1.0F);
 
-		if (ClientTickHandler.clientConfigData.debug_mode_radar)
+		if (ConfigMisc.debug_mode_radar)
 		{
 			EntityPlayer player = Minecraft.getMinecraft().player;
-			if (player != null)
+			if (player != null && ClientTickHandler.weatherManager != null)
 			{
 				NewSceneEnhancer scene = NewSceneEnhancer.instance();
 				WeatherManagerClient wm = ClientTickHandler.weatherManager;
-				float precipStr = Math.abs(SceneEnhancer.curPrecipStr);
+				float precipStr = Math.abs(scene.rain);
 				String rainThunder = Math.round(player.world.rainingStrength * 100.0F) + "% / " + Math.round(player.world.thunderingStrength * 100.0F) + "%";
 				renderLivingLabel("\u00A7" + " Fog Strength: " + Math.round(scene.fogMult * 300.0F) + "%", x, y + 1.8F, z, 1, 10, 10, playerViewY, 1.0F);
 				renderLivingLabel("\u00A7" + " Vanilla Weather Time: " + wm.weatherRainTime, x, y + 1.9F, z, 1, 10, 10, playerViewY, 1.0F);
@@ -166,7 +166,7 @@ public class RenderRadar extends TileEntitySpecialRenderer<TileEntity>
 				if (so.isHailing)
 					renderIconNew(x, y + 1.4F, z, 16, 16, 0.0F, playerViewY, 0.0F, radar.renderAlpha, ParticleRegistry.radarIconHail);
 				
-				if (ClientTickHandler.clientConfigData.debug_mode_radar && radar.system != null && so.uuid.equals(radar.system.getUUID()))
+				if (ConfigMisc.debug_mode_radar && radar.system != null && so.uuid.equals(radar.system.getUUID()))
 					renderLivingLabel(TextFormatting.GOLD + "" +  TextFormatting.BOLD + "|", x, y + 1.2F, z, 1, 5, 5, playerViewY, radar.renderAlpha);
 				else
 				{

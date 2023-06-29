@@ -376,6 +376,7 @@ public class WeatherManagerServer extends WeatherManager
 				fronts.put(globalFront.getUUID(), globalFront);
 
 				Weather2.debug("Loaded global front " + globalFront.getUUID().toString());
+				PacketFrontObject.create(world.provider.getDimension(), globalFront);
 			}
 			else
 			{
@@ -383,6 +384,7 @@ public class WeatherManagerServer extends WeatherManager
 				front.readNBT(nbt);
 				fronts.put(front.getUUID(), front);
 				Weather2.debug("Loaded front " + front.getUUID().toString());
+				PacketFrontObject.create(world.provider.getDimension(), front);
 			}
 		});
 		
@@ -391,6 +393,7 @@ public class WeatherManagerServer extends WeatherManager
 			globalFront = new FrontObject(this, null, 0);
 			fronts.put(globalFront.getUUID(), globalFront);	
 			Weather2.debug("Created a new global front " + globalFront.getUUID().toString());
+			PacketFrontObject.create(world.provider.getDimension(), globalFront);
 		}
 		
 		NBTTagCompound weatherNBT = mainNBT.getCompoundTag("stormData");
@@ -428,6 +431,7 @@ public class WeatherManagerServer extends WeatherManager
 				}
 				
 				Weather2.debug("Loaded storm " + wo.getUUID().toString());
+				PacketWeatherObject.create(world.provider.getDimension(), wo);
 			}
 		});
 		Weather2.debug("Loading Weather2 data successful!");

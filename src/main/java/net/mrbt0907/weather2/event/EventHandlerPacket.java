@@ -7,7 +7,6 @@ import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.FMLNetworkEvent;
-import net.mrbt0907.weather2.ClientProxy;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.client.NewSceneEnhancer;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
@@ -55,7 +54,7 @@ public class EventHandlerPacket {
 						//ItemPocketSand.particulateFromServer(nbt.getString("playerName"));
 						//break;
 					case 10:
-						ClientTickHandler.clientConfigData.readNBT(nbt);
+						//ClientTickHandler.clientConfigData.readNBT(nbt);
 						break;
 					case 11: case 12: case 13: case 14:
 						ClientTickHandler.checkClientWeather();
@@ -64,9 +63,6 @@ public class EventHandlerPacket {
 					case 15:
 						WeatherUtilSound.reset();
 						Weather2.debug("Refreshed weather2 sound system");
-						break;
-					case 16:
-						ClientProxy.clientTickHandler.op = nbt.getBoolean("op");
 						break;
 					case 17:
 						NewSceneEnhancer.instance().reset();
@@ -109,9 +105,6 @@ public class EventHandlerPacket {
 					case 10:
 						if (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() || FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().canSendCommands(entP.getGameProfile()))
 							WeatherUtilConfig.nbtReceiveServer(nbt);
-						break;
-					case 12:
-						PacketEZGUI.isOp(FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() || FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().canSendCommands(entP.getGameProfile()), entP);
 						break;
 				}
 			});

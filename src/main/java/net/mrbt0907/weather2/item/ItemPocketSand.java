@@ -13,13 +13,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
-import net.mrbt0907.weather2.client.SceneEnhancer;
 import net.mrbt0907.weather2.client.entity.particle.ParticleSandstorm;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.registry.BlockRegistry;
@@ -76,23 +74,7 @@ public class ItemPocketSand extends Item
 
         TextureAtlasSprite sprite = ParticleRegistry.cloud256;
 
-        double distCast = 10;
         double xzAdj = Maths.fastCos(Math.toRadians(player.rotationPitch));
-        double vecYCast = (-Maths.fastSin(Math.toRadians(player.rotationPitch)) * (distCast));
-        double vecXCast = (-Maths.fastSin(Math.toRadians(player.rotationYawHead)) * (distCast)) * xzAdj;
-        double vecZCast = (Maths.fastCos(Math.toRadians(player.rotationYawHead)) * (distCast)) * xzAdj;
-
-        BlockPos pos = new BlockPos(player.posX + vecXCast, player.posY + vecYCast, player.posZ + vecZCast);
-        //pos = new BlockPos(player.getLookVec().add(new Vec3d(player.posX, player.posY, player.posZ)));
-
-        double dist = Math.sqrt(Minecraft.getMinecraft().player.getDistanceSq(pos));
-
-        //System.out.println(dist);
-
-        if (Minecraft.getMinecraft().player != player && dist < 7) {
-            SceneEnhancer.adjustAmountTargetPocketSandOverride = 1.3F;
-        }
-
         for (int i = 0; i < 15; i++) {
             ParticleSandstorm part = new ParticleSandstorm(world, player.posX, player.posY + 1.5D, player.posZ
                     , 0, 0, 0, sprite);

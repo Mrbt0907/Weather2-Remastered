@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
+import net.mrbt0907.configex.ConfigManager;
 import net.mrbt0907.configex.gui.GuiConfigEditor;
 import net.mrbt0907.weather2.ClientProxy;
 import net.mrbt0907.weather2.Weather2;
@@ -81,7 +82,7 @@ public class GuiEZConfig extends GuiScreen
 		
 		//Initialize send cache.
 		nbtSendCache = new NBTTagCompound();
-		PacketEZGUI.isOp();
+		ClientProxy.clientTickHandler.op = ConfigManager.getPermissionLevel() > 3;
 		EZGuiAPI.refreshOptions();
 	}
 	
@@ -404,7 +405,7 @@ public class GuiEZConfig extends GuiScreen
 	private void send()
 	{
 		Weather2.debug("Preparing to send packets... " + nbtSendCache);
-		PacketEZGUI.isOp();
+		ClientProxy.clientTickHandler.op = ConfigManager.getPermissionLevel() > 3;
 		if (nbtSendCache.hasKey("client"))
 		{
 			Weather2.debug("Sending config packet to client");

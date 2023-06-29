@@ -8,6 +8,7 @@ import java.util.Random;
 import CoroUtil.api.weather.IWindHandler;
 import CoroUtil.config.ConfigCoroUtil;
 import CoroUtil.util.CoroUtilEntOrParticle;
+import extendedrenderer.EventHandler;
 import extendedrenderer.particle.ParticleRegistry;
 import extendedrenderer.particle.behavior.ParticleBehaviors;
 import extendedrenderer.particle.entity.EntityRotFX;
@@ -38,7 +39,9 @@ import net.mrbt0907.weather2.api.weather.WeatherEnum;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
 import net.mrbt0907.weather2.client.entity.particle.EntityWaterfallFX;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
+import net.mrbt0907.weather2.client.foliage.FoliageEnhancerShader;
 import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
+import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.config.ConfigVolume;
@@ -132,13 +135,13 @@ public class NewSceneEnhancer implements Runnable
 	 *- Cache storm results*/
 	protected void tickThread()
 	{
-		if (MC.world != null && MC.player != null && ClientTickHandler.weatherManager != null && WeatherUtilConfig.isEffectsEnabled(MC.world.provider.getDimension()))
+		if (MC.world != null && MC.player != null && WeatherUtilConfig.isEffectsEnabled(MC.world.provider.getDimension()))
 		{
 			Vec3 playerPos = new Vec3(MC.player.posX, MC.player.posY, MC.player.posZ);
 			Vec playerPos2D = new Vec(MC.player.posX, MC.player.posZ);
 			
 			if (ticksThreadExisted % 2L == 0L)
-				cachedSystem = ClientTickHandler.weatherManager.getClosestWeather(playerPos, renderDistance, 0, Integer.MAX_VALUE, WeatherEnum.Type.CLOUD);
+				cachedSystem = ClientTickHandler.weatherManager != null ? ClientTickHandler.weatherManager.getClosestWeather(playerPos, renderDistance, 0, Integer.MAX_VALUE, WeatherEnum.Type.CLOUD) : null;
 			
 			if (cachedSystem != null)
 			{
@@ -155,7 +158,6 @@ public class NewSceneEnhancer implements Runnable
 				if (cachedFunnelDistance >= 0.0D)
 					cachedFunnelDistance = -1.0D;
 			}
-			
 			cachedWindDirection = WindReader.getWindAngle(MC.world, playerPos);
 			cachedWindSpeed = WindReader.getWindSpeed(MC.world, playerPos);
 			
@@ -196,7 +198,6 @@ public class NewSceneEnhancer implements Runnable
 		{
 			IWeatherRain system = (IWeatherRain) cachedSystem;
 			float size = cachedSystem.size * 0.45F;
-			
 			if (system.hasDownfall())
 			{
 				overcastTarget = 1.0F - (float) Maths.clamp((cachedSystemDistance - size) / cachedSystem.size, 0.0F, 1.0F);
@@ -211,7 +212,7 @@ public class NewSceneEnhancer implements Runnable
 			}
 		}
 
-		if (ClientTickHandler.clientConfigData.overcastMode && ClientTickHandler.weatherManager.weatherID >= 1)
+		if (ConfigMisc.overcast_mode && ClientTickHandler.weatherManager != null && ClientTickHandler.weatherManager.weatherID >= 1)
 		{
 			overcastTarget = (float) ConfigStorm.min_overcast_rain;
 			rainTarget = (float) ConfigStorm.min_overcast_rain;
@@ -348,6 +349,16 @@ public class NewSceneEnhancer implements Runnable
 				tickParticles();
 				MC.profiler.endStartSection("tickAmbiantSounds");
 				tickSounds();
+				MC.profiler.endStartSection("tickFoliageShaders");
+				if (ConfigCoroUtil.foliageShaders && EventHandler.queryUseOfShaders())
+				{
+					if (!FoliageEnhancerShader.useThread)
+						if (MC.world.getTotalWorldTime() % 40 == 0)
+							FoliageEnhancerShader.tickClientThreaded();
+
+					if (MC.world.getTotalWorldTime() % 5 == 0)
+						FoliageEnhancerShader.tickClientCloseToPlayer();
+				}
 				MC.profiler.endSection();
 			}
 			MC.profiler.endSection();
@@ -415,7 +426,7 @@ public class NewSceneEnhancer implements Runnable
 						snow.setAlphaF(0);
 						snow.setTicksFadeOutMax(5);
 						snow.rotationYaw = snow.getWorld().rand.nextInt(360) - 180F;
-						spawnParticle(snow);
+						spawnParticle(snow, false);
 					}
 				}
 			}
@@ -461,7 +472,7 @@ public class NewSceneEnhancer implements Runnable
 						particle.rotationYaw = MC.world.rand.nextInt(360) - 180F;
 						particle.setMotionY(-0.5D);
 						particle.renderOrder = 2;
-						spawnParticle(particle);
+						spawnParticle(particle, false);
 					}
 				}
 				
@@ -494,7 +505,7 @@ public class NewSceneEnhancer implements Runnable
 						particle.setMotionY(0D);
 						particle.setMotionX((MC.world.rand.nextFloat() - 0.5F) * 0.01F);
 						particle.setMotionZ((MC.world.rand.nextFloat() - 0.5F) * 0.01F);
-						spawnParticle(particle);
+						spawnParticle(particle, false);
 					}
 				}
 
@@ -535,7 +546,7 @@ public class NewSceneEnhancer implements Runnable
 						particle.setMotionY(-0.3D);
 						particle.setMotionX((MC.world.rand.nextFloat() - 0.5F) * 0.01F);
 						particle.setMotionZ((MC.world.rand.nextFloat() - 0.5F) * 0.01F);
-						spawnParticle(particle);
+						spawnParticle(particle, false);
 					}
 				}
 			}
@@ -587,7 +598,7 @@ public class NewSceneEnhancer implements Runnable
 					particle.rotationYaw = MC.world.rand.nextInt(360);
 					particle.rotationPitch = MC.world.rand.nextInt(360);
 					particle.updateQuaternion(null);
-					spawnParticle(particle);
+					spawnParticle(particle, false);
 					break;
 				case 1:
 					for (int i = 0; i < 10; i++)
@@ -601,7 +612,7 @@ public class NewSceneEnhancer implements Runnable
 									((MC.world.rand.nextFloat() * 0.2F) - (0.2F/2)),
 									2D, 3);
 						particle.setMotionY(4.5F);
-						spawnParticle(particle);
+						spawnParticle(particle, true);
 					}
 					break;
 				case 2:
@@ -610,7 +621,7 @@ public class NewSceneEnhancer implements Runnable
 					ParticleBehaviors.setParticleRandoms(particle, true, true);
 					ParticleBehaviors.setParticleFire(particle);
 					particle.setMaxAge(100+MC.world.rand.nextInt(300));
-					spawnParticle(particle);
+					spawnParticle(particle, true);
 					break;
 				case 3:
 					float windStrAlt = Math.min(cachedWindSpeed * 0.6F, 1.0F);
@@ -664,8 +675,8 @@ public class NewSceneEnhancer implements Runnable
 				ClientTickHandler.weatherManager.effectedParticles.remove(i--);
 				continue;
 			}
-			
-			if (WindReader.getWindSpeed(MC.world, new Vec3(MC.player.posX, MC.player.posY, MC.player.posZ)) >= 0.10)
+				
+			if (WindReader.getWindSpeed(MC.world, new Vec3(MC.player.posX, MC.player.posY, MC.player.posZ)) > 0.0)
 			{
 	
 				if (particle instanceof EntityRotFX)
@@ -813,11 +824,16 @@ public class NewSceneEnhancer implements Runnable
 		MC.player.rotationYaw += Maths.random(-magnitude, magnitude); MC.player.rotationPitch += Maths.random(-magnitude, magnitude);
 	}
 	
-	public void spawnParticle(Particle particle)
+	public void spawnParticle(Particle particle, boolean isNormalEffect)
 	{
-		if (particle instanceof EntityRotFX)
-			((EntityRotFX) particle).spawnAsWeatherEffect();
-		ClientTickHandler.weatherManager.addEffectedParticle(particle);
+		if (isNormalEffect)
+			MC.effectRenderer.addEffect(particle);
+		else
+		{
+			if (particle instanceof EntityRotFX)
+				((EntityRotFX) particle).spawnAsWeatherEffect();
+			ClientTickHandler.weatherManager.addEffectedParticle(particle);
+		}
 	}
 	
 	public boolean seesWeatherObject()

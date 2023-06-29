@@ -1,8 +1,9 @@
 package net.mrbt0907.weather2.server.event;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import CoroUtil.forge.CULog;
 import modconfig.ConfigMod;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,7 +12,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.mrbt0907.weather2.Weather2;
-import net.mrbt0907.weather2.config.ClientConfigData;
 import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.network.packets.PacketEZGUI;
 import net.mrbt0907.weather2.server.weather.WeatherManagerServer;
@@ -48,32 +48,43 @@ public class ServerTickHandler
 		}
 		
 		World worlds[] = DimensionManager.getWorlds();
+		World dim;
+		List<Integer> removedManagers = new ArrayList<Integer>();
 		int size = worlds.length;
 		int dimension = 0;
 		//add use of CSV of supported dimensions here once feature is added, for now just overworld
 		
 		for (int i = 0; i < size; i++)
 		{
-			dimension = worlds[i].provider.getDimension();
+			dim = worlds[i];
+			dimension = dim.provider.getDimension();
 			if (!dimensionSystems.containsKey(dimension))
 			{
 				if (WeatherUtilConfig.isWeatherEnabled(dimension))
-					addWeatherSystem(world);
-				WeatherUtilConfig.dimNames.put(dimension, dimension + ":>  " + worlds[i].provider.getDimensionType().getName());
-				WeatherUtilConfig.nbtServerData.getCompoundTag("dimData").setString("dima_" + dimension, dimension + ":>  " + worlds[i].provider.getDimensionType().getName());
+					addWeatherSystem(dim);
+				WeatherUtilConfig.dimNames.put(dimension, dimension + ":>  " + dim.provider.getDimensionType().getName());
+				WeatherUtilConfig.nbtServerData.getCompoundTag("dimData").setString("dima_" + dimension, dimension + ":>  " + dim.provider.getDimensionType().getName());
 				WeatherUtilConfig.nbtSaveDataServer();
 			}
 			
 			if (dimensionSystems.containsKey(dimension))
-				dimensionSystems.get(i).tick();
+			{
+				if (WeatherUtilConfig.isWeatherEnabled(dimension))
+					dimensionSystems.get(dimension).tick();
+				else
+					removedManagers.add(dimension);
+			}
 		}
 
+		for (int i : removedManagers)
+			removeWeatherSystem(i);
+		
 		if (ConfigMisc.aesthetic_mode)
 		{
 			if (!ConfigMisc.overcast_mode)
 			{
 				ConfigMisc.overcast_mode = true;
-				CULog.dbg("detected Aesthetic_Only_Mode on, setting overcast mode on");
+				Weather2.debug("detected Aesthetic_Only_Mode on, setting overcast mode on");
 				WeatherUtilConfig.setOvercastModeServerSide(ConfigMisc.overcast_mode);
 				ConfigMod.forceSaveAllFilesFromRuntimeSettings();
 				syncServerConfigToClient();
@@ -95,15 +106,24 @@ public class ServerTickHandler
 		wm.readFromFile();
 	}
 	
-	public static void removeWeatherSystem(int dim) {
+	public static void removeWeatherSystem(int dim)
+	{
 		Weather2.debug("Weather2: Unregistering manager for dim: " + dim);
 		WeatherManagerServer wm = dimensionSystems.get(dim);
 		
-		if (wm != null)
-			dimensionSystems.remove(dim);
-		
-		//wm.readFromFile();
-		wm.writeToFile();
+		try
+		{
+			if (wm != null)
+			{
+				dimensionSystems.remove(dim);
+				wm.writeToFile();
+				wm.reset(true);
+			}
+		}
+		catch(Exception e)
+		{
+			Weather2.error(e);
+		}
 	}
 
 	public static void playerClientRequestsFullSync(EntityPlayerMP entP) {
@@ -136,14 +156,14 @@ public class ServerTickHandler
 	public static void syncServerConfigToClient() {
 		//packets
 		NBTTagCompound data = new NBTTagCompound();
-		ClientConfigData.writeNBT(data);
+		//ClientConfigData.writeNBT(data);
 		PacketEZGUI.apply(data);
 	}
 
 	public static void syncServerConfigToClientPlayer(EntityPlayerMP player) {
 		//packets
 		NBTTagCompound data = new NBTTagCompound();
-		ClientConfigData.writeNBT(data);
+		//ClientConfigData.writeNBT(data);
 		PacketEZGUI.apply(data, player);
 	}
 }

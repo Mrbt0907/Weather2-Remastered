@@ -45,7 +45,7 @@ public class ClientCommandHandler
 							if (!(field.enforce && !ConfigManager.isSinglePlayer()))
 								if (field.setClientValue(value))
 								{
-									ConfigManager.sync(field.config.getName(), field.registryName);
+									ConfigManager.sync(field.config.getName(), field.registryName, false);
 									say(field.name + " was set successfully! Client Value: " + field.getRealClientValue() + ", Server Value: " + field.getRealCachedValue());
 								}
 								else
@@ -65,7 +65,7 @@ public class ClientCommandHandler
 							if (!(field.enforce && !MC.isSingleplayer()))
 							{
 								field.setToDefault();
-								ConfigManager.sync(field.config.getName(), field.registryName);
+								ConfigManager.sync(field.config.getName(), field.registryName, false);
 								say(field.name + " was set to default successfully! Client Value: " + field.getRealClientValue() + ", Server Value: " + field.getRealCachedValue());
 							}
 							else

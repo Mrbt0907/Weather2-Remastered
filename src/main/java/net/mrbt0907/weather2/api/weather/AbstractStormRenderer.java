@@ -255,6 +255,6 @@ public abstract class AbstractStormRenderer
 	/**Checks whether the renderer can spawn another particle.*/
 	public final boolean canSpawnParticle()
 	{
-		return particleLimit >= particles.size();
+		return particles.size() < particleLimit;
 	}
 }

@@ -1,7 +1,6 @@
 package net.mrbt0907.weather2.client.foliage;
 
 import CoroUtil.config.ConfigCoroUtil;
-import CoroUtil.forge.CULog;
 import CoroUtil.util.CoroUtilBlockLightCache;
 import CoroUtil.util.Vec3;
 import com.google.common.base.Throwables;
@@ -103,7 +102,7 @@ public class FoliageEnhancerShader implements Runnable {
 	public static void processModels() {
 
         if (modelLoader == null || modelRegistry == null) {
-            CULog.err("modelLoader or modelRegistry null, aborting");
+        	Weather2.error("modelLoader or modelRegistry null, aborting");
         }
 
         boolean hackyLiveReplace = false;
@@ -132,7 +131,7 @@ public class FoliageEnhancerShader implements Runnable {
             //ModelLoader.
             //ModelManager mm =
 
-            CULog.log(str);
+            Weather2.debug(str);
             ProgressManager.ProgressBar prog = ProgressManager.push(str, modelRegistry.getKeys().size(), true);
 
             Map<ModelResourceLocation, IModel> stateModels = ReflectionHelper.getPrivateValue(ModelLoader.class, modelLoader, "stateModels");
@@ -142,7 +141,7 @@ public class FoliageEnhancerShader implements Runnable {
             //would this cause bugs for mods that use ModelBakeEvent? meaning we might miss their models if we shaderize them
             modelLoader.blockModelShapes.reloadModels();
 
-            CULog.dbg("bakedModelStore size: " + modelLoader.blockModelShapes.bakedModelStore.size());
+            Weather2.debug("bakedModelStore size: " + modelLoader.blockModelShapes.bakedModelStore.size());
 
             //make backup
             for (Map.Entry<IBlockState, IBakedModel> entry : modelLoader.blockModelShapes.bakedModelStore.entrySet()) {
@@ -272,7 +271,7 @@ public class FoliageEnhancerShader implements Runnable {
         //temp? for sake of hot reloading replacers
         FoliageEnhancerShader.setupReplacers();
 
-        CULog.log("Weather2: Setting up meshes for foliage shader");
+        Weather2.debug("Weather2: Setting up meshes for foliage shader");
 
         for (FoliageReplacerBase replacer : listFoliageReplacers) {
             for (TextureAtlasSprite sprite : replacer.sprites) {
@@ -291,7 +290,7 @@ public class FoliageEnhancerShader implements Runnable {
     @SuppressWarnings("rawtypes")
 	public static void setupReplacers() {
 
-        CULog.log("Weather2: Setting up foliage replacers");
+    	Weather2.debug("Weather2: Setting up foliage replacers");
 
         //boolean test = false;
 

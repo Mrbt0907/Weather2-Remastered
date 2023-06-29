@@ -114,7 +114,7 @@ public class TileRadar extends TileEntity implements ITickable
 	{
 		if (world.getTotalWorldTime() % pingRate == 0)
 		{
-			if (net.mrbt0907.weather2.client.event.ClientTickHandler.clientConfigData.debug_mode_radar)
+			if (ConfigMisc.debug_mode_radar)
 			{
 				WeatherObject system = net.mrbt0907.weather2.client.event.ClientTickHandler.weatherManager.getClosestWeather(new Vec3(getPos().getX(), getPos().getY(), getPos().getZ()), pingRange);
 				this.system = (system == null || system.isDead ? null : system);
@@ -123,7 +123,7 @@ public class TileRadar extends TileEntity implements ITickable
 				system = null;
 				
 			
-			if (net.mrbt0907.weather2.client.event.ClientTickHandler.clientConfigData.debug_mode_radar)
+			if (ConfigMisc.debug_mode_radar)
 			{
 				systems.clear();
 				for (FrontObject front : net.mrbt0907.weather2.client.event.ClientTickHandler.weatherManager.getFronts())
@@ -168,7 +168,7 @@ public class TileRadar extends TileEntity implements ITickable
 	@SideOnly(Side.CLIENT)
 	public double getPingRange(int tier)
 	{
-		return tier == 1 ? net.mrbt0907.weather2.client.event.ClientTickHandler.clientConfigData.doppler_radar_range : tier == 2 ? net.mrbt0907.weather2.client.event.ClientTickHandler.clientConfigData.pulse_doppler_radar_range : net.mrbt0907.weather2.client.event.ClientTickHandler.clientConfigData.radar_range;
+		return tier == 1 ? ConfigMisc.doppler_radar_range : tier == 2 ? ConfigMisc.pulse_doppler_radar_range : ConfigMisc.radar_range;
 	}
 	
     public NBTTagCompound writeToNBT(NBTTagCompound tag)

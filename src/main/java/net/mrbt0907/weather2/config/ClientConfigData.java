@@ -1,13 +1,11 @@
 package net.mrbt0907.weather2.config;
 
-import net.minecraft.nbt.NBTTagCompound;
-
 /**
  * Used for anything that needs to be used on both client and server side, to avoid config mismatch between dedicated server and clients
  */
 public class ClientConfigData
 {
-	//Storm
+	/*//Storm
 	public boolean overcastMode = false;
 	public boolean stormGrabPlayers = true;
 	public boolean stormGrabMobs = true;
@@ -32,13 +30,13 @@ public class ClientConfigData
 	public double radar_range = 1024.0D;
 	public double doppler_radar_range = 2048.0D;
 	public double pulse_doppler_radar_range = 4096.0D;
-
+	*/
 	/**
 	 * For client side
 	 *
 	 * @param nbt
 	 */
-	public void readNBT(NBTTagCompound nbt)
+	/*public void readNBT(NBTTagCompound nbt)
 	{
 		overcastMode = nbt.getBoolean("overcastMode");
 		stormGrabPlayers = nbt.getBoolean("stormGrabPlayers");
@@ -62,14 +60,14 @@ public class ClientConfigData
 		radar_range = nbt.getDouble("radar_range");
 		doppler_radar_range = nbt.getDouble("doppler_radar_range");
 		pulse_doppler_radar_range = nbt.getDouble("pulse_doppler_radar_range");
-	}
+	}*/
 
 	/**
 	 * For server side
 	 *
 	 * @param nbt
 	 */
-	public static void writeNBT(NBTTagCompound nbt)
+	/*public static void writeNBT(NBTTagCompound nbt)
 	{
 		nbt.setBoolean("overcastMode", ConfigMisc.overcast_mode);
 		nbt.setBoolean("stormGrabPlayers", ConfigGrab.grab_players);
@@ -93,5 +91,5 @@ public class ClientConfigData
 		nbt.setDouble("radar_range", ConfigMisc.radar_range);
 		nbt.setDouble("doppler_radar_range", ConfigMisc.doppler_radar_range);
 		nbt.setDouble("pulse_doppler_radar_range", ConfigMisc.pulse_doppler_radar_range);
-	}
+	}*/
 }

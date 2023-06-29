@@ -208,6 +208,7 @@ public class ParticleManagerEX extends RotatingParticleManager
 		
 		for (Map.Entry<TextureAtlasSprite, List<ArrayDeque<Particle>[][]>> entry1 : fxLayers.entrySet())
 		{
+			if (entry1.getKey() == null) continue;
 			InstancedMeshParticle mesh = null;
 			if (useParticleShaders)
 			{

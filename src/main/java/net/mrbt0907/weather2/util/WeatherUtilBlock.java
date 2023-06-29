@@ -3,7 +3,6 @@ package net.mrbt0907.weather2.util;
 import java.util.ArrayList;
 import java.util.List;
 import CoroUtil.block.BlockRepairingBlock;
-import CoroUtil.forge.CULog;
 import net.minecraft.util.math.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
@@ -474,7 +473,7 @@ public class WeatherUtilBlock
 			}
 		}
 		
-		CULog.dbg("leftover: " + amountWeHave);
+		Weather2.debug("leftover: " + amountWeHave);
 	}
 	
 	public static int tryTakeFromPos(World world, BlockPos posTakeFrom, int amount, int amountAllowedToTakeForXZ, int maxDropAllowed, Block blockLayerable) {
@@ -590,7 +589,7 @@ public class WeatherUtilBlock
 		//at this point the block we are about to work with is solid facing up, or snow
 		if (!stateCheckPlaceable.isSideSolid(world, posCheckPlaceable, EnumFacing.UP) && 
 					stateCheckPlaceable.getBlock() != blockLayerable) {
-			CULog.err("sandstorm: shouldnt be, failed a check somewhere!");
+			Weather2.error("sandstorm: shouldnt be, failed a check somewhere!");
 			return amount;
 		}
 		
@@ -665,12 +664,12 @@ public class WeatherUtilBlock
 					statePlaceLayerable = Weather2.getChunkUtil(world).getBlockState(world, posPlaceLayerable);
 				}
 			} else {
-				CULog.dbg("wat! - " + statePlaceLayerable);
+				Weather2.debug("wat! - " + statePlaceLayerable);
 			}
 		}
 		
 		if (amountAllowedToAdd < 0) {
-			CULog.dbg("wat");
+			Weather2.debug("wat");
 		}
 		int amountAdded = amountToAdd - amountAllowedToAdd;
 		amount -= amountAdded;
@@ -763,8 +762,6 @@ public class WeatherUtilBlock
 		
 		int heightToUse = getHeightForLayeredBlock(state);
 
-		CULog.dbg("try smooth out");
-		
 		if (heightToUse > 2) {
 			for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL)
 	        {

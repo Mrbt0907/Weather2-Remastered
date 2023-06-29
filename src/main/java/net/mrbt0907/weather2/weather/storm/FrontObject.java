@@ -304,6 +304,7 @@ public class FrontObject implements IWeatherDetectable
 	public void reset()
 	{
 		systems.forEach((uuid, system) -> system.reset());
+		systems.clear();
 	}
 	
 	public void aimStormAtPlayer(EntityPlayer entP)

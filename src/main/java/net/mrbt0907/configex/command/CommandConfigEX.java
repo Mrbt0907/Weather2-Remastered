@@ -1,5 +1,6 @@
 package net.mrbt0907.configex.command;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -16,7 +17,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.mrbt0907.configex.ConfigManager;
 import net.mrbt0907.configex.manager.FieldInstance;
 import net.mrbt0907.configex.network.NetworkHandler;
-import scala.actors.threadpool.Arrays;
 
 public class CommandConfigEX extends CommandBase
 {
@@ -51,11 +51,11 @@ public class CommandConfigEX extends CommandBase
 		switch(args.length)
 		{
 			case 1:
-				return getListOfStringsMatchingLastWord(args, new String[] {"get", "set", "default", "refresh", "config", "version"});
+				return getListOfStringsMatchingLastWord(args, new String[] {"get", "set", "default", /*"refresh",*/ "config"});
 			case 2:
 				switch(args[0])
 				{
-					case "get": case "set": case "default": case "refresh":
+					case "get": case "set": case "default": /*case "refresh":*/
 						return getListOfStringsMatchingLastWord(args, new String[] {"client", "server"});
 				}
 			case 3:
@@ -108,15 +108,13 @@ public class CommandConfigEX extends CommandBase
 					else
 						say(sender, TextFormatting.RED + "You cannot run this sub command in the console");
 					break;
-				case "refresh":
-					break;
-				case "version":
-					break;
+				//case "refresh":
+					//break;
 				default:
-					say(sender, TextFormatting.RED + "Usage: /" + getName() + " <config/default/get/set/refresh/version>");
+					say(sender, TextFormatting.RED + "Usage: /" + getName() + " <config/default/get/set/refresh>");
 			}
 		else
-			say(sender, TextFormatting.RED + "Usage: /" + getName() + " <config/default/get/set/refresh/version>");
+			say(sender, TextFormatting.RED + "Usage: /" + getName() + " <config/default/get/set/refresh>");
 	}
 	
 	private void setDefault(MinecraftServer server, ICommandSender sender, boolean toServer, String registryName)
@@ -136,7 +134,7 @@ public class CommandConfigEX extends CommandBase
 					if (field.hasPermission(permissionLevel) || !field.enforce && !field.hide)
 					{
 						field.setToDefault();
-						ConfigManager.sync(field.config.getName(), field.registryName);
+						ConfigManager.sync(field.config.getName(), field.registryName, false);
 						say(sender, field.name + " was set to default successfully! Value: " + field.getRealCachedValue());
 					}
 					else
@@ -172,7 +170,7 @@ public class CommandConfigEX extends CommandBase
 					if (field.hasPermission(permissionLevel) || !field.enforce && !field.hide)
 						if (field.setServerValue(value))
 						{
-							ConfigManager.sync(field.config.getName(), field.registryName);
+							ConfigManager.sync(field.config.getName(), field.registryName, false);
 							say(sender, field.name + " was set successfully! Value: " + field.getRealCachedValue());
 						}
 						else

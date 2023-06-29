@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.MinecraftForge;
+import net.mrbt0907.configex.ConfigManager;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.EZGuiAPI;
 import net.mrbt0907.weather2.api.event.EventEZGuiData;
@@ -19,11 +20,10 @@ import net.mrbt0907.weather2.client.gui.GuiEZConfig;
 import net.mrbt0907.weather2.config.*;
 import CoroUtil.config.ConfigCoroUtil;
 import CoroUtil.util.CoroUtilFile;
-import modconfig.ConfigMod;
 
 public class WeatherUtilConfig
 {
-	public static final String version = "2.4";
+	public static final String version = "2.5";
 	public static final Map<String, Integer> CLIENT_DEFAULTS = new HashMap<String, Integer>();
 	public static final Map<String, Integer> SERVER_DEFAULTS = new HashMap<String, Integer>();
 	private static List<Integer> weatherList = new ArrayList<Integer>();
@@ -44,9 +44,6 @@ public class WeatherUtilConfig
 			{
 				case EZGuiAPI.BB_GLOBAL:
 					ConfigMisc.overcast_mode = value == 1;
-					break;
-				case EZGuiAPI.BB_RADAR:
-					ConfigMisc.debug_mode_radar = value == 1;
 					break;
 				case EZGuiAPI.BC_ENABLE_TORNADO:
 					ConfigStorm.disable_tornados = value == 0;
@@ -188,7 +185,7 @@ public class WeatherUtilConfig
 			refreshDimensionRules();
 		}
 		nbtSaveDataServer();
-		ConfigMod.forceSaveAllFilesFromRuntimeSettings();
+		ConfigManager.sync(true);
 	}
 	
 	public static void processClientData(NBTTagCompound cache)
@@ -581,6 +578,9 @@ public class WeatherUtilConfig
 				case EZGuiAPI.BA_FANCY_RENDERING:
 					ConfigParticle.enable_legacy_rendering = value == 0;
 					break;
+				case EZGuiAPI.BA_RADAR:
+					ConfigMisc.debug_mode_radar = value == 1;
+					break;
 				}
 			
 				if (!key.equals("dimData"))
@@ -591,7 +591,7 @@ public class WeatherUtilConfig
 			}
 		
 		nbtSaveDataClient();
-		ConfigMod.forceSaveAllFilesFromRuntimeSettings();
+		ConfigManager.sync(true);
 	}
 	
 	/**Used to get needed information from a client to add to the server data*/

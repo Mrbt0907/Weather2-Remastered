@@ -34,7 +34,6 @@ import net.mrbt0907.weather2.api.weather.IWeatherLayered;
 import net.mrbt0907.weather2.api.weather.IWeatherRain;
 import net.mrbt0907.weather2.api.weather.WeatherEnum;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
-import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.weather.StormNames;
 import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.config.ConfigSnow;
@@ -976,8 +975,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		
 		StormObject entity = this;
 		WeatherEntityConfig conf = getWeatherEntityConfigForStorm();
-		float heightMult = getLayerHeight() * (world.isRemote && obj instanceof Particle ? 0.0064F : 0.0034F);
-		float rotationMult = heightMult * 0.25F * ((isViolent ? 3.1F : 1.55F) + Math.min((stage - 5.0F) / 3.0F, 2.0F));
+		float heightMult = getLayerHeight() * (world.isRemote && obj instanceof Particle ? 0.004F : 0.0034F);
+		float rotationMult = heightMult * 0.5F * ((isViolent ? 3.1F : 1.55F) + Math.min((stage - 5.0F) / 3.0F, 2.0F));
 		World world = CoroUtilEntOrParticle.getWorld(obj);
 		long worldTime = world.getTotalWorldTime();
 		
@@ -1224,12 +1223,11 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	@Override
 	public int getLayerHeight()
 	{
-		boolean isClient = world.isRemote;
 		switch (layer)
 		{
-			case 1: return isClient ? ClientTickHandler.clientConfigData.stormCloudHeight1 : ConfigStorm.cloud_layer_1_height;
-			case 2: return isClient ? ClientTickHandler.clientConfigData.stormCloudHeight2 : ConfigStorm.cloud_layer_2_height;
-			default: return isClient ? ClientTickHandler.clientConfigData.stormCloudHeight0 : ConfigStorm.cloud_layer_0_height;
+			case 1: return ConfigStorm.cloud_layer_1_height;
+			case 2: return ConfigStorm.cloud_layer_2_height;
+			default: return ConfigStorm.cloud_layer_0_height;
 		}
 	}
 

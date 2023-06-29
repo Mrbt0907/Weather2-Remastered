@@ -9,10 +9,12 @@ import java.io.File;
 
 public class ConfigSimulation implements IConfigEX
 {
-	//@Comment({"Should storms use a more realistic storm system? (Does not work rn, don't enable)"})
-    //public static boolean simulation_enable = false;
+	@Enforce
+	@IntegerRange(min=0)
 	@Comment("Distance storms can go to from players before they are deleted")
 	public static int max_storm_distance = 2300;
+	@Enforce
+	@IntegerRange(min=0)
 	@Comment("Distance storms can spawn away from players")
 	public static int max_storm_spawning_distance = 2150;
 	

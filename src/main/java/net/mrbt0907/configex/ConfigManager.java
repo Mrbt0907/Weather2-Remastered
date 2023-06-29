@@ -19,7 +19,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.configex.api.IConfigEX;
-import net.mrbt0907.configex.event.ClientHandler;
 import net.mrbt0907.configex.manager.ConfigInstance;
 import net.mrbt0907.configex.manager.FieldInstance;
 import net.mrbt0907.configex.network.NetworkHandler;
@@ -122,12 +121,18 @@ public class ConfigManager
 		return new ArrayList<ConfigInstance>(configs.values());
 	}
 	
-	public static void sync(IConfigEX config)
+	public static void sync(boolean readCurrentValues)
 	{
-		sync(config.getName());
+		ConfigModEX.debug("Requested sync of all configurations");
+		configs.forEach((name, config) -> config.updateAllFields(readCurrentValues));
 	}
 	
-	public static void sync(String configName)
+	public static void sync(IConfigEX config, boolean readCurrentValues)
+	{
+		sync(config.getName(), readCurrentValues);
+	}
+	
+	public static void sync(String configName, boolean readCurrentValues)
 	{
 		configName = formatRegistryName(configName);
 		ConfigModEX.debug("Requested sync for config " + configName);
@@ -139,7 +144,7 @@ public class ConfigManager
 			return;
 		}
 		
-		instance.updateAllFields(true);
+		instance.updateAllFields(readCurrentValues);
 		instance.writeConfigFile(false);
 		
 		if (!isRemote)
@@ -149,12 +154,12 @@ public class ConfigManager
 		}
 	}
 	
-	public static void sync(IConfigEX config, String variableName)
+	public static void sync(IConfigEX config, String variableName, boolean readCurrentValue)
 	{
-		sync(config.getName(), variableName);
+		sync(config.getName(), variableName, readCurrentValue);
 	}
 	
-	public static void sync(String configName, String variableName)
+	public static void sync(String configName, String variableName, boolean readCurrentValue)
 	{
 		configName = formatRegistryName(configName);
 		configName = formatRegistryName(configName);
@@ -175,7 +180,7 @@ public class ConfigManager
 			return;
 		}
 		
-		instance.updateField(field, false);
+		instance.updateField(field, readCurrentValue);
 		instance.writeConfigFile(false);
 		
 		if (!isRemote)
@@ -219,12 +224,12 @@ public class ConfigManager
 		return size;
 	}
 	
-	public static void reset()
+	public static void reset(boolean fullReset)
 	{
-		if (isRemote && !ClientHandler.inGame())
+		if (isRemote)
 		{
 			ConfigModEX.debug("Resetting all config values to orignal values...");
-			configs.forEach((name, config) -> config.reset());
+			configs.forEach((name, config) -> config.reset(fullReset));
 			return;
 		}
 		ConfigModEX.error("Cannot reset variables server side. Skipping call...");

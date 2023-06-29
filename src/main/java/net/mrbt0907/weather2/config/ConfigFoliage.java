@@ -8,14 +8,17 @@ import java.io.File;
 
 public class ConfigFoliage implements IConfigEX {
 	@Permission(0)
-	@Comment("How far foliage shaders can be seen")
+	@Name("Foliage Render Distance")
+	@Comment("How far in blocks can foliage shaders render up to?")
     public static int shader_range = 40;
 	@Permission(0)
 	@IntegerRange(min=0)
-	@Comment("The delay that folage shaders will use in ticks to update itself.")
+	@Name("Foliage Process Delay")
+	@Comment("How many ticks it takes for foliage shaders to process new plants.\nLower values increases lag.")
     public static int shader_process_delay = 1000;
 	@Permission(0)
-	@Comment("Enable client side grass to appear")
+	@Name("Enable Extra Grass")
+	@Comment("When foliage shaders are enabled in the EZ Gui, should extra grass render?")
     public static boolean enable_extra_grass = false;
 
     @Override

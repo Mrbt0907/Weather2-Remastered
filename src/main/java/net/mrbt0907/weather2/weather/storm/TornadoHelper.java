@@ -23,7 +23,6 @@ import net.mrbt0907.weather2.api.WeatherAPI;
 import net.mrbt0907.weather2.api.weather.IWeatherStaged;
 import net.mrbt0907.weather2.api.weather.WeatherEnum;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
-import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.config.ConfigGrab;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.entity.EntityMovingBlock;
@@ -336,21 +335,20 @@ public class TornadoHelper
 	public boolean canGrabEntity(Entity ent)
 	{
 		if (ent == null) return false;	
-		boolean isClient = ent.world.isRemote;
 		
 		EntityEntry entry = EntityRegistry.getEntry(ent.getClass());
 		if (entry != null && WeatherAPI.getEntityGrabList().containsKey(entry.getRegistryName().toString()))
 			return false;
 		if (ent instanceof EntityPlayer)
-			return isClient ? ClientTickHandler.clientConfigData.stormGrabPlayers : ConfigGrab.grab_players;
+			return ConfigGrab.grab_players;
 		if (ent instanceof INpc)
-			return isClient ? ClientTickHandler.clientConfigData.stormGrabVillagers : ConfigGrab.grab_villagers;
+			return ConfigGrab.grab_villagers;
 		if (ent instanceof EntityItem)
-			return isClient ? ClientTickHandler.clientConfigData.stormGrabItems : ConfigGrab.grab_items;
+			return ConfigGrab.grab_items;
 		if (ent instanceof IMob)
-			return isClient ? ClientTickHandler.clientConfigData.stormGrabMobs : ConfigGrab.grab_mobs;
+			return ConfigGrab.grab_mobs;
 		if (ent instanceof EntityAnimal)
-			return isClient ? ClientTickHandler.clientConfigData.stormGrabAnimals : ConfigGrab.grab_animals;
+			return ConfigGrab.grab_animals;
 		
 		//for moving blocks, other non livings
 		return true;

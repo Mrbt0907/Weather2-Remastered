@@ -8,7 +8,6 @@ import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
-import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.config.ConfigWind;
 import net.mrbt0907.weather2.network.packets.PacketWind;
@@ -104,7 +103,7 @@ public class WindManager
 			}
 		}
 		else if (!WeatherUtil.isPaused())
-			if (ClientTickHandler.clientConfigData.enableWind)
+			if (ConfigWind.enable)
 				tickClient();
 			else
 			{
@@ -125,9 +124,9 @@ public class WindManager
 		if (manager.world.getTotalWorldTime() % 200L == 0L)
 			cache.clear();
 		
-		if (ClientTickHandler.clientConfigData.enableWindAffectsEntities && mc.player != null && WeatherUtilEntity.isEntityOutside(mc.player, true))
+		if (ConfigWind.enableWindAffectsEntities && mc.player != null && WeatherUtilEntity.isEntityOutside(mc.player, true))
 		{
-			Vec3 a = getWindVectors(new Vec3(mc.player.posX, mc.player.posY, mc.player.posZ), new Vec3(mc.player.motionX, mc.player.motionY, mc.player.motionZ), (float) (WeatherUtilEntity.getWeight(mc.player) * 8.0F * ClientTickHandler.clientConfigData.windPlayerWeightMult * (mc.player.isInWater() ? ClientTickHandler.clientConfigData.windSwimmingWeightMult : 1.0F)), 0.05F, 5.0F);
+			Vec3 a = getWindVectors(new Vec3(mc.player.posX, mc.player.posY, mc.player.posZ), new Vec3(mc.player.motionX, mc.player.motionY, mc.player.motionZ), (float) (WeatherUtilEntity.getWeight(mc.player) * 8.0F * ConfigWind.windPlayerWeightMult * (mc.player.isInWater() ? ConfigWind.windSwimmingWeightMult : 1.0F)), 0.05F, 5.0F);
 
 	    	//Weather2.debug(a.toString());
 			mc.player.setVelocity(a.posX, a.posY, a.posZ);
@@ -175,7 +174,7 @@ public class WindManager
 		if (windAngle != windAngleTarget)
 		{
 			float difference = windAngle + -(windAngle > 180 && windAngleTarget <= 180 ? windAngleTarget + 360.0F : windAngle <= 180 && windAngleTarget > 180 ? windAngleTarget + -360.0F : windAngleTarget);
-			float change = (float) (1.95F * ClientTickHandler.clientConfigData.windChangeMult);
+			float change = (float) (1.95F * ConfigWind.windChangeMult);
 			if (Math.abs(difference) > change)
 				if (difference > 0.0F)
 					windAngle -= change;
@@ -191,7 +190,7 @@ public class WindManager
 		if (windSpeed != windSpeedTarget)
 		{
 			float difference = windSpeed - windSpeedTarget;
-			float change = (float) (0.015F * ClientTickHandler.clientConfigData.windChangeMult);
+			float change = (float) (0.015F * ConfigWind.windChangeMult);
 			if (Math.abs(difference) > change)
 				if (windSpeed > windSpeedTarget)
 					windSpeed -= change;

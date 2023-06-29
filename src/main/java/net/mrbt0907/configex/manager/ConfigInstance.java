@@ -226,7 +226,6 @@ public class ConfigInstance
 		}
 	}
 	
-	//TODO: Saving to file doesn't work as intended. Right now, server data is saved to the config file no matter what. We should only save client variables on clients, and server variables on the server
 	public void writeConfigFile(boolean wipeFile)
 	{
 		if (wipeFile && fileLocation.exists()) fileLocation.delete();
@@ -332,15 +331,18 @@ public class ConfigInstance
 		fields.forEach((registryName, field) -> field.setToDefault());
 	}
 	
-	public void reset()
+	public void reset(boolean fullReset)
 	{
 		config.onConfigChanged(Phase.START, fields.size());
 		variablesChanged = 0;
 		fields.forEach((name, field) ->
 		{
 			Object value = field.getRealCachedValue();
-			field.reset();
-			if (value != field.getRealCachedValue())
+			if (fullReset)
+				field.reset();
+			else
+				field.setRealValue();
+			if (value != field.getRealCachedValue() || !fullReset)
 			{
 				config.onValueChanged(field.name, value, field.getRealCachedValue());
 				variablesChanged++;

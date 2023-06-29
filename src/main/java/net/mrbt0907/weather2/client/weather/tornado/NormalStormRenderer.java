@@ -61,7 +61,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		Material material = state.getMaterial();
 		double maxRenderDistance = NewSceneEnhancer.instance().renderDistance + 64.0D;
 		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0016F, 0.45F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.02F);
-		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.01F, 0.25F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.005F);
+		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.01F, 0.35F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.010F);
 		float sizeOtherMult = Math.min(Math.max(storm.size * 0.003F, 0.45F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.035F);
 		float heightMult = storm.getLayerHeight() * 0.0064F;
 		float rotationMult = Math.max(heightMult * 0.55F, 1.0F);
@@ -281,7 +281,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 			}
 		}
 		
-		if (ConfigParticle.enable_distant_downfall && storm.ticks % 20 == 0 && ConfigParticle.distant_downfall_particle_rate > 0.0F && listParticlesRain.size() < 1000 && storm.stage > Stage.THUNDER.getStage() && storm.isRaining())
+		if (ConfigParticle.enable_distant_downfall && storm.ticks % 20 == 0 && ConfigParticle.distant_downfall_particle_rate > 0.0F && listParticlesRain.size() < 1000 && storm.stage > Stage.THUNDER.getStage() && storm.isRaining() && storm.temperature > 0.0F)
 		{
 			int particleCount = (int)Math.ceil(storm.rain * storm.stage * ConfigParticle.distant_downfall_particle_rate * 0.005F);
 			

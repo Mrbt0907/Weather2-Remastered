@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Random;
 
 import CoroUtil.config.ConfigCoroUtil;
-import CoroUtil.forge.CULog;
 import CoroUtil.util.ChunkCoordinatesBlock;
 import CoroUtil.util.CoroUtilBlock;
 import CoroUtil.util.CoroUtilEntOrParticle;
@@ -43,6 +42,7 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WindReader;
 import net.mrbt0907.weather2.api.weather.IWeatherRain;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
@@ -215,7 +215,8 @@ public class SceneEnhancer implements Runnable
 			}
 			particleBehavior.tickUpdateList();
 
-			if (ConfigCoroUtil.foliageShaders && EventHandler.queryUseOfShaders()) {
+			if (ConfigCoroUtil.foliageShaders && EventHandler.queryUseOfShaders())
+			{
 				if (!FoliageEnhancerShader.useThread) {
 					if (mc.world.getTotalWorldTime() % 40 == 0) {
 						FoliageEnhancerShader.tickClientThreaded();
@@ -844,7 +845,7 @@ public class SceneEnhancer implements Runnable
 			   }
 				else
 				{
-					if (!ClientTickHandler.clientConfigData.overcastMode)
+					if (!ConfigMisc.overcast_mode)
 					{
 						mc.world.getWorldInfo().setRaining(false);
 						mc.world.getWorldInfo().setThundering(false);
@@ -988,7 +989,7 @@ public class SceneEnhancer implements Runnable
 				}
 			}
 		} catch (Exception ex) {
-			CULog.err("Weather2: Error handling particle spawn queue: ");
+			Weather2.error("Weather2: Error handling particle spawn queue: ");
 			ex.printStackTrace();
 		}
 

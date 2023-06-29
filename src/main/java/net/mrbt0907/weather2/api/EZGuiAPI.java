@@ -72,7 +72,7 @@ public class EZGuiAPI
 	public static final String BA_RENDER_DISTANCE = "a_render_distance";
 	public static final String BA_FANCY_RENDERING = "a_fancy_rendering";
 	public static final String BB_GLOBAL = "b_global";
-	public static final String BB_RADAR = "b_radar";
+	public static final String BA_RADAR = "a_radar";
 	public static final String BC_ENABLE_TORNADO = "c_tornado";
 	public static final String BC_ENABLE_CYCLONE = "c_cyclone";
 	public static final String BC_ENABLE_SANDSTORM = "c_sandstorm";
@@ -118,7 +118,7 @@ public class EZGuiAPI
 		options.put(BA_RENDER_DISTANCE, BL_STR_ALT, 0);
 		options.put(BA_FANCY_RENDERING, BL_TOGGLE, 0);
 		options.put(BB_GLOBAL, BL_TOGGLE, 0);
-		options.put(BB_RADAR, BL_TOGGLE, 0);
+		options.put(BA_RADAR, BL_TOGGLE, 0);
 		options.put(BC_ENABLE_TORNADO, BL_TOGGLE, 1);
 		options.put(BC_ENABLE_CYCLONE, BL_TOGGLE, 1);
 		options.put(BC_ENABLE_SANDSTORM, BL_TOGGLE, 1);

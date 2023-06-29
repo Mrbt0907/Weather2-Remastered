@@ -57,7 +57,7 @@ public class WeatherManager
 		windManager = new WindManager(this);
 	}
 	
-	public void reset()
+	public void reset(boolean fullReset)
 	{
 		//Remove weather objects
 		fronts.forEach((uuid, front) -> front.reset());
@@ -69,8 +69,11 @@ public class WeatherManager
 		volcanoObjects.clear();
 		volcanoUUIDS.clear();
 		
-		//Reset wind manager
-		windManager.reset();
+		if (fullReset)
+		{
+		//	Reset wind manager
+			windManager.reset();
+		}
 	}
 	
 	public void tick()

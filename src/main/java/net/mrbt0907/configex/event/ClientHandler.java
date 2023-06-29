@@ -18,7 +18,7 @@ public class ClientHandler
 			ConfigModEX.debug("World was closed. Resetting client handler...");
 			inGame = false;
 			permissionLevel = ConfigManager.getPermissionLevel();
-			ConfigManager.reset();
+			ConfigManager.reset(true);
 		}
 		else if (MC.world != null && !inGame)
 		{
@@ -34,10 +34,12 @@ public class ClientHandler
 	public static void onGameTick()
 	{
 		int permission;
-		if (MC.currentScreen instanceof GuiConfigEditor && permissionLevel != (permission = MC.player.getPermissionLevel()))
+		if (permissionLevel != (permission = MC.player.getPermissionLevel()))
 		{
 			permissionLevel = permission;
-			((GuiConfigEditor)MC.currentScreen).scrollPane.populateData();
+			ConfigManager.reset(false);
+			if (MC.currentScreen instanceof GuiConfigEditor) 
+				((GuiConfigEditor)MC.currentScreen).scrollPane.populateData();
 		}
 	}
 	

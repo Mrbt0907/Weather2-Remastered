@@ -7,28 +7,27 @@ import net.mrbt0907.weather2.Weather2;
 import java.io.File;
 
 
-public class ConfigSnow implements IConfigEX {
-
-
+public class ConfigSnow implements IConfigEX
+{
 	//snow
+	@Enforce
 	@Comment("Should snow build up in a snowstorm?")
 	public static boolean Snow_PerformSnowfall = false;
-	//public static boolean Snow_ExtraPileUp = false;
+	@Enforce
+	@IntegerRange(min=1)
 	@Comment("Snow layers have a 1 in x chance to spawn durring a snowstorm")
 	public static int Snow_RarityOfBuildup = 64;
-	//public static int Snow_MaxBlockBuildupHeight = 3;
-	//public static boolean Snow_SmoothOutPlacement = false;
 
     @Override
     public String getName()
     {
-        return "Snow";
+        return "Weather2 Remastered - Snow";
     }
 
     @Override
     public String getSaveLocation()
     {
-        return Weather2.MODID + File.separator + getName();
+        return Weather2.MODID + File.separator + "ConfigSnow";
     }
 
 	@Override

@@ -13,6 +13,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import net.mrbt0907.configex.ConfigManager;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WindReader;
 import net.mrbt0907.weather2.client.NewSceneEnhancer;
@@ -23,8 +24,8 @@ import net.mrbt0907.weather2.config.ClientConfigData;
 import net.mrbt0907.weather2.config.ConfigFoliage;
 import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.network.packets.PacketData;
-import net.mrbt0907.weather2.network.packets.PacketEZGUI;
 import net.mrbt0907.weather2.util.Maths;
+import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import net.mrbt0907.weather2.util.WeatherUtilSound;
 import net.mrbt0907.weather2.weather.EntityRendererEX;
@@ -61,12 +62,14 @@ public class ClientTickHandler
 		}
 		
 		clientConfigData = new ClientConfigData();
+    	op = ConfigManager.getPermissionLevel() > 3;
 	}
 
     public void onRenderScreenTick()
     {
     	Minecraft mc = FMLClientHandler.instance().getClient();
-    	if (mc.currentScreen instanceof GuiIngameMenu) {
+    	if (mc.currentScreen instanceof GuiIngameMenu)
+    	{
     		ScaledResolution scaledresolution = new ScaledResolution(mc);
             int i = scaledresolution.getScaledWidth();
             int j = scaledresolution.getScaledHeight();
@@ -75,11 +78,8 @@ public class ClientTickHandler
     		configButton = new GuiButton(0, (i/2)-100, 0, 200, 20, "Weather2 EZ Config");
     		configButton.drawButton(mc, k, l, 1F);
     		
-    		if (k >= configButton.x && l >= configButton.y && k < configButton.x + 200 && l < configButton.y + 20) {
-    			if (Mouse.isButtonDown(0)) {
-    				mc.displayGuiScreen(new GuiEZConfig());
-    			}
-    		}
+    		if (k >= configButton.x && l >= configButton.y && k < configButton.x + 200 && l < configButton.y + 20 && Mouse.isButtonDown(0))
+    			mc.displayGuiScreen(new GuiEZConfig());
     	}
     }
 
@@ -122,23 +122,31 @@ public class ClientTickHandler
 		{
 			checkClientWeather();
 			weatherManager.tick();
-			
 			Weather2.clientChunkUtil.tick();
 			
-			if (!clientConfigData.aestheticMode && ConfigMisc.enable_forced_clouds_off && world.provider.getDimension() == 0)
+			if (!ConfigMisc.aesthetic_mode && ConfigMisc.enable_forced_clouds_off && world.provider.getDimension() == 0)
 				mc.gameSettings.clouds = 0;
 			
 			if (WeatherUtilConfig.isEffectsEnabled(world.provider.getDimension()))
 				NewSceneEnhancer.instance().tick();
 			
+			if (!WeatherUtilConfig.isWeatherEnabled(world.provider.getDimension()) && weatherManager.getFronts().size() > 1)
+			{
+				Weather2.debug("Removing all storms as the dimension weather is disabled");
+				weatherManager.reset(false);
+			}
+			
 			mc.profiler.endStartSection("tickWind");
 			//TODO: evaluate if best here
-			float windDir = WindReader.getWindAngle(world, null);
-			float windSpeed = WindReader.getWindSpeed(world, null);
+			
+			Vec3 pos = mc.player == null ? null : new Vec3(mc.player.getPosition());
+			float windDir = WindReader.getWindAngle(world, pos);
+			float windSpeed = WindReader.getWindSpeed(world, pos) * 0.25F;
 
 			float diff = Math.abs(windDir - smoothAngle)/* - 180*/;
 
-			if (true && diff > 10/* && (smoothAngle > windDir - give || smoothAngle < windDir + give)*/) {
+			if (diff > 10)
+			{
 
 				if (smoothAngle > 180) smoothAngle -= 360;
 				if (smoothAngle < -180) smoothAngle += 360;
@@ -217,19 +225,21 @@ public class ClientTickHandler
 			Weather2.debug("Weather2: Detected old WeatherManagerClient with unloaded world, clearing its data");
 			WeatherUtilSound.reset();
 			Weather2.clientChunkUtil.clearCache();
-			weatherManager.reset();
+			weatherManager.reset(true);
 			weatherManager = null;
 		}
 	}
 	
-    public static void checkClientWeather() {
-
-    	try {
+    public static void checkClientWeather()
+    {
+    	try
+    	{
 			World world = FMLClientHandler.instance().getClient().world;
-    		if (weatherManager == null || world != lastWorld) {
+    		if (weatherManager == null || world != lastWorld)
     			init(world);
-        	}
-    	} catch (Exception ex) {
+    	} 
+    	catch (Exception ex)
+    	{
     		Weather2.debug("Weather2: Warning, client received packet before it was ready to use, and failed to init client weather due to null world");
     	}
     }
@@ -237,17 +247,16 @@ public class ClientTickHandler
     public static void init(World world)
     {
 		//this is generally triggered when they teleport to another dimension
-		if (weatherManager != null) {
+		if (weatherManager != null)
+		{
 			Weather2.debug("Weather2: Detected old WeatherManagerClient with active world, clearing its data");
-			weatherManager.reset();
+			weatherManager.reset(true);
 		}
 
 		Weather2.debug("Weather2: Initializing WeatherManagerClient for client world and requesting full sync");
 
     	lastWorld = world;
     	weatherManager = new WeatherManagerClient(world);
-    	PacketEZGUI.isOp();
-    	
 		//request a full sync from server
     	PacketData.sync();
     }
