@@ -50,7 +50,7 @@ public class ConfigModEX
 		if (FMLCommonHandler.instance().getMinecraftServerInstance() == null || FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer())
 			return FMLClientHandler.instance().getClient().gameDir.getPath() + File.separator;
 		else
-			return FMLCommonHandler.instance().getSavesDirectory().getPath() + File.separator;
+			return new File(".").getAbsolutePath() + File.separator;
 	}
 	
 	public static void info(Object message)

@@ -169,7 +169,14 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 						
 						DamageSource ds = DamageSource.causeThrownDamage(this, this);
 						ds.damageType = "wm.movingblock";
-						var10.attackEntityFrom(ds, 4);
+						try
+						{
+							var10.attackEntityFrom(ds, 4);
+						}
+						catch(Exception e)
+						{
+							Weather2.error(e);
+						}
 					}
 				}
 
@@ -186,7 +193,15 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 
 						if (block == Blocks.CACTUS)
 						{
-							var10.attackEntityFrom(DamageSource.causeThrownDamage(this, this), 1);
+							try
+							{
+								var10.attackEntityFrom(DamageSource.causeThrownDamage(this, this), 1);
+							}
+							catch(Exception e)
+							{
+								Weather2.error(e);
+							}
+							
 						}
 						else if (this.material == Material.LAVA)
 						{
