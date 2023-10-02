@@ -225,7 +225,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		}
 		
 		delay = 1;
-		loopSize = 3 + (int)(storm.funnelSize / 80);
+		loopSize = 3 + (storm.funnelSize > 300.0F ? 4 : (int)(storm.funnelSize / 80.0F));
 		double spawnRad = storm.funnelSize * 0.01F;
 		
 		if (storm.stage >= Stage.TORNADO.getStage() + 1) 
