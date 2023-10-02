@@ -164,9 +164,6 @@ public class Weather2
 
 	public static void error(Object message)
 	{
-		boolean isDebug = ConfigMisc.debug_mode;
-		if (isDebug)
-		{
 			Throwable exception;
 			
 			if (message instanceof Throwable)
@@ -175,7 +172,6 @@ public class Weather2
 				exception = new Exception(String.valueOf(message));
 
 			exception.printStackTrace();
-		}
 	}
 	
 	public static void fatal(Object message)

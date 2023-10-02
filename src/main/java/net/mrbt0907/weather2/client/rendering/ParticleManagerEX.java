@@ -51,6 +51,7 @@ public class ParticleManagerEX extends RotatingParticleManager
 	private final Minecraft mc = Minecraft.getMinecraft();
 	public final Comparator<? super Particle> COMPARE_DISTANCE = (pA, pB) ->
 	{
+		if (pA == null) return 0;
 		if (pB == null) return 0;
 		double a = Maths.distance(mc.player.posX, mc.player.posY, mc.player.posZ, pA.posX, pA.posY, pA.posZ);
 		double b = Maths.distance(mc.player.posX, mc.player.posY, mc.player.posZ, pB.posX, pB.posY, pB.posZ);

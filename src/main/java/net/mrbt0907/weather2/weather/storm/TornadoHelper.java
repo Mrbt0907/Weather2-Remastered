@@ -123,23 +123,24 @@ public class TornadoHelper
 	public void tick(World world)
 	{
 		world.profiler.startSection("tornadoHelperTick");
-		float size = getTornadoBaseSize();
-		forceRotate(world, size * 0.85F + 32.0F);
-		int firesPerTickMax = 1;
-		int loopAmount;
-		double loopSize;
-		boolean shouldGrab = true, shouldReplace = true, shouldContinue = true;
-		BlockPos pos;
-		IBlockState state;
-		
 		if (storm == null)
 		{
 			world.profiler.endSection();
 			return;
 		}
 		
+		float size = getTornadoBaseSize();
+		forceRotate(world, size * 0.85F + 32.0F);
+		
 		if (!world.isRemote)
 		{
+
+			int firesPerTickMax = 1;
+			int loopAmount;
+			double loopSize;
+			boolean shouldGrab = true, shouldReplace = true, shouldContinue = true;
+			BlockPos pos;
+			IBlockState state;
 			ChunkUtils util = Weather2.getChunkUtil(world);
 			world.profiler.startSection("tickGrabBlocks");
 			if (ConfigGrab.grab_blocks && world.getTotalWorldTime() % (ConfigGrab.grab_process_delay > 0 ? ConfigGrab.grab_process_delay : 1) == 0)
@@ -360,7 +361,7 @@ public class TornadoHelper
 		boolean foundEnt = false;
 		List<Entity> entities = new ArrayList<Entity>(parWorld.loadedEntityList);
 		for (Entity entity : entities)
-			if (canGrabEntity(entity) && getDistanceXZ(storm.pos_funnel_base, entity.posX, entity.posY, entity.posZ) < size)
+			if ((!parWorld.isRemote || entity instanceof EntityPlayer) && canGrabEntity(entity) && getDistanceXZ(storm.pos_funnel_base, entity.posX, entity.posY, entity.posZ) < size)
 			{
 				if ((entity instanceof EntityMovingBlock && !((EntityMovingBlock)entity).collideFalling) || WeatherUtilEntity.isEntityOutside(entity, !(entity instanceof EntityPlayer)))
 				{

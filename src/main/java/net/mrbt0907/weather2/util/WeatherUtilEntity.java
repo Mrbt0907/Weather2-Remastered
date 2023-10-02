@@ -39,7 +39,7 @@ public class WeatherUtilEntity {
 		else if (world.isRemote && entity instanceof Particle)
 			return WeatherUtilParticle.getParticleWeight((Particle) entity);
 		else if (entity instanceof EntityMovingBlock)
-			return 1F + ((EntityMovingBlock) entity).age * 0.005F;
+			return 7.5F + ((EntityMovingBlock) entity).age * 0.05F;
 		else if (entity instanceof EntitySquid)
 			return 400F;
 		else if (entity instanceof EntityPlayer)

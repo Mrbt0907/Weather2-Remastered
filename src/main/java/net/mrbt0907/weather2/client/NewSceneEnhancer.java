@@ -678,7 +678,6 @@ public class NewSceneEnhancer implements Runnable
 				
 			if (WindReader.getWindSpeed(MC.world, new Vec3(MC.player.posX, MC.player.posY, MC.player.posZ)) > 0.0)
 			{
-	
 				if (particle instanceof EntityRotFX)
 				{
 					EntityRotFX entity1 = (EntityRotFX) particle;
@@ -709,53 +708,42 @@ public class NewSceneEnhancer implements Runnable
 			}
 		}
 		MC.profiler.endStartSection("effectParticle");
+		if (WeatherUtilParticle.fxLayers == null)
+			WeatherUtilParticle.getFXLayers();
+		
 		//Particles
-		if (WeatherUtilParticle.fxLayers != null && windMan.windSpeed >= 0.10)
+		for (int layer = 0; layer < WeatherUtilParticle.fxLayers.length; layer++)
 		{
-			//Built in particles
-			for (int layer = 0; layer < WeatherUtilParticle.fxLayers.length; layer++)
+			for (int i = 0; i < WeatherUtilParticle.fxLayers[layer].length; i++)
 			{
-				for (int i = 0; i < WeatherUtilParticle.fxLayers[layer].length; i++)
+				for (Particle entity1 : WeatherUtilParticle.fxLayers[layer][i])
 				{
-					for (Particle entity1 : WeatherUtilParticle.fxLayers[layer][i])
+					String className = entity1.getClass().getName();
+					if (className.equals("net.minecraft.client.particle.Barrier") || ConfigParticle.enable_vanilla_rain && className.equals("net.minecraft.client.particle.ParticleRain"))
+						continue;
+	
+					if ((WeatherUtilBlock.getPrecipitationHeightSafe(MC.world, new BlockPos(MathHelper.floor(CoroUtilEntOrParticle.getPosX(entity1)), 0, MathHelper.floor(CoroUtilEntOrParticle.getPosZ(entity1)))).getY() - 1 < (int)CoroUtilEntOrParticle.getPosY(entity1) + 1) || (entity1 instanceof ParticleTexFX))
 					{
-						
-						if (ConfigParticle.enable_vanilla_rain)
+						if ((entity1 instanceof ParticleFlame))
 						{
-							String className = entity1.getClass().getName();
-							if (className.contains("net.minecraft.") || className.contains("weather2.")) {
-								
-							}
-							else
-							{
-								continue;
+							if (windMan.windSpeed >= 0.20) {
+								entity1.particleAge += 1;
 							}
 						}
-	
-						if ((WeatherUtilBlock.getPrecipitationHeightSafe(MC.world, new BlockPos(MathHelper.floor(CoroUtilEntOrParticle.getPosX(entity1)), 0, MathHelper.floor(CoroUtilEntOrParticle.getPosZ(entity1)))).getY() - 1 < (int)CoroUtilEntOrParticle.getPosY(entity1) + 1) || (entity1 instanceof ParticleTexFX))
+						else if (entity1 instanceof IWindHandler)
 						{
-							if ((entity1 instanceof ParticleFlame))
+							if (((IWindHandler)entity1).getParticleDecayExtra() > 0 && WeatherUtilParticle.getParticleAge(entity1) % 2 == 0)
 							{
-								if (windMan.windSpeed >= 0.20) {
-									entity1.particleAge += 1;
-								}
+								entity1.particleAge += ((IWindHandler)entity1).getParticleDecayExtra();
 							}
-							else if (entity1 instanceof IWindHandler)
-							{
-								if (((IWindHandler)entity1).getParticleDecayExtra() > 0 && WeatherUtilParticle.getParticleAge(entity1) % 2 == 0)
-								{
-									entity1.particleAge += ((IWindHandler)entity1).getParticleDecayExtra();
-								}
-							}
-	
-							//rustle!
-							if (!(entity1 instanceof EntityWaterfallFX))
-							{
-								if (CoroUtilEntOrParticle.getMotionX(entity1) < 0.01F && CoroUtilEntOrParticle.getMotionZ(entity1) < 0.01F)
-									CoroUtilEntOrParticle.setMotionY(entity1, CoroUtilEntOrParticle.getMotionY(entity1) + rand.nextDouble() * 0.02);
-							}
-							windMan.getEntityWindVectors(entity1, 1F/20F, 0.5F);
 						}
+						//rustle!
+						if (!(entity1 instanceof EntityWaterfallFX))
+						{
+							if (CoroUtilEntOrParticle.getMotionX(entity1) < 0.01F && CoroUtilEntOrParticle.getMotionZ(entity1) < 0.01F)
+								CoroUtilEntOrParticle.setMotionY(entity1, CoroUtilEntOrParticle.getMotionY(entity1) + rand.nextDouble() * 0.02);
+						}
+						windMan.getEntityWindVectors(entity1, 1F/20F, 0.5F);
 					}
 				}
 			}
@@ -958,6 +946,8 @@ public class NewSceneEnhancer implements Runnable
 		errorsThreaded = 0;
 		rain = rainTarget = overcast = overcastTarget = fogDensity = fogMult = 0.0F;
 		fogRed = fogRedTarget = fogGreen = fogGreenTarget = fogBlue = fogBlueTarget = -1.0F;
+		if (WeatherUtilParticle.fxLayers == null)
+			WeatherUtilParticle.getFXLayers();
 		Weather2.debug("Scene Enhancer has been reset");
 	}
 	

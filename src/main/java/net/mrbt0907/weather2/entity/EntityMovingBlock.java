@@ -356,7 +356,8 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 	}
 
 	@Override
-	public boolean attackEntityFrom(DamageSource source, float amount) {
+	public boolean attackEntityFrom(DamageSource source, float amount)
+	{
 		return false;
 	}
 
@@ -364,29 +365,29 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 	protected void writeEntityToNBT(NBTTagCompound nbt)
 	{
 		nbt.setString("Tile", Block.REGISTRY.getNameForObject(block).toString());
-		nbt.setByte("Metadata", (byte)this.metadata);
+		nbt.setByte("Metadata", (byte)metadata);
 		NBTTagCompound var2 = new NBTTagCompound();
 
-		if (this.tileentity != null)
-			this.tileentity.writeToNBT(var2);
+		if (tileentity != null)
+			tileentity.writeToNBT(var2);
 
 		nbt.setTag("TileEntity", var2);
-		
-		
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void readEntityFromNBT(NBTTagCompound nbt)
 	{
-		this.block = (Block)Block.REGISTRY.getObject(new ResourceLocation(nbt.getString("Tile")));
-		this.metadata = nbt.getByte("Metadata") & 15;
-		this.tileentity = null;
+		block = (Block)Block.REGISTRY.getObject(new ResourceLocation(nbt.getString("Tile")));
+		metadata = nbt.getByte("Metadata") & 15;
+		state = block.getStateFromMeta(metadata);
+		tileentity = null;
 
-		if (this.block instanceof BlockContainer)
+		if (block instanceof BlockContainer)
 		{
-			this.tileentity = ((BlockContainer)this.block).createNewTileEntity(world, metadata);
+			tileentity = ((BlockContainer)this.block).createNewTileEntity(world, metadata);
 			NBTTagCompound var2 = nbt.getCompoundTag("TileEntity");
-			this.tileentity.readFromNBT(var2);
+			tileentity.readFromNBT(var2);
 		}
 	}
 

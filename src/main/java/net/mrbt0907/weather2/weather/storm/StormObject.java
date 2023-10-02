@@ -973,7 +973,6 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		float weight = WeatherUtilEntity.getWeight(obj);
 		if (weight < 0.0F) return;
 		
-		StormObject entity = this;
 		WeatherEntityConfig conf = getWeatherEntityConfigForStorm();
 		float heightMult = getLayerHeight() * (world.isRemote && obj instanceof Particle ? 0.004F : 0.0034F);
 		float rotationMult = heightMult * 0.5F * ((isViolent ? 3.1F : 1.55F) + Math.min((stage - 5.0F) / 3.0F, 2.0F));
@@ -984,8 +983,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		if (obj instanceof Entity)
 			ent = (Entity) obj;
 		
-		double radius = 10D, scale = conf.tornadoWidthScale;
-		double d1 = entity.pos.posX - CoroUtilEntOrParticle.getPosX(obj), d2 = entity.pos.posZ - CoroUtilEntOrParticle.getPosZ(obj);
+		double radius = 10D, scale = conf.tornadoWidthScale * (obj instanceof Particle ? 1D : 8.0D);
+		double d1 = pos.posX - CoroUtilEntOrParticle.getPosX(obj), d2 = pos.posZ - CoroUtilEntOrParticle.getPosZ(obj);
 		
 		
 		
@@ -1004,13 +1003,13 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		for (; f < -180F; f += 360F);
 		for (; f >= 180F; f -= 360F);
 
-		double distY = entity.pos.posY - CoroUtilEntOrParticle.getPosY(obj);
+		double distY = pos.posY - CoroUtilEntOrParticle.getPosY(obj);
 		double distXZ = Math.sqrt(Math.abs(d1)) + Math.sqrt(Math.abs(d2));
 
-		if (CoroUtilEntOrParticle.getPosY(obj) - entity.pos.posY < 0.0D)
+		if (CoroUtilEntOrParticle.getPosY(obj) - pos.posY < 0.0D)
 			distY = 1.0D;
 		else
-			distY = CoroUtilEntOrParticle.getPosY(obj) - entity.pos.posY;
+			distY = CoroUtilEntOrParticle.getPosY(obj) - pos.posY;
 
 		if (distY > maxHeight)
 			distY = maxHeight;
@@ -1054,9 +1053,6 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		float f4 = (float)Maths.fastSin(-f * 0.01745329F - (float)Math.PI);
 		float f5 = conf.tornadoPullRate * 1.5F;
 
-		//if (obj instanceof EntityLivingBase)
-		//	f5 /= (weight * ((distXZ + 1D) / radius));
-		
 		//if player and not spout
 		if (conf.type != 0 && (obj instanceof EntityLivingBase))
 			f5 *= ent.onGround ? 2F : 7.0F;
@@ -1076,16 +1072,19 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		
 		float moveX = f3 * f5;
 		float moveZ = f4 * f5;
+		
 		//tornado strength changes
 		float str = strength * 1.25f;
 		
 		if (conf.type == WeatherEntityConfig.TYPE_SPOUT)
 			str *= 0.3F;
+		
 		if (stormType == StormType.WATER.ordinal())
 		{
 			str *= 0.55F;
 			pullY = Math.min(pullY , 0.0275F);
 		}
+		
 		if (world.isRemote && obj instanceof Particle)
 			pullY *= str * 0.01F;
 		else

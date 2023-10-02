@@ -10,6 +10,7 @@ import extendedrenderer.particle.entity.EntityRotFX;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -60,8 +61,8 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		IBlockState state = ConfigCoroUtil.optimizedCloudRendering ? Blocks.AIR.getDefaultState() : Weather2.clientChunkUtil.getBlockState(manager.getWorld(), (int) storm.pos_funnel_base.posX, (int) storm.pos_funnel_base.posY - 1, (int) storm.pos_funnel_base.posZ);
 		Material material = state.getMaterial();
 		double maxRenderDistance = NewSceneEnhancer.instance().renderDistance + 64.0D;
-		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0016F, 0.45F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.02F);
-		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.01F, 0.35F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.010F);
+		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0010F, 0.45F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.02F);
+		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.012F, 0.35F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.010F);
 		float sizeOtherMult = Math.min(Math.max(storm.size * 0.003F, 0.45F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.035F);
 		float heightMult = storm.getLayerHeight() * 0.0064F;
 		float rotationMult = Math.max(heightMult * 0.55F, 1.0F);
@@ -190,9 +191,9 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		{
 			if (manager.getWorld().getTotalWorldTime() % (delay + ConfigParticle.ground_debris_particle_delay) == 0)
 			{
-				for (int i = 0; i < 3 && shouldSpawn(2); i++)
+				for (int i = 0; i < 16 && shouldSpawn(2); i++)
 				{
-					double spawnRad = storm.funnelSize + 5.0D;
+					double spawnRad = storm.funnelSize;
 						
 					Vec3 tryPos = new Vec3(storm.pos_funnel_base.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), storm.pos_funnel_base.posY, storm.pos_funnel_base.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
 					if (tryPos.distanceSq(playerAdjPos) < maxRenderDistance)
@@ -200,19 +201,23 @@ public class NormalStormRenderer extends AbstractStormRenderer
 						int groundY = WeatherUtilBlock.getPrecipitationHeightSafe(manager.getWorld(), new BlockPos((int)tryPos.posX, 0, (int)tryPos.posZ)).getY();
 						ExtendedEntityRotFX particle;
 						if (WeatherUtil.isAprilFoolsDay())
-							particle = spawnParticle(tryPos.posX, groundY + 3, tryPos.posZ, 1, ParticleRegistry.potato);
+							particle = spawnParticle(tryPos.posX, groundY, tryPos.posZ, 1, ParticleRegistry.potato);
 						else
-							particle = spawnParticle(tryPos.posX, groundY + 3, tryPos.posZ, 1);
+						{
+							int reee = Maths.random(3);
+							TextureAtlasSprite sprite = reee == 1 ? ParticleRegistry.debris_1 : reee == 2 ? ParticleRegistry.debris_2 : reee == 3 ? ParticleRegistry.debris_3 : ParticleRegistry.leaf;
+							particle = spawnParticle(tryPos.posX, groundY, tryPos.posZ, 1, sprite);
+						}
 						if (particle == null) break;
 						particle.setColor(r, g, b);
-						particle.setTicksFadeInMax(40);
+						particle.setTicksFadeInMax(8);
 						particle.setTicksFadeOutMax(80);
 						particle.setGravity(0.01F);
-						particle.setMaxAge(80);
-						particle.setScale(200.0F * sizeFunnelMult);
+						particle.setMaxAge(160);
+						particle.setScale(7.0F);
 						particle.rotationYaw = rand.nextInt(360);
 						particle.rotationPitch = 30.0F + rand.nextInt(60);
-							
+						particle.setMotionY(0.9D);
 						listParticlesGround.add(particle);
 					}
 				}
@@ -221,7 +226,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		
 		delay = 1;
 		loopSize = 3 + (int)(storm.funnelSize / 80);
-		double spawnRad = storm.funnelSize * 0.02F;
+		double spawnRad = storm.funnelSize * 0.01F;
 		
 		if (storm.stage >= Stage.TORNADO.getStage() + 1) 
 			spawnRad *= 48.25D;
@@ -491,8 +496,8 @@ public class NormalStormRenderer extends AbstractStormRenderer
 	@Override
 	public void onParticleLimitRefresh(WeatherManagerClient manager, int newParticleLimit)
 	{
-		particleLimitCloud = (int) (newParticleLimit * 0.2F);
-		particleLimitGround = (int) (newParticleLimit * 0.05F);
+		particleLimitCloud = (int) (newParticleLimit * 0.05F);
+		particleLimitGround = (int) (newParticleLimit * 0.25F);
 		particleLimitRain = (int) (newParticleLimit * 0.1F);
 		particleLimitFunnel = (int) (newParticleLimit * 0.6F);
 	}
