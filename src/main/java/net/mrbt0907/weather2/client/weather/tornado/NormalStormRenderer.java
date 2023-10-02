@@ -223,6 +223,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 				}
 			}
 		}
+
 		
 		delay = 1;
 		loopSize = 3 + (storm.funnelSize > 300.0F ? 4 : (int)(storm.funnelSize / 80.0F));
@@ -285,10 +286,9 @@ public class NormalStormRenderer extends AbstractStormRenderer
 				}
 			}
 		}
-		
 		if (ConfigParticle.enable_distant_downfall && storm.ticks % 20 == 0 && ConfigParticle.distant_downfall_particle_rate > 0.0F && listParticlesRain.size() < 1000 && storm.stage > Stage.THUNDER.getStage() && storm.isRaining() && storm.temperature > 0.0F)
 		{
-			int particleCount = (int)Math.ceil(storm.rain * storm.stage * ConfigParticle.distant_downfall_particle_rate * 0.005F);
+			int particleCount = (int)Math.min(Math.ceil(storm.rain * storm.stage * ConfigParticle.distant_downfall_particle_rate * 0.005F), 50.0F);
 			
 			for (int i = 0; i < particleCount && shouldSpawn(3); i++)
 			{
@@ -309,7 +309,6 @@ public class NormalStormRenderer extends AbstractStormRenderer
 				}
 			}
 		}
-		
 		for (int i = 0; i < listParticlesFunnel.size(); i++)
 		{
 			EntityRotFX ent = listParticlesFunnel.get(i);
