@@ -134,7 +134,7 @@ public class CommandConfigEX extends CommandBase
 					if (field.hasPermission(permissionLevel) || !field.enforce && !field.hide)
 					{
 						field.setToDefault();
-						ConfigManager.sync(field.config.getName(), field.registryName, false);
+						ConfigManager.save(field.config.getName(), field.registryName);
 						say(sender, field.name + " was set to default successfully! Value: " + field.getRealCachedValue());
 					}
 					else
@@ -170,7 +170,7 @@ public class CommandConfigEX extends CommandBase
 					if (field.hasPermission(permissionLevel) || !field.enforce && !field.hide)
 						if (field.setServerValue(value))
 						{
-							ConfigManager.sync(field.config.getName(), field.registryName, false);
+							ConfigManager.save(field.config.getName(), field.registryName);
 							say(sender, field.name + " was set successfully! Value: " + field.getRealCachedValue());
 						}
 						else

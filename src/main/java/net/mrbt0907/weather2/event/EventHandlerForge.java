@@ -25,7 +25,7 @@ import net.mrbt0907.weather2.api.event.EventRegisterParticleRenderer;
 import net.mrbt0907.weather2.client.NewSceneEnhancer;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.foliage.FoliageEnhancerShader;
-import net.mrbt0907.weather2.client.weather.tornado.LegacyStormRenderer;
+import net.mrbt0907.weather2.client.rendering.LegacyStormRenderer;
 import net.mrbt0907.weather2.config.ConfigFoliage;
 import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.config.ConfigParticle;

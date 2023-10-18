@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiIngameMenu;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.mrbt0907.configex.ConfigManager;
@@ -23,10 +24,10 @@ import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
 import net.mrbt0907.weather2.config.ClientConfigData;
 import net.mrbt0907.weather2.config.ConfigFoliage;
 import net.mrbt0907.weather2.config.ConfigMisc;
+import net.mrbt0907.weather2.config.EZConfigParser;
 import net.mrbt0907.weather2.network.packets.PacketData;
 import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.util.Maths.Vec3;
-import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import net.mrbt0907.weather2.util.WeatherUtilSound;
 import net.mrbt0907.weather2.weather.EntityRendererEX;
 
@@ -127,10 +128,10 @@ public class ClientTickHandler
 			if (!ConfigMisc.aesthetic_mode && ConfigMisc.enable_forced_clouds_off && world.provider.getDimension() == 0)
 				mc.gameSettings.clouds = 0;
 			
-			if (WeatherUtilConfig.isEffectsEnabled(world.provider.getDimension()))
+			if (EZConfigParser.isEffectsEnabled(world.provider.getDimension()))
 				NewSceneEnhancer.instance().tick();
 			
-			if (!WeatherUtilConfig.isWeatherEnabled(world.provider.getDimension()) && weatherManager.getFronts().size() > 1)
+			if (!EZConfigParser.isWeatherEnabled(world.provider.getDimension()) && weatherManager.getFronts().size() > 1)
 			{
 				Weather2.debug("Removing all storms as the dimension weather is disabled");
 				weatherManager.reset(false);
@@ -217,7 +218,6 @@ public class ClientTickHandler
 			resetClientWeather();
 
         mc.profiler.endSection();
-		mc.profiler.endSection();
     }
 
     public static void resetClientWeather() {

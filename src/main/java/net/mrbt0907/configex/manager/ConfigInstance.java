@@ -56,7 +56,7 @@ public class ConfigInstance
 			instance = new FieldInstance(config, field);
 			fields.put(instance.registryName, instance);
 		};
-		readConfigFile(false);
+		readConfigFile();
 		writeConfigFile(false);
 		ConfigModEX.debug("Config " + registryName + " has initialized successfully!");
 	}
@@ -134,8 +134,6 @@ public class ConfigInstance
 			}
 		ConfigModEX.debug("Read complete!");
 		config.onConfigChanged(Phase.END, variablesChanged);
-		if (variablesChanged > 0)
-			writeConfigFile(false);
 		variablesChanged = -1;
 	}
 	
@@ -194,7 +192,6 @@ public class ConfigInstance
 				config.onConfigChanged(Phase.START, 1);
 				config.onValueChanged(field.name, value, ConfigManager.isRemote ? field.getClientValue() : field.getServerValue());
 				config.onConfigChanged(Phase.END, 1);
-				writeConfigFile(false);
 			}
 			else
 				config.onValueChanged(field.name, value, ConfigManager.isRemote ? field.getClientValue() : field.getServerValue());
@@ -220,8 +217,6 @@ public class ConfigInstance
 		if (fullSync)
 		{
 			config.onConfigChanged(Phase.END, variablesChanged);
-			if (variablesChanged > 0)
-				writeConfigFile(false);
 			variablesChanged = -1;
 		}
 	}
@@ -241,9 +236,8 @@ public class ConfigInstance
 		ConfigModEX.debug("Saved config " + registryName + " successfully!");
 	}
 	
-	public void readConfigFile(boolean wipeFile)
+	public void readConfigFile()
 	{
-		if (wipeFile && fileLocation.exists()) fileLocation.delete();
 		ConfigModEX.debug("Config " + registryName + " is reading from file " + ConfigModEX.getGameFolder() + "config/" + saveLocation + ".cfg" + "...");
 		config.onConfigChanged(Phase.START, fields.size());
 		variablesChanged = 0;

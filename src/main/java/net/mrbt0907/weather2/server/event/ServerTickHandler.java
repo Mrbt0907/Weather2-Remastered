@@ -13,9 +13,9 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.config.ConfigMisc;
+import net.mrbt0907.weather2.config.EZConfigParser;
 import net.mrbt0907.weather2.network.packets.PacketEZGUI;
 import net.mrbt0907.weather2.server.weather.WeatherManagerServer;
-import net.mrbt0907.weather2.util.WeatherUtilConfig;
 
 public class ServerTickHandler
 {
@@ -60,16 +60,19 @@ public class ServerTickHandler
 			dimension = dim.provider.getDimension();
 			if (!dimensionSystems.containsKey(dimension))
 			{
-				if (WeatherUtilConfig.isWeatherEnabled(dimension))
+				if (EZConfigParser.isWeatherEnabled(dimension))
 					addWeatherSystem(dim);
-				WeatherUtilConfig.dimNames.put(dimension, dimension + ":>  " + dim.provider.getDimensionType().getName());
-				WeatherUtilConfig.nbtServerData.getCompoundTag("dimData").setString("dima_" + dimension, dimension + ":>  " + dim.provider.getDimensionType().getName());
-				WeatherUtilConfig.nbtSaveDataServer();
+				if (!EZConfigParser.dimNames.containsKey(dimension))
+				{
+					EZConfigParser.dimNames.put(dimension, dimension + ":>  " + dim.provider.getDimensionType().getName());
+					EZConfigParser.nbtServerData.getCompoundTag("dimData").setString("dima_" + dimension, dimension + ":>  " + dim.provider.getDimensionType().getName());
+					EZConfigParser.nbtSaveDataServer();
+				}
 			}
 			
 			if (dimensionSystems.containsKey(dimension))
 			{
-				if (WeatherUtilConfig.isWeatherEnabled(dimension))
+				if (EZConfigParser.isWeatherEnabled(dimension))
 					dimensionSystems.get(dimension).tick();
 				else
 					removedManagers.add(dimension);
@@ -85,7 +88,7 @@ public class ServerTickHandler
 			{
 				ConfigMisc.overcast_mode = true;
 				Weather2.debug("detected Aesthetic_Only_Mode on, setting overcast mode on");
-				WeatherUtilConfig.setOvercastModeServerSide(ConfigMisc.overcast_mode);
+				EZConfigParser.setOvercastModeServerSide(ConfigMisc.overcast_mode);
 				ConfigMod.forceSaveAllFilesFromRuntimeSettings();
 				syncServerConfigToClient();
 			}

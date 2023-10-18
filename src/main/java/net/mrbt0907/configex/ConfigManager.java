@@ -120,7 +120,88 @@ public class ConfigManager
 	{
 		return new ArrayList<ConfigInstance>(configs.values());
 	}
+
+	public static void save()
+	{
+		ConfigModEX.debug("Requested save of all configurations");
+		configs.forEach((name, instance) -> save(name, null));
+	}
 	
+	/**Saves all current config values to disk*/
+	public static void save(String configID)
+	{
+		save(configID, null);
+	}
+	
+	/**Saves a specific variable in the config to disk*/
+	public static void save(String configID, String variableName)
+	{
+		configID = formatRegistryName(configID);
+		ConfigModEX.debug("Requested save of configuration " + configID);
+		ConfigInstance instance = configs.get(configID);
+		
+		if (instance == null)
+		{
+			ConfigModEX.error(new NullPointerException("Config instance was null. Skipping..."));
+			return;
+		}
+		
+		if (variableName == null)
+			instance.updateAllFields(true);
+		else
+		{
+			FieldInstance field = instance.getField(variableName);
+			
+			if (field == null)
+			{
+				ConfigModEX.error(new NullPointerException("Field instance was null. Skipping..."));
+				return;
+			}
+			
+			instance.updateField(field, true);
+		}
+		
+		instance.writeConfigFile(false);
+		if (!isRemote)
+		{
+			ConfigModEX.debug("Sending information to all clients...");
+			NetworkHandler.sendClientPacket(0, ConfigManager.writeNBT(new NBTTagCompound()));
+		}
+	}
+	
+	public static void load()
+	{
+		ConfigModEX.debug("Requested load of all configurations");
+		configs.forEach((name, instance) -> instance.readConfigFile());
+		if (!isRemote)
+		{
+			ConfigModEX.debug("Sending information to all clients...");
+			NetworkHandler.sendClientPacket(0, ConfigManager.writeNBT(new NBTTagCompound()));
+		}
+	}
+	
+	/**Erases all config values and reloads config values from disk*/
+	public static void load(String configID)
+	{
+		configID = formatRegistryName(configID);
+		ConfigModEX.debug("Requested load of configuration " + configID);
+		ConfigInstance instance = configs.get(configID);
+		
+		if (instance == null)
+		{
+			ConfigModEX.error(new NullPointerException("Config instance was null. Skipping..."));
+			return;
+		}
+		
+		instance.readConfigFile();
+		if (!isRemote)
+		{
+			ConfigModEX.debug("Sending information to all clients...");
+			NetworkHandler.sendClientPacket(0, ConfigManager.writeNBT(new NBTTagCompound()));
+		}
+	}
+	
+	/*
 	public static void sync(boolean readCurrentValues)
 	{
 		ConfigModEX.debug("Requested sync of all configurations");
@@ -189,7 +270,7 @@ public class ConfigManager
 			NetworkHandler.sendClientPacket(0, ConfigManager.writeNBT(new NBTTagCompound()));
 		}
 	}
-	
+	*/
 	/**Registers the config instance to the registry, and */
 	public static IConfigEX register(IConfigEX config)
 	{

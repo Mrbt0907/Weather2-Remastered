@@ -39,7 +39,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.config.ConfigFoliage;
 import net.mrbt0907.weather2.config.ConfigMisc;
-import net.mrbt0907.weather2.util.WeatherUtilConfig;
+import net.mrbt0907.weather2.config.EZConfigParser;
 
 import org.lwjgl.BufferUtils;
 
@@ -602,7 +602,7 @@ public class FoliageEnhancerShader implements Runnable {
     public static boolean tickClientCloseToPlayer() {
         Minecraft mc = FMLClientHandler.instance().getClient();
 
-        if (mc.world != null && mc.player != null && WeatherUtilConfig.isEffectsEnabled(mc.world.provider.getDimension())) {
+        if (mc.world != null && mc.player != null && EZConfigParser.isEffectsEnabled(mc.world.provider.getDimension())) {
             return tickFoliage(5, false);
         } else {
             return true;
@@ -613,7 +613,7 @@ public class FoliageEnhancerShader implements Runnable {
     public static boolean tickClientThreaded() {
         Minecraft mc = FMLClientHandler.instance().getClient();
 
-        if (mc.world != null && mc.player != null && WeatherUtilConfig.isEffectsEnabled(mc.world.provider.getDimension())) {
+        if (mc.world != null && mc.player != null && EZConfigParser.isEffectsEnabled(mc.world.provider.getDimension())) {
             return tickFoliage(ConfigFoliage.shader_range, true);
         } else {
             return true;

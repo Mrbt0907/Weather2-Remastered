@@ -23,7 +23,7 @@ import net.mrbt0907.weather2.server.command.CommandWeather2;
 import net.mrbt0907.weather2.server.event.ServerTickHandler;
 import net.mrbt0907.weather2.server.weather.WeatherManagerServer;
 import net.mrbt0907.weather2.util.ChunkUtils;
-import net.mrbt0907.weather2.util.WeatherUtilConfig;
+
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Weather2.MODID, name=Weather2.MOD, version=Weather2.VERSION, acceptedMinecraftVersions="[1.12.2]", dependencies="required-after:coroutil@[1.12.1-1.2.37,);required-after:configex@[1.0,);required-after:forge@[14.23.5.2860,);", guiFactory = "net.mrbt0907.configex.gui.AdvancedGuiFactory")
@@ -62,7 +62,7 @@ public class Weather2
 		ConfigModEX.register(new ConfigSand());
 		ConfigModEX.register(new ConfigSnow());
 		ConfigModEX.register(new ConfigFoliage());
-		WeatherUtilConfig.loadNBT();
+		EZConfigParser.loadNBT();
 		info("Starting Weather2 - Remastered...");
 		if (FMLCommonHandler.instance().getSide().equals(Side.CLIENT))
 			clientChunkUtil = new ChunkUtils();

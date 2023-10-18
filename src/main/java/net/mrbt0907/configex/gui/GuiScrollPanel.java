@@ -29,7 +29,7 @@ public abstract class GuiScrollPanel
 	public int scrollBarSize;
 	
 	public int selected = -1;
-	protected float scrollPos;
+	protected static float scrollPos;
 	/**The mouse position in which the user started to drag the scroll bar*/
 	protected float initialMouseY;
 	
@@ -83,9 +83,9 @@ public abstract class GuiScrollPanel
 	}
 	
 	/**Moves the scroll position by the adjustment value; This is in actual height, not percentage*/
-	protected void setScrollPos(float scrollPos)
+	protected void setScrollPos(float scroll)
 	{
-		this.scrollPos = MathHelper.clamp(scrollPos, 0.0F, getScrollHeight() - ySize);
+		scrollPos = MathHelper.clamp(scroll, 0.0F, getScrollHeight() - ySize);
 	}
 	
 	/**Moves the scroll position by the adjustment value; This is in actual height, not percentage*/

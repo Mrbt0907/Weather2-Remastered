@@ -62,6 +62,7 @@ public class NetworkHandler
 					
 					nbt.setUniqueId("player", player.getUniqueID());
 					ConfigManager.readNBT(nbt);
+					ConfigManager.save();
 					break;
 				case 1:
 					if (ConfigManager.isRemote)

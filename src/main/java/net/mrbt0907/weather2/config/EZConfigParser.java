@@ -1,4 +1,4 @@
-package net.mrbt0907.weather2.util;
+package net.mrbt0907.weather2.config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,11 +17,12 @@ import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.EZGuiAPI;
 import net.mrbt0907.weather2.api.event.EventEZGuiData;
 import net.mrbt0907.weather2.client.gui.GuiEZConfig;
-import net.mrbt0907.weather2.config.*;
+import net.mrbt0907.weather2.util.TriMapEx;
 import CoroUtil.config.ConfigCoroUtil;
 import CoroUtil.util.CoroUtilFile;
+import modconfig.ConfigMod;
 
-public class WeatherUtilConfig
+public class EZConfigParser
 {
 	public static final String version = "2.5";
 	public static final Map<String, Integer> CLIENT_DEFAULTS = new HashMap<String, Integer>();
@@ -33,8 +34,9 @@ public class WeatherUtilConfig
 	
 	//actual data that gets written out to disk
 	public static NBTTagCompound nbtServerData = new NBTTagCompound();
+	public static NBTTagCompound nbtRealServerData = new NBTTagCompound();
 	public static NBTTagCompound nbtClientData = new NBTTagCompound();
-	
+
 	public static void processServerData(NBTTagCompound cache)
 	{
 		for(String key : cache.getKeySet())
@@ -185,7 +187,7 @@ public class WeatherUtilConfig
 			refreshDimensionRules();
 		}
 		nbtSaveDataServer();
-		ConfigManager.sync(true);
+		ConfigManager.save();
 	}
 	
 	public static void processClientData(NBTTagCompound cache)
@@ -525,6 +527,8 @@ public class WeatherUtilConfig
 							ConfigMisc.proxy_render_override = false;
 							break;
 					}
+					ConfigMod.configLookup.get("coroutil_general").updateField("particleShaders", ConfigCoroUtil.particleShaders);
+					ConfigMod.configLookup.get("coroutil_general").updateField("useEntityRenderHookForShaders", ConfigCoroUtil.useEntityRenderHookForShaders);
 					break;
 				case EZGuiAPI.BA_FOLIAGE:
 					ConfigCoroUtil.foliageShaders = value == 1;
@@ -591,7 +595,7 @@ public class WeatherUtilConfig
 			}
 		
 		nbtSaveDataClient();
-		ConfigManager.sync(true);
+		ConfigManager.save();
 	}
 	
 	/**Used to get needed information from a client to add to the server data*/
@@ -625,11 +629,15 @@ public class WeatherUtilConfig
 			{
 				nbtClientData.setBoolean("op", parNBT.getBoolean("op"));
 				for (String key : parNBT.getKeySet())
+				{
 					if (key.matches("^" + GuiEZConfig.PREFIX + ".+"))
 					{
 						newKey = key.replaceFirst("^" + GuiEZConfig.PREFIX, "");
-						nbtServerData.setInteger(newKey, parNBT.getInteger(key));
+						nbtRealServerData.setInteger(newKey, parNBT.getInteger(key));
 					}
+					else if (nbtServerData.hasKey(key))
+						nbtRealServerData.setInteger(key, parNBT.getInteger(key));
+				}
 				NBTTagCompound dimensions = parNBT.getCompoundTag("dimData");
 				if (dimensions != null)
 				{
@@ -708,6 +716,8 @@ public class WeatherUtilConfig
 	{
 		if (nbtClientData.hasKey(buttonID))
 			return nbtClientData.getInteger(buttonID);
+		else if (nbtRealServerData.hasKey(buttonID))
+			return nbtRealServerData.getInteger(buttonID);
 		else if (nbtServerData.hasKey(buttonID))
 			return nbtServerData.getInteger(buttonID);
 		else
@@ -746,6 +756,7 @@ public class WeatherUtilConfig
 	
 	public static void nbtWriteNBTToDisk(NBTTagCompound parData, boolean saveForClient)
 	{
+		Weather2.debug("Saving EZ Gui " + (saveForClient ? "client" : "server") + " data...");
 		String fileURL = null;
 		
 		if (saveForClient)
@@ -768,6 +779,7 @@ public class WeatherUtilConfig
 	
 	public static NBTTagCompound nbtReadNBTFromDisk(boolean loadForClient)
 	{
+		Weather2.debug("Loading EZ Gui " + (loadForClient ? "client" : "server") + " data...");
 		NBTTagCompound data = new NBTTagCompound();
 		String fileURL = null;
 		if (loadForClient)

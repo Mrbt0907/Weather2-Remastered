@@ -21,11 +21,11 @@ import net.mrbt0907.weather2.api.event.EventRegisterParticleRenderer;
 import net.mrbt0907.weather2.api.event.EventRegisterStages;
 import net.mrbt0907.weather2.api.weather.AbstractStormRenderer;
 import net.mrbt0907.weather2.api.weather.WeatherEnum;
-import net.mrbt0907.weather2.client.weather.tornado.NormalStormRenderer;
+import net.mrbt0907.weather2.client.rendering.NormalStormRenderer;
 import net.mrbt0907.weather2.config.ConfigGrab;
 import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.config.ConfigStorm;
-import net.mrbt0907.weather2.util.WeatherUtilConfig;
+import net.mrbt0907.weather2.config.EZConfigParser;
 import net.mrbt0907.weather2.util.ConfigList;
 import net.mrbt0907.weather2.weather.WeatherManager;
 import net.mrbt0907.weather2.weather.storm.StormObject;
@@ -218,7 +218,7 @@ public class WeatherAPI
 	/**Refreshes the dimension rules. These rules determine if weather can spawn in a dimension and whether they can create effects in a dimension.*/
 	public static void refreshDimensionRules()
 	{
-		WeatherUtilConfig.refreshDimensionRules();
+		EZConfigParser.refreshDimensionRules();
 	}
 	
 	/**Refreshes every stage list, which each is used for rolling storm stages*/

@@ -28,6 +28,7 @@ import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.config.ConfigSand;
 import net.mrbt0907.weather2.config.ConfigSimulation;
 import net.mrbt0907.weather2.config.ConfigStorm;
+import net.mrbt0907.weather2.config.EZConfigParser;
 import net.mrbt0907.weather2.network.packets.PacketFrontObject;
 import net.mrbt0907.weather2.network.packets.PacketVanillaWeather;
 import net.mrbt0907.weather2.network.packets.PacketVolcanoObject;
@@ -36,7 +37,6 @@ import net.mrbt0907.weather2.network.packets.PacketWind;
 import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.util.WeatherUtilBlock;
-import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import net.mrbt0907.weather2.util.WeatherUtilEntity;
 import net.mrbt0907.weather2.weather.WeatherManager;
 import net.mrbt0907.weather2.weather.storm.StormObject;
@@ -151,7 +151,7 @@ public class WeatherManagerServer extends WeatherManager
 			//cloud formation spawning - REFINE ME!
 			if (!ConfigMisc.aesthetic_mode)
 			{
-				if (WeatherUtilConfig.isWeatherEnabled(dim) && world.getTotalWorldTime() % ConfigStorm.spawningTickRate == 0)
+				if (EZConfigParser.isWeatherEnabled(dim) && world.getTotalWorldTime() % ConfigStorm.spawningTickRate == 0)
 				{
 					List<EntityPlayer> players = world.playerEntities;
 					int layer, frontCount = fronts.size() + 1;
@@ -205,7 +205,7 @@ public class WeatherManagerServer extends WeatherManager
 		WorldInfo worldInfo = world.getWorldInfo();
 		boolean isRaining = worldInfo.isRaining();
 		boolean isThundering = worldInfo.isThundering();
-		if (WeatherUtilConfig.isWeatherEnabled(dim))
+		if (EZConfigParser.isWeatherEnabled(dim))
 		{
 			if (!ConfigMisc.overcast_mode && ConfigMisc.server_weather_mode != -1)
 			{
@@ -573,7 +573,7 @@ public class WeatherManagerServer extends WeatherManager
 	
 	protected boolean canSpawnWeather(int type)
 	{
-		if (!WeatherUtilConfig.isWeatherEnabled(world.provider.getDimension())) return false;
+		if (!EZConfigParser.isWeatherEnabled(world.provider.getDimension())) return false;
 		long ticks;
 		
 		switch(type)

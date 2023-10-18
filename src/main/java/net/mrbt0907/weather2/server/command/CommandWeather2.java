@@ -16,6 +16,7 @@ import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WeatherAPI;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.config.ConfigStorm;
+import net.mrbt0907.weather2.config.EZConfigParser;
 import net.mrbt0907.weather2.network.packets.PacketRefresh;
 import net.mrbt0907.weather2.network.packets.PacketVolcanoObject;
 import net.mrbt0907.weather2.network.packets.PacketWeatherObject;
@@ -24,7 +25,6 @@ import net.mrbt0907.weather2.server.weather.WeatherManagerServer;
 import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.util.ReflectionHelper;
-import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import net.mrbt0907.weather2.weather.storm.FrontObject;
 import net.mrbt0907.weather2.weather.storm.StormObject;
 import net.mrbt0907.weather2.weather.storm.StormObject.StormType;
@@ -251,7 +251,7 @@ public class CommandWeather2 extends CommandBase
 								int dimension = world.provider.getDimension();
 								
 								WeatherManagerServer wm = ServerTickHandler.dimensionSystems.get(dimension);
-								if (wm == null || !WeatherUtilConfig.isWeatherEnabled(dimension))
+								if (wm == null || !EZConfigParser.isWeatherEnabled(dimension))
 								{
 									say(sender, "fail.nomanager");
 									return;
@@ -400,7 +400,7 @@ public class CommandWeather2 extends CommandBase
 								
 								//TODO: make this handle non StormObject types better, currently makes instance and doesnt use that type if its a sandstorm
 								WeatherManagerServer wm = ServerTickHandler.dimensionSystems.get(dimension);
-								if (wm == null || !WeatherUtilConfig.isWeatherEnabled(dimension))
+								if (wm == null || !EZConfigParser.isWeatherEnabled(dimension))
 								{
 									say(sender, "fail.nomanager");
 									return;
@@ -479,7 +479,7 @@ public class CommandWeather2 extends CommandBase
 									break;
 								}
 								WeatherManagerServer wm = ServerTickHandler.dimensionSystems.get(world.provider.getDimension());
-								if (wm == null || !WeatherUtilConfig.isWeatherEnabled(world.provider.getDimension()))
+								if (wm == null || !EZConfigParser.isWeatherEnabled(world.provider.getDimension()))
 								{
 									say(sender, "fail.nomanager");
 									return;
@@ -537,7 +537,7 @@ public class CommandWeather2 extends CommandBase
 							case "volcano":
 							{
 								WeatherManagerServer wm = ServerTickHandler.dimensionSystems.get(0);
-								if (wm == null || !WeatherUtilConfig.isWeatherEnabled(0))
+								if (wm == null || !EZConfigParser.isWeatherEnabled(0))
 								{
 									say(sender, "fail.nomanager");
 									return;

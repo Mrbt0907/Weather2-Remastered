@@ -164,6 +164,7 @@ public class ConfigParticle implements IConfigEX
     		if (ClientTickHandler.weatherManager != null)
     			ClientTickHandler.weatherManager.refreshParticleLimit();
     	}
+		
 	}
 
 	@Override

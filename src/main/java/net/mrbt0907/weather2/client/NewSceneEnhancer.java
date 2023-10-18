@@ -45,12 +45,12 @@ import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.config.ConfigVolume;
+import net.mrbt0907.weather2.config.EZConfigParser;
 import net.mrbt0907.weather2.registry.SoundRegistry;
 import net.mrbt0907.weather2.util.BlockSESnapshot;
 import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.util.WeatherUtil;
 import net.mrbt0907.weather2.util.WeatherUtilBlock;
-import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import net.mrbt0907.weather2.util.WeatherUtilEntity;
 import net.mrbt0907.weather2.util.WeatherUtilParticle;
 import net.mrbt0907.weather2.util.WeatherUtilSound;
@@ -135,7 +135,7 @@ public class NewSceneEnhancer implements Runnable
 	 *- Cache storm results*/
 	protected void tickThread()
 	{
-		if (MC.world != null && MC.player != null && WeatherUtilConfig.isEffectsEnabled(MC.world.provider.getDimension()))
+		if (MC.world != null && MC.player != null && EZConfigParser.isEffectsEnabled(MC.world.provider.getDimension()))
 		{
 			Vec3 playerPos = new Vec3(MC.player.posX, MC.player.posY, MC.player.posZ);
 			Vec playerPos2D = new Vec(MC.player.posX, MC.player.posZ);
@@ -296,7 +296,7 @@ public class NewSceneEnhancer implements Runnable
 	{
 		if (event.phase.equals(Phase.START) && MC.world != null)
 		{
-			MC.world.setRainStrength(rain);
+			MC.world.setRainStrength(Math.abs(rain));
 			MC.world.setThunderStrength(overcast);
 		}
 	}

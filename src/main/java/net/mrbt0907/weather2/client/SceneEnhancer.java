@@ -57,12 +57,12 @@ import net.mrbt0907.weather2.config.ConfigMisc;
 import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.config.ConfigStorm;
 import net.mrbt0907.weather2.config.ConfigVolume;
+import net.mrbt0907.weather2.config.EZConfigParser;
 import net.mrbt0907.weather2.registry.SoundRegistry;
 import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.util.WeatherUtil;
 import net.mrbt0907.weather2.util.WeatherUtilBlock;
-import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import net.mrbt0907.weather2.util.WeatherUtilEntity;
 import net.mrbt0907.weather2.util.WeatherUtilParticle;
 import net.mrbt0907.weather2.util.WeatherUtilSound;
@@ -235,7 +235,7 @@ public class SceneEnhancer implements Runnable
 	//run from our newly created thread
 	public void tickClientThreaded() {
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		if (mc.world != null && mc.player != null && WeatherUtilConfig.isEffectsEnabled(mc.world.provider.getDimension()) && ClientTickHandler.weatherManager != null)
+		if (mc.world != null && mc.player != null && EZConfigParser.isEffectsEnabled(mc.world.provider.getDimension()) && ClientTickHandler.weatherManager != null)
 		{
 			if (mc.world.getTotalWorldTime() % 10L == 0L)
 				wo = ClientTickHandler.weatherManager.getClosestWeather(new Vec3(mc.player.posX, mc.player.posY, mc.player.posZ), ConfigParticle.extended_render_distance);
@@ -810,7 +810,7 @@ public class SceneEnhancer implements Runnable
 		
 		ClientTickHandler.checkClientWeather();
 		
-		if (WeatherUtilConfig.isWeatherEnabled(ClientTickHandler.weatherManager.getDimension()))
+		if (EZConfigParser.isWeatherEnabled(ClientTickHandler.weatherManager.getDimension()))
 		{
 			if (wo instanceof StormObject)
 				storm = (StormObject)wo; 
@@ -1783,7 +1783,7 @@ public class SceneEnhancer implements Runnable
 		Minecraft mc = Minecraft.getMinecraft();
 		IBlockState iblockstate = ActiveRenderInfo.getBlockStateAtEntityViewpoint(mc.world, mc.getRenderViewEntity(), 1F);
 		if (iblockstate.getMaterial().isLiquid()) return false;
-		return ConfigParticle.enable_extended_render_distance && WeatherUtilConfig.isWeatherEnabled(ClientTickHandler.weatherManager.getDimension());
+		return ConfigParticle.enable_extended_render_distance && EZConfigParser.isWeatherEnabled(ClientTickHandler.weatherManager.getDimension());
 	}
 	
 	public static void renderWorldLast(RenderWorldLastEvent event) {

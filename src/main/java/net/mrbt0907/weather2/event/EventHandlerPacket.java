@@ -10,9 +10,9 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.client.NewSceneEnhancer;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
+import net.mrbt0907.weather2.config.EZConfigParser;
 import net.mrbt0907.weather2.network.packets.PacketEZGUI;
 import net.mrbt0907.weather2.server.event.ServerTickHandler;
-import net.mrbt0907.weather2.util.WeatherUtilConfig;
 import net.mrbt0907.weather2.util.WeatherUtilSound;
 import CoroUtil.packet.PacketHelper;
 
@@ -48,7 +48,7 @@ public class EventHandlerPacket {
 						ClientTickHandler.weatherManager.nbtSyncFromServer(nbt);
 						break;
 					case 9:
-						WeatherUtilConfig.nbtReceiveClient(nbt);
+						EZConfigParser.nbtReceiveClient(nbt);
 						break;
 					//case 9:
 						//ItemPocketSand.particulateFromServer(nbt.getString("playerName"));
@@ -67,6 +67,9 @@ public class EventHandlerPacket {
 					case 17:
 						NewSceneEnhancer.instance().reset();
 						NewSceneEnhancer.instance().enable();
+						break;
+					case 18:
+						
 						break;
 					default:
 						Weather2.error("Recieved an invalid network packet from the server");
@@ -93,7 +96,7 @@ public class EventHandlerPacket {
 				switch(command)
 				{
 					case 8:
-						NBTTagCompound sendNBT = WeatherUtilConfig.nbtServerData;
+						NBTTagCompound sendNBT = EZConfigParser.nbtServerData;
 						sendNBT.setInteger("command", 9);
 						sendNBT.setInteger("server", 1);
 						sendNBT.setBoolean("op", FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() || FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().canSendCommands(entP.getGameProfile()));
@@ -104,7 +107,7 @@ public class EventHandlerPacket {
 						break;
 					case 10:
 						if (FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() || FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().canSendCommands(entP.getGameProfile()))
-							WeatherUtilConfig.nbtReceiveServer(nbt);
+							EZConfigParser.nbtReceiveServer(nbt);
 						break;
 				}
 			});

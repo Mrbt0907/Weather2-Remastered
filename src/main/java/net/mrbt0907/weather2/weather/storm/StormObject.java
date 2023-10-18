@@ -983,7 +983,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 		if (obj instanceof Entity)
 			ent = (Entity) obj;
 		
-		double radius = 10D, scale = conf.tornadoWidthScale * (obj instanceof Particle ? 1D : 8.0D);
+		double radius = 10D, scale = conf.tornadoWidthScale * (world.isRemote && obj instanceof Particle ? 1D : 8.0D);
 		double d1 = pos.posX - CoroUtilEntOrParticle.getPosX(obj), d2 = pos.posZ - CoroUtilEntOrParticle.getPosZ(obj);
 		
 		

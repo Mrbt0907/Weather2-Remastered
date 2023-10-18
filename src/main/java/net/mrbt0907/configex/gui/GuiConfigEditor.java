@@ -240,6 +240,7 @@ public class GuiConfigEditor extends GuiScreen
 				ConfigModEX.debug("Applying client changes...");
 				nbt.setBoolean("setClient", true);
 				ConfigManager.readNBT(nbt);
+				ConfigManager.save();
 			}
 		}
 	}

@@ -22,9 +22,10 @@ import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.EZGuiAPI;
 import net.mrbt0907.weather2.client.gui.elements.GuiButtonBoolean;
 import net.mrbt0907.weather2.client.gui.elements.GuiButtonCycle;
+import net.mrbt0907.weather2.config.EZConfigParser;
 import net.mrbt0907.weather2.network.packets.PacketEZGUI;
 import net.mrbt0907.weather2.util.TriMapEx;
-import net.mrbt0907.weather2.util.WeatherUtilConfig;
+
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -78,6 +79,7 @@ public class GuiEZConfig extends GuiScreen
 	{
 		super();
 		//only sync request on initial gui open
+		EZConfigParser.nbtRealServerData = new NBTTagCompound();
 		PacketEZGUI.sync();
 		
 		//Initialize send cache.
@@ -132,7 +134,7 @@ public class GuiEZConfig extends GuiScreen
 				drawString(this.fontRenderer, format("button." + buttons.get(i + EZGuiAPI.BUTTON_MIN + (maxEntries * subPage)) + ".tooltip"), xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight * i), 16777215);
 		else
 			for (int i = 0; i < size; i++)
-				drawString(this.fontRenderer, WordUtils.capitalize(String.valueOf(buttons.get(EZGuiAPI.BUTTON_MIN + i * 2)).replaceAll("\\_", " ")), xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight * i), 16777215);
+				drawString(this.fontRenderer, WordUtils.capitalize(String.valueOf(buttons.get(EZGuiAPI.BUTTON_MIN + (i + maxEntries * subPage) * 2)).replaceAll("\\_", " ")), xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight * i), 16777215);
 		
 		if (maxSubPages > 0)
 			drawString(this.fontRenderer, format("misc.page", subPage + 1, maxSubPages + 1), xStart+46, yStart+238, 16777215);
@@ -227,24 +229,24 @@ public class GuiEZConfig extends GuiScreen
 		int size = 0;
 		int startingIndex = maxEntries * subPage;
 		
-		if (page == 0 || WeatherUtilConfig.isOp())
+		if (page == 0 || EZConfigParser.isOp())
 			try
 			{
 				switch(page)
 				{
 					case 3:
-						size = WeatherUtilConfig.dimNames.size();
+						size = EZConfigParser.dimNames.size();
 						maxSubPages = size / (this.maxEntries);
-						Object[] keys = WeatherUtilConfig.dimNames.keySet().toArray();
-						Object[] values = WeatherUtilConfig.dimNames.values().toArray();
-						int ii = 0, iii = 0;
-						
+						Object[] keys = EZConfigParser.dimNames.keySet().toArray();
+						Object[] values = EZConfigParser.dimNames.values().toArray();
+						int ii = 0, iii = 0, heightOffset;
 						if (ClientProxy.clientTickHandler.op)
-							for(int i = 0; i < size && i - startingIndex < this.maxEntries; i++)
+							for(int i = startingIndex; i < size && i - startingIndex < this.maxEntries; i++)
 							{
-								ii = i + iii + EZGuiAPI.BUTTON_MIN;
-								addButton(new GuiButtonCycle(ii, xStart + buttonRowBX - (buttonWidth + 5), yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, EZGuiAPI.BL_WTOGGLE, WeatherUtilConfig.isWeatherEnabled((int) keys[i]) ? 1 : 0), (String) values[i]);
-								addButton(new GuiButtonCycle(ii + 1, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * i, buttonWidth, buttonHeight, EZGuiAPI.BL_ETOGGLE, WeatherUtilConfig.isEffectsEnabled((int) keys[i]) ? 1 : 0));
+								heightOffset = i - startingIndex;
+								ii = i + iii + EZGuiAPI.BUTTON_MIN + startingIndex ;
+								addButton(new GuiButtonCycle(ii, xStart + buttonRowBX - (buttonWidth + 5), yStart + buttonRowBY + (buttonHeight + 5) * heightOffset, buttonWidth, buttonHeight, EZGuiAPI.BL_WTOGGLE, EZConfigParser.isWeatherEnabled((int) keys[i]) ? 1 : 0), (String) values[i]);
+								addButton(new GuiButtonCycle(ii + 1, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * heightOffset, buttonWidth, buttonHeight, EZGuiAPI.BL_ETOGGLE, EZConfigParser.isEffectsEnabled((int) keys[i]) ? 1 : 0));
 								iii++;
 							}
 						
@@ -267,7 +269,7 @@ public class GuiEZConfig extends GuiScreen
 							if (i >= startingIndex)
 							{
 								id = settings.get(i);
-								addButton(new GuiButtonCycle((i) + EZGuiAPI.BUTTON_MIN, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * (i - startingIndex), buttonWidth, buttonHeight, options.getA(id), WeatherUtilConfig.getConfigValue(id)), id);
+								addButton(new GuiButtonCycle((i) + EZGuiAPI.BUTTON_MIN, xStart + buttonRowBX, yStart + buttonRowBY + (buttonHeight + 5) * (i - startingIndex), buttonWidth, buttonHeight, options.getA(id), EZConfigParser.getConfigValue(id)), id);
 							}
 						}
 						break;
@@ -302,7 +304,7 @@ public class GuiEZConfig extends GuiScreen
 					nbtSendCache.getCompoundTag("client").setInteger(PREFIX + settings.get(index), ((GuiButtonBoolean)button).enabled ? 1 : 0);
 					break;
 				case 3:
-					Object[] keys = WeatherUtilConfig.dimNames.keySet().toArray();
+					Object[] keys = EZConfigParser.dimNames.keySet().toArray();
 					if (!nbtSendCache.hasKey("server"))
 						nbtSendCache.setTag("server", new NBTTagCompound());
 					if (!nbtSendCache.getCompoundTag("server").hasKey("dimData"))
@@ -326,7 +328,7 @@ public class GuiEZConfig extends GuiScreen
 					nbtSendCache.getCompoundTag("client").setInteger(PREFIX + settings.get(index), ((GuiButtonCycle)button).index);
 					break;
 				case 3:
-					Object[] keys = WeatherUtilConfig.dimNames.keySet().toArray();
+					Object[] keys = EZConfigParser.dimNames.keySet().toArray();
 					if (!nbtSendCache.hasKey("server"))
 						nbtSendCache.setTag("server", new NBTTagCompound());
 					if (!nbtSendCache.getCompoundTag("server").hasKey("dimData"))
@@ -410,7 +412,7 @@ public class GuiEZConfig extends GuiScreen
 		{
 			Weather2.debug("Sending config packet to client");
 			nbtSendCache.getCompoundTag("client").setInteger("server", 0);
-			WeatherUtilConfig.nbtReceiveClient(nbtSendCache.getCompoundTag("client"));
+			EZConfigParser.nbtReceiveClient(nbtSendCache.getCompoundTag("client"));
 			nbtSendCache.removeTag("client");
 		}
 		if (nbtSendCache.hasKey("server") && ClientProxy.clientTickHandler.op)

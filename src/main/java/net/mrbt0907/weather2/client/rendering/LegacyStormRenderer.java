@@ -1,4 +1,4 @@
-package net.mrbt0907.weather2.client.weather.tornado;
+package net.mrbt0907.weather2.client.rendering;
 
 import java.awt.Color;
 import java.util.ArrayList;
