@@ -590,11 +590,8 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	public void tickProgressionNormal()
 	{
 		World world = manager.getWorld();
-		
-		if (ticks < ConfigStorm.storm_tick_delay)
-			ticks = ConfigStorm.storm_tick_delay;
 			
-		if (world.getTotalWorldTime() % ConfigStorm.storm_tick_delay == 0 && ConfigStorm.storm_tick_delay > 0)
+		if (ticks % ConfigStorm.storm_tick_delay == 0)
 		{
 			Biome biome = world.getBiome(new BlockPos(MathHelper.floor(pos.posX), 0, MathHelper.floor(pos.posZ)));
 			float tempAdjustRate = (float)ConfigStorm.temperature_adjust_rate;
@@ -657,8 +654,12 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 					Weather2.debug("Storm " + getUUID().toString() + " was forced to dissipate because of overcast mode at stage " + stage + " and is now dying");
 					isDying = true;
 				}
-				
-				
+				else if (ConfigStorm.disable_tornados && stormType == StormType.LAND.ordinal() || ConfigStorm.disable_cyclones && stormType == StormType.WATER.ordinal())
+				{
+					Weather2.debug("Storm " + getUUID().toString() + " was forced to dissipate because it was disabled at stage " + stage + " and is now dying");
+					isDying = true;
+				}
+					
 				if (stage == Stage.SEVERE.getStage() && hasWater)
 				{
 					if (ConfigStorm.high_wind_waterspout_10_in_x != 0 && Maths.random(ConfigStorm.high_wind_waterspout_10_in_x) == 0)
@@ -1274,6 +1275,11 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 	@Override
 	public String getName()
 	{
+		return getName(false);
+	}
+	
+	public String getName(boolean getEF)
+	{
 		boolean truth = name.length() == 0, isHailing = isHailing();
 		
 		switch(type)
@@ -1293,7 +1299,7 @@ public class StormObject extends WeatherObject implements IWeatherRain, IWeather
 			case TROPICAL_STORM:
 				return (isHailing ? "Hailing " : "") + "Tropical Storm " + name;
 			case TORNADO:
-				return (truth ? "" : name + " ") + (ConfigStorm.enable_ef_scale ? "EF" + (stage - Stage.TORNADO.getStage()) : "F" + (int)Maths.clamp(Math.floor(funnelSize * 0.0206611570247933884297520661157F), 0, Integer.MAX_VALUE)) + " " + (isHailing ? "Hailing " : "") + "Tornado";
+				return (truth ? "" : name + " ") + (ConfigStorm.enable_ef_scale || getEF ? "EF" + (stage - Stage.TORNADO.getStage()) : "F" + (int)Maths.clamp(Math.floor(funnelSize * 0.0206611570247933884297520661157F), 0, Integer.MAX_VALUE)) + " " + (isHailing ? "Hailing " : "") + "Tornado";
 			case HURRICANE:
 				return (isHailing ? "Hailing " : "") + "Hurricane " + name + " - Category " + (stage - Stage.TORNADO.getStage());
 			default:

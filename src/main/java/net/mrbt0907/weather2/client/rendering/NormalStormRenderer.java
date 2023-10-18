@@ -212,7 +212,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 						particle.setColor(r, g, b);
 						particle.setTicksFadeInMax(8);
 						particle.setTicksFadeOutMax(80);
-						particle.setGravity(0.01F);
+						particle.setGravity(0.25F);
 						particle.setMaxAge(160);
 						particle.setScale(7.0F);
 						particle.rotationYaw = rand.nextInt(360);

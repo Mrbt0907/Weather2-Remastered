@@ -589,6 +589,7 @@ public class WeatherManagerServer extends WeatherManager
 					ticksStormFormed = world.getTotalWorldTime() + ConfigStorm.storm_spawn_delay;
 				return (!ConfigStorm.disable_tornados || !ConfigStorm.disable_cyclones) && ticksStormFormed < world.getTotalWorldTime() && systems.size() < ConfigStorm.max_weather_objects;
 			case 2:
+				if (true) return false;
 				ticks = ticksSandstormFormed - world.getTotalWorldTime();
 				if (ticks > ConfigSand.sandstorm_spawn_delay)
 					ticksSandstormFormed = world.getTotalWorldTime() + ConfigSand.sandstorm_spawn_delay;

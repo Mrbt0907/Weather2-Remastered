@@ -273,8 +273,6 @@ public class NewSceneEnhancer implements Runnable
 							}
 							else if (ConfigParticle.enable_fire_particle && block == Blocks.FIRE)
 								snapshots.add(new BlockSESnapshot(state, pos, null, 2));
-							else if (ConfigParticle.enable_wind_particle && cachedWindSpeed > 0.0F && dampness < 0.35F && (material == Material.GRASS || material == Material.GROUND || material == Material.SAND) && MC.world.getPrecipitationHeight(pos).getY() <= pos.up().getY())
-								snapshots.add(new BlockSESnapshot(state, pos, null, 3));
 						}
 				
 				queue.clear();
@@ -622,31 +620,6 @@ public class NewSceneEnhancer implements Runnable
 					ParticleBehaviors.setParticleFire(particle);
 					particle.setMaxAge(100+MC.world.rand.nextInt(300));
 					spawnParticle(particle, true);
-					break;
-				case 3:
-					float windStrAlt = Math.min(cachedWindSpeed * 0.6F, 1.0F);
-					
-					if (MC.world.rand.nextInt((int) (particleCount / Maths.clamp(ConfigParticle.wind_particle_rate, 0.0001D, 159.0D))) == 0)
-					{
-							ParticleTexFX rain = new ParticleTexFX(MC.world, snapshot.x + MC.world.rand.nextFloat(), snapshot.y + 1.01D, snapshot.z + MC.world.rand.nextFloat(), 0D, 0D, 0D, ParticleRegistry.cloud256_6);
-							rain.setKillWhenUnderTopmostBlock(true);
-							rain.setCanCollide(false);
-							rain.windWeight = 12F;
-							rain.setFacePlayer(false);
-							rain.setScale((10F + (MC.world.rand.nextFloat() * 10F)) * windStrAlt);
-							rain.setMaxAge(60);
-							rain.setMotionY(Maths.random(0.01F, 0.05F) * windStrAlt);
-							rain.setGravity(-0.01F * windStrAlt);
-							rain.setTicksFadeInMax(4);
-							rain.setAlphaF(0);
-							rain.setRBGColorF(0.4F, 0.35F, 0.25F);
-							rain.setTicksFadeOutMax(4);
-							rain.renderOrder = 2;
-							rain.rotationYaw = rain.getWorld().rand.nextInt(360) - 180F;
-							rain.rotationPitch = Maths.random(0.0F, 90.0F);
-							rain.spawnAsWeatherEffect();
-							ClientTickHandler.weatherManager.addEffectedParticle(rain);
-					}
 					break;
 			}
 			

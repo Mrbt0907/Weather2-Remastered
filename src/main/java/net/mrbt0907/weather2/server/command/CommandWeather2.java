@@ -372,8 +372,8 @@ public class CommandWeather2 extends CommandBase
 											{
 												if (speed < 0.0F)
 												{
-													speed = Float.parseFloat(flag.replaceAll("[^\\d\\.]*", ""));
-													flags += ", Moving At " + speed + " M/s";
+													speed = Float.parseFloat(flag.replaceAll("[^\\d\\.]*", "")) * 0.05F;
+													flags += ", Moving At " + (speed * 20.0F) + " M/s";
 												}
 											}
 											else if (flag.matches("size\\=[\\d\\.\\%]+"))
@@ -458,7 +458,7 @@ public class CommandWeather2 extends CommandBase
 								wm.getGlobalFront().addWeatherObject(so);
 								PacketWeatherObject.create(wm.getDimension(), so);
 								
-								say(sender, "create.success", so.getName(), Math.round(pos.x), Math.round(pos.z), flags);
+								say(sender, "create.success", so.getName(true), Math.round(pos.x), Math.round(pos.z), flags);
 								return;
 							}
 						}
