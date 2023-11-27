@@ -12,6 +12,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.mrbt0907.configex.ConfigManager;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WeatherAPI;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
@@ -54,6 +55,11 @@ public class CommandWeather2 extends CommandBase
 	public int getRequiredPermissionLevel()
 	{
 		return 0;
+	}
+	
+	public boolean hasPermission(ICommandSender sender, int level)
+	{
+		return sender instanceof EntityPlayerMP ? ConfigManager.getPermissionLevel(((EntityPlayerMP)sender).getPersistentID()) >= level : sender.canUseCommand(level, getName());
 	}
 	
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos targetPos)
@@ -180,7 +186,7 @@ public class CommandWeather2 extends CommandBase
 						say(sender, "config.usage");
 					break;
 				case "create":
-					if (!sender.canUseCommand(4, getName()))
+					if (!hasPermission(sender, 4))
 					{
 						say(sender, "nopermission");
 						break;
@@ -473,7 +479,7 @@ public class CommandWeather2 extends CommandBase
 						switch (args[1].toLowerCase())
 						{
 							case "all":
-								if (!sender.canUseCommand(4, getName()))
+								if (!hasPermission(sender, 4))
 								{
 									say(sender, "nopermission");
 									break;
@@ -525,7 +531,7 @@ public class CommandWeather2 extends CommandBase
 						say(sender, "view.fail");	
 					break;
 				case "test":
-					if (!sender.canUseCommand(4, getName()))
+					if (!hasPermission(sender, 4))
 					{
 						say(sender, "nopermission");
 						break;

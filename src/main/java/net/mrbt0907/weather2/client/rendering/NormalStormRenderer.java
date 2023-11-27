@@ -61,7 +61,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		IBlockState state = ConfigCoroUtil.optimizedCloudRendering ? Blocks.AIR.getDefaultState() : Weather2.clientChunkUtil.getBlockState(manager.getWorld(), (int) storm.pos_funnel_base.posX, (int) storm.pos_funnel_base.posY - 1, (int) storm.pos_funnel_base.posZ);
 		Material material = state.getMaterial();
 		double maxRenderDistance = NewSceneEnhancer.instance().renderDistance + 64.0D;
-		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0011F, 0.45F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.02F);
+		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0011F, 0.45F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.01F);
 		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.008F, 0.35F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.0060F);
 		float sizeOtherMult = Math.min(Math.max(storm.size * 0.003F, 0.45F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.035F);
 		float heightMult = storm.getLayerHeight() * 0.0053F;
