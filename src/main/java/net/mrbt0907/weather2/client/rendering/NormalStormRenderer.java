@@ -61,13 +61,13 @@ public class NormalStormRenderer extends AbstractStormRenderer
 		IBlockState state = ConfigCoroUtil.optimizedCloudRendering ? Blocks.AIR.getDefaultState() : Weather2.clientChunkUtil.getBlockState(manager.getWorld(), (int) storm.pos_funnel_base.posX, (int) storm.pos_funnel_base.posY - 1, (int) storm.pos_funnel_base.posZ);
 		Material material = state.getMaterial();
 		double maxRenderDistance = NewSceneEnhancer.instance().renderDistance + 64.0D;
-		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0010F, 0.45F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.02F);
-		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.012F, 0.35F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.010F);
+		float sizeCloudMult = Math.min(Math.max(storm.size * 0.0011F, 0.45F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.02F);
+		float sizeFunnelMult = Math.min(Math.max(storm.funnelSize * 0.008F, 0.35F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.0060F);
 		float sizeOtherMult = Math.min(Math.max(storm.size * 0.003F, 0.45F) * (float) ConfigParticle.particle_scale_mult, storm.getLayerHeight() * 0.035F);
-		float heightMult = storm.getLayerHeight() * 0.0064F;
+		float heightMult = storm.getLayerHeight() * 0.0053F;
 		float rotationMult = Math.max(heightMult * 0.55F, 1.0F);
 		float r = -1.0F, g = -1.0F, b = -1.0F;
-
+		
 		if (ConfigParticle.enable_tornado_block_colors)
 		{
 			if (!ConfigCoroUtil.optimizedCloudRendering && state.getBlock().equals(Blocks.AIR))
@@ -151,7 +151,9 @@ public class NormalStormRenderer extends AbstractStormRenderer
 			if (manager.getWorld().getTotalWorldTime() % (delay + ConfigParticle.cloud_particle_delay) == 0) {
 				for (int i = 0; i < loopSize && shouldSpawn(0); i++)
 				{
-					if (listParticlesCloud.size() < (storm.size + extraSpawning) / 1F) {
+					if (listParticlesCloud.size() < (storm.size + extraSpawning) / 1F)
+					{
+						
 						double spawnRad = storm.size * 1.2D;
 						Vec3 tryPos = new Vec3(storm.pos.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), storm.getLayerHeight() + (rand.nextDouble() * 40.0F) + (storm.stage >= Stage.RAIN.getStage() ? 30.0F : 60.0D), storm.pos.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
 						if (tryPos.distanceSq(playerAdjPos) < maxRenderDistance) {
@@ -165,17 +167,22 @@ public class NormalStormRenderer extends AbstractStormRenderer
 								else
 								{
 									float finalBright = Math.min(0.8F, 0.6F + (rand.nextFloat() * 0.2F)) + (storm.stage >= Stage.RAIN.getStage() ? -0.3F : 0.0F);
-									particle = spawnParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 0);
+									particle = spawnParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 0, net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_light);
 									if (particle == null) break;
-									particle.setColor(finalBright, finalBright, finalBright);
+										particle.setColor(finalBright, finalBright, finalBright);
 									
-									if (storm.isFirenado && storm.isSevere())
-									{
-											particle.setParticleTexture(net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_fire);
-											particle.setColor(1F, 1F, 1F);
-									}
+									if (storm.isSevere())
+										if (storm.isFirenado)
+										{
+												particle.setParticleTexture(net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_fire);
+												particle.setColor(1F, 1F, 1F);
+										}
+										else if (particle.getEntityId() % 40 < 10)
+											particle.setParticleTexture(net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_meso);
+										else
+											particle.setParticleTexture(net.mrbt0907.weather2.registry.ParticleRegistry.cloud256);
+									
 								}
-
 								particle.rotationPitch = Maths.random(70.0F, 110.0F);
 								particle.setScale(1250.0F * sizeCloudMult);
 								listParticlesCloud.add(particle);
@@ -196,7 +203,8 @@ public class NormalStormRenderer extends AbstractStormRenderer
 					double spawnRad = storm.funnelSize;
 						
 					Vec3 tryPos = new Vec3(storm.pos_funnel_base.posX + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad), storm.pos_funnel_base.posY, storm.pos_funnel_base.posZ + (rand.nextDouble()*spawnRad) - (rand.nextDouble()*spawnRad));
-					if (tryPos.distanceSq(playerAdjPos) < maxRenderDistance)
+					double distance = tryPos.distanceSq(playerAdjPos);
+					if (distance < maxRenderDistance && distance < 64.0D)
 					{
 						int groundY = WeatherUtilBlock.getPrecipitationHeightSafe(manager.getWorld(), new BlockPos((int)tryPos.posX, 0, (int)tryPos.posZ)).getY();
 						ExtendedEntityRotFX particle;
@@ -261,9 +269,9 @@ public class NormalStormRenderer extends AbstractStormRenderer
 							
 						//highwind aka spout in this current code location
 						if (storm.stage == Stage.SEVERE.getStage())
-							particle.setScale(100.0F * sizeFunnelMult);
+							particle.setScale(100.0F * sizeFunnelMult * heightMult);
 						else
-							particle.setScale(450.0F * sizeFunnelMult);
+							particle.setScale(450.0F * sizeFunnelMult * heightMult);
 
 						if (r >= 0.0F)
 						{

@@ -198,9 +198,9 @@ public class NewSceneEnhancer implements Runnable
 		{
 			IWeatherRain system = (IWeatherRain) cachedSystem;
 			float size = cachedSystem.size * 0.45F;
+			overcastTarget = 1.0F - (float) Maths.clamp((cachedSystemDistance - size) / cachedSystem.size, 0.0F, 1.0F);
 			if (system.hasDownfall())
 			{
-				overcastTarget = 1.0F - (float) Maths.clamp((cachedSystemDistance - size) / cachedSystem.size, 0.0F, 1.0F);
 				rainTarget = Math.min((system.getDownfall() - IWeatherRain.MINIMUM_DRIZZLE) * overcast * 0.0034F, 1.0F);
 				
 				if (WeatherUtil.getTemperature(MC.world, MC.player.getPosition()) < 0.0F)

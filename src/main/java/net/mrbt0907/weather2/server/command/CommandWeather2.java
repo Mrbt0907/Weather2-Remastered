@@ -180,7 +180,7 @@ public class CommandWeather2 extends CommandBase
 						say(sender, "config.usage");
 					break;
 				case "create":
-					if (!sender.canUseCommand(2, getName()))
+					if (!sender.canUseCommand(4, getName()))
 					{
 						say(sender, "nopermission");
 						break;
@@ -473,7 +473,7 @@ public class CommandWeather2 extends CommandBase
 						switch (args[1].toLowerCase())
 						{
 							case "all":
-								if (!sender.canUseCommand(2, getName()))
+								if (!sender.canUseCommand(4, getName()))
 								{
 									say(sender, "nopermission");
 									break;
@@ -525,7 +525,7 @@ public class CommandWeather2 extends CommandBase
 						say(sender, "view.fail");	
 					break;
 				case "test":
-					if (!sender.canUseCommand(2, getName()))
+					if (!sender.canUseCommand(4, getName()))
 					{
 						say(sender, "nopermission");
 						break;

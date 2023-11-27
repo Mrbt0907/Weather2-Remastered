@@ -12,9 +12,9 @@ public class ParticleRegistry
 	public static TextureAtlasSprite cloud;
 	public static TextureAtlasSprite cloud_legacy;
 	public static TextureAtlasSprite cloud256;
+	public static TextureAtlasSprite cloud256_light;
+	public static TextureAtlasSprite cloud256_meso;
 	public static TextureAtlasSprite cloud256_fire;
-	public static TextureAtlasSprite cloud256_2;
-	public static TextureAtlasSprite cloud256_6;
 	public static TextureAtlasSprite cloud32;
 	public static TextureAtlasSprite rainLight;
 	public static TextureAtlasSprite rainHeavy;
@@ -48,9 +48,10 @@ public class ParticleRegistry
 		MeshBufferManagerFoliage.cleanup();
 
 		cloud256 = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":particles/cloud256"));
+		cloud256_light = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":particles/cloud256_light"));
+		cloud256_meso = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":particles/cloud256_meso"));
 		cloud_legacy = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":particles/cloud_legacy"));
 		cloud256_fire = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID + ":particles/cloud256_fire"));
-		cloud256_6 = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID  + ":particles/cloud256_6"));
 		cloud32 = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID  + ":particles/cloud32"));
 		rainLight = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID  + ":particles/rain_light"));
 		rainHeavy = event.getMap().registerSprite(new ResourceLocation(Weather2.OLD_MODID  + ":particles/rain_heavy"));

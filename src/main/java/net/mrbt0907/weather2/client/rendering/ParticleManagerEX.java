@@ -53,8 +53,8 @@ public class ParticleManagerEX extends RotatingParticleManager
 	{
 		if (pA == null) return 0;
 		if (pB == null) return 0;
-		double a = Maths.distance(mc.player.posX, mc.player.posY, mc.player.posZ, pA.posX, pA.posY, pA.posZ);
-		double b = Maths.distance(mc.player.posX, mc.player.posY, mc.player.posZ, pB.posX, pB.posY, pB.posZ);
+		double a = Maths.distance(mc.player.posX, mc.player.posZ, pA.posX, pA.posZ);
+		double b = Maths.distance(mc.player.posX, mc.player.posZ, pB.posX, pB.posZ);
 		return a > b ? -1 : a == b ? 0 : 1;
 	};
 	
