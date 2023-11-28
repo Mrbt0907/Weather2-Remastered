@@ -204,7 +204,7 @@ public class WeatherManagerClient extends WeatherManager
 					ent.setEntityId(mainNBT.getInteger("entityID"));
 					getWorld().addWeatherEffect(ent);
 				}
-				else
+				else if (ConfigParticle.enable_sky_lightning)
 				{
 					Minecraft mc = Minecraft.getMinecraft(); 
 					int x = mainNBT.getInteger("posX"), y = mainNBT.getInteger("posY"), z = mainNBT.getInteger("posZ");

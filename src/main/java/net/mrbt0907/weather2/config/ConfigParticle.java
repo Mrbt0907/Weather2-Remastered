@@ -138,6 +138,9 @@ public class ConfigParticle implements IConfigEX
 	@Permission(0)
 	@Comment("Enables rendering based on layers rather than based on player distance for all weather2 particles")
 	public static boolean enable_legacy_rendering = true;
+	@Permission(0)
+	@Comment("Should sky lightning flash in the sky? Does not affect normal lightning bolts")
+	public static boolean enable_sky_lightning = true;
 
     @Override
     public String getName() {
