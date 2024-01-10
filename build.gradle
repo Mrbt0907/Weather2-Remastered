@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '2.8.11'
+version = '2.8.12'
 group = 'net.mrbt0907.weather2' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'Weather2Remastered-1.12.2'
 
@@ -80,7 +80,7 @@ jar {
         attributes([
             "Specification-Title": "Weather 2 - Remastered",
             "Specification-Vendor": "Mrbt0907",
-            "Specification-Version": "2.8.10-indev", // We are version 1 of ourselves
+            "Specification-Version": "2.8.12-indev",
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
             "Implementation-Vendor" :"Mrbt0907",

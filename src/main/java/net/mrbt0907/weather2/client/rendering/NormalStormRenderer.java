@@ -167,7 +167,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 								else
 								{
 									float finalBright = Math.min(0.8F, 0.6F + (rand.nextFloat() * 0.2F)) + (storm.stage >= Stage.RAIN.getStage() ? -0.3F : 0.0F);
-									particle = spawnParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 0, net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_light);
+									particle = spawnParticle(tryPos.posX, tryPos.posY, tryPos.posZ, 0, (storm.stage <= Stage.RAIN.getStage() ? net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_light : net.mrbt0907.weather2.registry.ParticleRegistry.cloud256));
 									if (particle == null) break;
 										particle.setColor(finalBright, finalBright, finalBright);
 									
@@ -176,12 +176,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 										{
 												particle.setParticleTexture(net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_fire);
 												particle.setColor(1F, 1F, 1F);
-										}
-										else if (particle.getEntityId() % 40 < 10)
-											particle.setParticleTexture(net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_meso);
-										else
-											particle.setParticleTexture(net.mrbt0907.weather2.registry.ParticleRegistry.cloud256);
-									
+										}									
 								}
 								particle.rotationPitch = Maths.random(70.0F, 110.0F);
 								particle.setScale(1250.0F * sizeCloudMult);
@@ -402,7 +397,8 @@ public class NormalStormRenderer extends AbstractStormRenderer
 						double var18 = storm.pos.posZ - ent.getPosZ();
 						ent.rotationYaw = (float)(Maths.fastATan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
 						ent.rotationPitch = -30F - (ent.getEntityId() % 10); //meso clouds
-						ent.setScale(400.0F * sizeCloudMult);
+						ent.setScale(900.0F * sizeCloudMult);
+						ent.setParticleTexture(net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_meso);
 					}
 					else
 					{
