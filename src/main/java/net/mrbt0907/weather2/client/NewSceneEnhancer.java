@@ -36,6 +36,7 @@ import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WindReader;
 import net.mrbt0907.weather2.api.weather.IWeatherRain;
 import net.mrbt0907.weather2.api.weather.WeatherEnum;
+import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
 import net.mrbt0907.weather2.client.entity.particle.EntityWaterfallFX;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
@@ -198,7 +199,8 @@ public class NewSceneEnhancer implements Runnable
 		{
 			IWeatherRain system = (IWeatherRain) cachedSystem;
 			float size = cachedSystem.size * 0.90F;
-			overcastTarget = 1.0F - (float) Maths.clamp((cachedSystemDistance - size) / cachedSystem.size, 0.0F, 1.0F);
+			int stage = cachedSystem.getStage();
+			overcastTarget = ((stage == 0 ? 0.0F : stage == 1 ? 0.35F : stage == 2 ? 0.6F : 1.0F) - (float) Maths.clamp((cachedSystemDistance - size) / cachedSystem.size, 0.0F, 1.0F));
 			if (system.hasDownfall())
 			{
 				rainTarget = Math.min((system.getDownfall() - IWeatherRain.MINIMUM_DRIZZLE) * overcast * 0.0034F, 1.0F);

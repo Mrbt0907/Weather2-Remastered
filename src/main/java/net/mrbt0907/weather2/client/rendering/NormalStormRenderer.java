@@ -397,7 +397,7 @@ public class NormalStormRenderer extends AbstractStormRenderer
 						double var18 = storm.pos.posZ - ent.getPosZ();
 						ent.rotationYaw = (float)(Maths.fastATan2(var18, var16) * 180.0D / Math.PI) - 90.0F;
 						ent.rotationPitch = -30F - (ent.getEntityId() % 10); //meso clouds
-						ent.setScale(900.0F * sizeCloudMult);
+						ent.setScale((storm.stormType == StormType.WATER.ordinal() ? 400.0F : 900.0F) * sizeCloudMult);
 						ent.setParticleTexture(net.mrbt0907.weather2.registry.ParticleRegistry.cloud256_meso);
 					}
 					else
