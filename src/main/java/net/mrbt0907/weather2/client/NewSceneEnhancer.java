@@ -197,7 +197,7 @@ public class NewSceneEnhancer implements Runnable
 		if (cachedSystem != null && cachedSystem instanceof IWeatherRain)
 		{
 			IWeatherRain system = (IWeatherRain) cachedSystem;
-			float size = cachedSystem.size * 0.45F;
+			float size = cachedSystem.size * 0.90F;
 			overcastTarget = 1.0F - (float) Maths.clamp((cachedSystemDistance - size) / cachedSystem.size, 0.0F, 1.0F);
 			if (system.hasDownfall())
 			{
@@ -294,7 +294,7 @@ public class NewSceneEnhancer implements Runnable
 	{
 		if (event.phase.equals(Phase.START) && MC.world != null)
 		{
-			MC.world.setRainStrength(Math.abs(rain));
+			MC.world.setRainStrength(overcast);
 			MC.world.setThunderStrength(overcast);
 		}
 	}
