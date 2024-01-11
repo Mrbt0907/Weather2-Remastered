@@ -3,7 +3,7 @@
 		"modid": "weather2remaster",
 		"name": "Weather 2 - Remastered",
 		"description": "Brings a new localized weather system into your game, giving the environment around you more atmosphere while giving you storms to worry about.",
-		"version": "2.8.12-indev-c",
+		"version": "2.8.12-indev-d",
 		"mcversion": "${mcversion}",
 		"url": "http://Coros.us/",
 		"updateUrl": "",

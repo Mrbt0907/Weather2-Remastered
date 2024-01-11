@@ -28,6 +28,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
@@ -198,8 +199,13 @@ public class NewSceneEnhancer implements Runnable
 		if (cachedSystem != null && cachedSystem instanceof IWeatherRain)
 		{
 			IWeatherRain system = (IWeatherRain) cachedSystem;
-			float size = cachedSystem.size * 0.90F;
+			float size = cachedSystem.size * 0.875F;
 			int stage = cachedSystem.getStage();
+			Vec3d playerPos = (Minecraft.getMinecraft().player.getPositionVector());
+			if (cachedSystem.getPos().distanceSq(playerPos) > size * 1.25D) {
+				overcastTarget = 0.0F;
+				return;
+			}
 			overcastTarget = ((stage == 0 ? 0.0F : stage == 1 ? 0.35F : stage == 2 ? 0.6F : 1.0F) - (float) Maths.clamp((cachedSystemDistance - size) / cachedSystem.size, 0.0F, 1.0F));
 			if (system.hasDownfall())
 			{
