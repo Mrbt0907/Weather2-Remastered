@@ -525,6 +525,12 @@ public class Maths
 			return distanceSq(vector.posX, vector.posY, vector.posZ);
 		}
 		
+		/**Calculates the square rooted distance between this 3D vector and another 3D vector*/
+		public double distanceSq(Vec3d vector)
+		{
+			return distanceSq(vector.x, vector.y, vector.z);
+		}
+		
 		/**Calculates the square rooted speed of this vector*/
 		public double speed()
 		{
