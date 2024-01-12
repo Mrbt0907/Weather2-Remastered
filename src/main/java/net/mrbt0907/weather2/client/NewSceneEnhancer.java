@@ -93,7 +93,7 @@ public class NewSceneEnhancer implements Runnable
 	/**Unknown*/
 	public final ParticleBehaviors behavior;
 	public float rain, rainTarget;
-	public float overcast, overcastTarget;
+	public float overcast, overcastTarget, overcastMult, overcastTargetMult;
 	/**Used to smoothen fog transitions*/
 	public float fogMult;
 	/**Determines close the fog will be to the player*/
@@ -206,7 +206,15 @@ public class NewSceneEnhancer implements Runnable
 				overcastTarget = 0.0F;
 				return;
 			}
-			overcastTarget = ((stage == 0 ? 0.0F : stage == 1 ? 0.35F : stage == 2 ? 0.6F : 1.0F) - (float) Maths.clamp((cachedSystemDistance - size) / cachedSystem.size, 0.0F, 1.0F));
+
+			overcastTarget = ((stage == 0 ? 0.0F :stage == 1 ? 0.35F : stage == 2 ? 0.6F : 1.0F) - (float) Maths.clamp((cachedSystemDistance - size) / cachedSystem.size, 0.0F, 1.0F));
+			
+			if (cachedSystem != null && cachedSystem instanceof StormObject)
+			{
+				StormObject storm = (StormObject) cachedSystem;
+				overcastTargetMult = (storm.isViolent ? 1.0F : stage >= 2 ? 0.4F : 0.0F);
+			}
+
 			if (system.hasDownfall())
 			{
 				rainTarget = Math.min((system.getDownfall() - IWeatherRain.MINIMUM_DRIZZLE) * overcast * 0.0034F, 1.0F);
@@ -223,6 +231,7 @@ public class NewSceneEnhancer implements Runnable
 		if (ConfigMisc.overcast_mode && ClientTickHandler.weatherManager != null && ClientTickHandler.weatherManager.weatherID >= 1)
 		{
 			overcastTarget = (float) ConfigStorm.min_overcast_rain;
+			overcastTargetMult = (float) ConfigStorm.min_overcast_rain;
 			rainTarget = (float) ConfigStorm.min_overcast_rain;
 			MC.world.getWorldInfo().setRaining(true);
 			MC.world.getWorldInfo().setThundering(true);
@@ -302,8 +311,8 @@ public class NewSceneEnhancer implements Runnable
 	{
 		if (event.phase.equals(Phase.START) && MC.world != null)
 		{
-			MC.world.setRainStrength(overcast);
-			MC.world.setThunderStrength(overcast);
+			MC.world.setRainStrength(Math.abs(overcast));
+			MC.world.setThunderStrength(overcastMult);
 		}
 	}
 	
@@ -386,6 +395,9 @@ public class NewSceneEnhancer implements Runnable
 		if (overcast != overcastTarget)
 			overcast = Maths.adjust(overcast, overcastTarget, rate);
 		
+		if (overcastMult != overcastTargetMult)
+			overcastMult = Maths.adjust(overcastMult, overcastTargetMult, rate);
+	
 		if (!ConfigParticle.enable_vanilla_rain && ConfigParticle.precipitation_particle_rate > 0.0D && rain != 0.0F)
 		{
 			ParticleTexFX particle;
@@ -925,7 +937,7 @@ public class NewSceneEnhancer implements Runnable
 		cachedSystem = null;
 		errors = 0;
 		errorsThreaded = 0;
-		rain = rainTarget = overcast = overcastTarget = fogDensity = fogMult = 0.0F;
+		rain = rainTarget = overcast = overcastTarget = overcastMult = overcastTargetMult = fogDensity = fogMult = 0.0F;
 		fogRed = fogRedTarget = fogGreen = fogGreenTarget = fogBlue = fogBlueTarget = -1.0F;
 		if (WeatherUtilParticle.fxLayers == null)
 			WeatherUtilParticle.getFXLayers();
