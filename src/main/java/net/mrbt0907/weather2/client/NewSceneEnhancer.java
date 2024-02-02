@@ -204,6 +204,9 @@ public class NewSceneEnhancer implements Runnable
 			Vec3d playerPos = (Minecraft.getMinecraft().player.getPositionVector());
 			if (cachedSystem.getPos().distanceSq(playerPos) > size * 1.25D) {
 				overcastTarget = 0.0F;
+				rainTarget = 0.0F;
+				MC.world.getWorldInfo().setRaining(false);
+				MC.world.getWorldInfo().setThundering(false);
 				return;
 			}
 
