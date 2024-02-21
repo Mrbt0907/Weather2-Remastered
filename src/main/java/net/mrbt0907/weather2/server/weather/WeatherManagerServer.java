@@ -89,6 +89,8 @@ public class WeatherManagerServer extends WeatherManager
 					if (front.isGlobal())
 					{
 						front.reset();
+						systems.forEach(weather -> PacketWeatherObject.remove(dim, weather));
+						systems.clear();
 						front.isDead = false;
 					}
 					else

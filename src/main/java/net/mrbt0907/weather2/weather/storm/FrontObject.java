@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import CoroUtil.util.CoroUtilEntity;
 import CoroUtil.util.CoroUtilMisc;
@@ -279,20 +280,15 @@ public class FrontObject implements IWeatherDetectable
 	public void removeWeatherObject(UUID uuid)
 	{
 		WeatherObject system = systems.get(uuid);
+		system.reset();
 		manager.removeWeatherObject(uuid);
 		
-		if (system != null)
-		{
-			Weather2.debug("Weather " + uuid + " was removed from front " + this.uuid);
-
-			if (!system.type.equals(Type.CLOUD))
-				activeStorms--;
+		if (!system.type.equals(Type.CLOUD))
+			activeStorms--;
 			
-			system.reset();
-			systems.remove(uuid);
-		}
-		else
-			Weather2.error("Front " + this.uuid.toString() + " tried to remove a non-existent weather object with uuid " + uuid);
+		system.reset();
+		systems.remove(uuid);
+		Weather2.debug("Weather " + uuid + " was removed from front " + this.uuid);
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -303,8 +299,11 @@ public class FrontObject implements IWeatherDetectable
 	
 	public void reset()
 	{
-		systems.forEach((uuid, system) -> system.reset());
-		systems.clear();
+		int size = systems.size();
+		UUID[] keys = new UUID[systems.size()];
+		keys = systems.keySet().toArray(keys);
+		for (int i = 0; i < size; i++)
+			removeWeatherObject(keys[i]);
 	}
 	
 	public void aimStormAtPlayer(EntityPlayer entP)
@@ -429,7 +428,6 @@ public class FrontObject implements IWeatherDetectable
 				activeStorms++;
 				
 			systems.put(weather.getUUID(), weather);
-			
 			if (ConfigStorm.storms_aim_at_player && !overrideAngle && weather instanceof StormObject && ((StormObject)weather).stageMax >= WeatherEnum.Stage.SEVERE.getStage())
 				aimStormAtPlayer(null);
 			manager.addWeatherObject(weather);

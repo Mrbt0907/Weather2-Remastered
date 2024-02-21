@@ -27,17 +27,17 @@ public class EventRegisterStormLogic extends Event
 	public void register(ResourceLocation id, Class<?> particleRenderer)
 	{
 		if (id == null)
-			Weather2.debug("Failed to register a particle renderer as the id was null. Skipping...");
+			Weather2.debug("Failed to register a storm logic module as the id was null. Skipping...");
 		else if (id.toString().equals(Weather2.MODID + ":normal") || registry.containsKey(id))
-			Weather2.debug("Failed to register a particle renderer as the id is already taken. Skipping...");
+			Weather2.debug("Failed to register a storm logic module as the id is already taken. Skipping...");
 		else if (particleRenderer == null)
-			Weather2.debug("Failed to register particle renderer " + id.toString() + " as the renderer was null. Skipping...");
+			Weather2.debug("Failed to register storm logic module " + id.toString() + " as the logic module was null. Skipping...");
 		else if (!AbstractStormRenderer.class.isAssignableFrom(particleRenderer))
-			Weather2.debug("Failed to register particle renderer " + id.toString() + " as the renderer does not extend from AbstractStormRenderer. Skipping...");
+			Weather2.debug("Failed to register storm logic module " + id.toString() + " as the logic module does not extend from AbstractStormLogic. Skipping...");
 		else
 		{
 			registry.put(id, particleRenderer);
-			Weather2.debug("Registered particle renderer " + id.toString());
+			Weather2.debug("Registered storm logic module " + id.toString());
 		}
 	}
 }

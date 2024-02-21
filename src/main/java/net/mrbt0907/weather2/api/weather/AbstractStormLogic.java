@@ -27,7 +27,7 @@ public abstract class AbstractStormLogic extends AbstractDebugging
 			while (attempts > -1)
 				try
 				{
-					onTick();
+					onTickProgression();
 					attempts = -1;
 				}
 				catch(Exception e)
@@ -36,12 +36,12 @@ public abstract class AbstractStormLogic extends AbstractDebugging
 					
 					if (attempts < 3)
 					{
-						Weather2.warn("Storm's logic onTick() has encountered an error. Retrying...");
+						Weather2.warn("Storm's logic onTickProgression() has encountered an error. Retrying...");
 						e.printStackTrace();
 					}
 					else
 					{
-						Weather2.warn("Storm's logic onTick() has failed to run correctly. Disabling storm logic...");
+						Weather2.warn("Storm's logic onTickProgression() has failed to run correctly. Disabling storm logic...");
 						e.printStackTrace();
 						attempts = -1;
 					}
@@ -49,8 +49,8 @@ public abstract class AbstractStormLogic extends AbstractDebugging
 		}
 	}
 	
-	/**Used to control how the storm functions each tick.*/
-	public abstract void onTick();
+	/**Used to control how the storm progresses each tick.*/
+	public abstract void onTickProgression();
 	/**Used to add extra information to the debug renderer. Null is acceptable*/
 	public abstract List<String> onDebugInfo();
 	/**Used when this storm logic is being removed.*/

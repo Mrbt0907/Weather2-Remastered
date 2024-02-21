@@ -32,7 +32,7 @@ public class Weather2
 	public static final String MOD = "Weather 2 - Remastered";
 	public static final String MODID = "weather2remaster";
 	public static final String OLD_MODID = "weather2";
-	public static final String VERSION = "2.8.11";
+	public static final String VERSION = "2.8.15";
 	public static final FMLEventChannel event_channel = NetworkRegistry.INSTANCE.newEventDrivenChannel(MODID);
 	public static final CreativeTabs TAB = new CreativeTabs(MODID) {@Override public ItemStack createIcon() {return new ItemStack(BlockRegistry.tornado_sensor);}};
 	@Mod.Instance( value = Weather2.MODID )
