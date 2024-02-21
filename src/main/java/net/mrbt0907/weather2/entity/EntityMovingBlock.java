@@ -142,11 +142,11 @@ public class EntityMovingBlock extends Entity implements IEntityAdditionalSpawnD
 				var2 = new Vec3d(var3.hitVec.x, var3.hitVec.y, var3.hitVec.z);
 
 			Entity var4 = null;
-			List<Entity> var5 = new ArrayList<Entity>(), entities = new ArrayList<Entity>(world.loadedEntityList);
+			List<Entity> var5 = new ArrayList<Entity>(), entities = new ArrayList<Entity>();
 
 			if (age > gravityDelay / 4)
 				for (Entity entity : entities)
-					if (!entity.equals(this) && entity.getDistance(posX, posY, posZ) < height * Maths.speedSq(motionX, motionY, motionZ))
+					if (!entity.equals(this) && entity.getDistance(posX, posY, posZ) < height * 2.0F)
 						var5.add(entity);
 
 			double var6 = 0.0D;

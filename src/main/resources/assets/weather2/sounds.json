@@ -1,7 +1,6 @@
 {
 	"block.siren":
 	{
-		"category": "weather",
 		"subtitle": "subtitle.weather2.block.siren",
 		"sounds":
 		[
@@ -10,7 +9,6 @@
 	},
 	"block.siren.darude":
 	{
-		"category": "weather",
 		"subtitle": "subtitle.weather2.block.siren.darude",
 		"sounds":
 		[
@@ -24,7 +22,6 @@
 	},
 	"block.siren.advanced":
 	{
-		"category": "weather",
 		"subtitle": "subtitle.weather2.block.siren.advanced",
 		"sounds":
 		[
@@ -33,7 +30,6 @@
 	},
 	"ambient.leaves":
 	{
-		"category": "weather",
 		"subtitle": "subtitle.weather2.ambient.leaves",
 		"sounds":
 		[
@@ -42,7 +38,6 @@
 	},
 	"ambient.waterfall":
 	{
-		"category": "weather",
 		"subtitle": "subtitle.weather2.ambient.waterfall",
 		"sounds":
 		[
@@ -51,7 +46,6 @@
 	},
 	"ambient.wind.fast":
 	{
-		"category": "weather",
 		"subtitle": "subtitle.weather2.ambient.wind.fast",
 		"sounds":
 		[
@@ -63,7 +57,7 @@
 	},
 	"ambient.wind":
 	{
-		"category": "weather",
+		
 		"subtitle": "subtitle.weather2.ambient.wind",
 		"sounds":
 		[
@@ -75,7 +69,7 @@
 	},
 	"ambient.rain.light":
 	{
-		"category": "weather",
+		
 		"subtitle": "subtitle.weather2.ambient.rain.light",
 		"sounds":
 		[
@@ -88,7 +82,7 @@
 	},
 	"ambient.rain.heavy":
 	{
-		"category": "weather",
+		
 		"subtitle": "subtitle.weather2.ambient.rain.heavy",
 		"sounds":
 		[
@@ -101,7 +95,7 @@
 	},
 	"weather.debris":
 	{
-		"category": "weather",
+		
 		"subtitle": "subtitle.weather2.weather.debris",
 		"sounds":
 		[
@@ -114,7 +108,7 @@
 	},
 	"weather.sandstorm.fast":
 	{
-		"category": "weather",
+		
 		"subtitle": "subtitle.weather2.weather.sandstorm.fast",
 		"sounds":
 		[
@@ -123,7 +117,7 @@
 	},
 	"weather.sandstorm":
 	{
-		"category": "weather",
+		
 		"subtitle": "subtitle.weather2.weather.sandstorm",
 		"sounds":
 		[
@@ -133,7 +127,7 @@
 	},
 	"weather.sandstorm.slow":
 	{
-		"category": "weather",
+		
 		"subtitle": "subtitle.weather2.weather.sandstorm.slow",
 		"sounds":
 		[

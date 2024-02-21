@@ -122,10 +122,8 @@ public class TornadoHelper
 	
 	public void tick(World world)
 	{
-		world.profiler.startSection("tornadoHelperTick");
 		if (storm == null)
 		{
-			world.profiler.endSection();
 			return;
 		}
 		
@@ -142,7 +140,6 @@ public class TornadoHelper
 			BlockPos pos;
 			IBlockState state;
 			ChunkUtils util = Weather2.getChunkUtil(world);
-			world.profiler.startSection("tickGrabBlocks");
 			if (ConfigGrab.grab_blocks && world.getTotalWorldTime() % (ConfigGrab.grab_process_delay > 0 ? ConfigGrab.grab_process_delay : 1) == 0)
 			{
 				int x = 0, z = 0, grabbed = 0, replaced = 0;
@@ -226,10 +223,8 @@ public class TornadoHelper
 			}
 			
 			getBlockCountForDim(storm.manager.getWorld());
-			world.profiler.endSection();
 		}
 
-		world.profiler.endSection();
 	}
 	
 	public boolean grabBlock(World world, BlockPos pos, IBlockState state)

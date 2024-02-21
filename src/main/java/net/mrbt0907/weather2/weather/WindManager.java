@@ -118,7 +118,6 @@ public class WindManager
 	public void tickClient()
 	{
 		Minecraft mc = Minecraft.getMinecraft();
-		mc.profiler.startSection("tickWindClient");
 		tickWindChangeClient();
 		
 		if (manager.world.getTotalWorldTime() % 200L == 0L)
@@ -131,7 +130,6 @@ public class WindManager
 	    	//Weather2.debug(a.toString());
 			mc.player.setVelocity(a.posX, a.posY, a.posZ);
 		}
-		mc.profiler.endSection();
 	}
 	
 	public void tickWindChange()

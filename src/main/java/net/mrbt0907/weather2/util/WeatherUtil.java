@@ -48,9 +48,7 @@ public class WeatherUtil {
 	
 	public static float getDewpoint(World world, BlockPos pos)
 	{
-		world.profiler.startSection("getDewpoint");
 		float a = toCelsius(getTemperature(world, pos)) - ((100.0F - (getHumidity(world, pos) * 100.0F)) * 0.2F);
-		world.profiler.endSection();
 		return a;
 	}
 	
@@ -61,14 +59,12 @@ public class WeatherUtil {
 	
 	public static float getTemperature(World world, BlockPos pos)
 	{
-		world.profiler.startSection("getTemperature");
 		float temp = CoroUtilCompatibility.getAdjustedTemperature(world, world.getBiome(pos), pos);
 		float time_bonus = 0.0F;
 		float[] time_table = {0.18F, 0.16F, 0.14F, 0.12F, 0.09F, 0.07F, 0.05F, 0.02F, 0.0F, 0.01F, 0.015F, 0.2F, 0.3F, 0.5F, 0.75F, 0.9F, 0.12F, 0.14F, 0.16F, 0.175F, 0.2F, 0.215F, 0.2F, 0.19F};
 		long time = world.getWorldTime() % 24000L;
 		
 		time_bonus = (time_table[(int)(time * 0.0001)]);
-		world.profiler.endSection();
 		return temp - time_bonus;
 		
 	}

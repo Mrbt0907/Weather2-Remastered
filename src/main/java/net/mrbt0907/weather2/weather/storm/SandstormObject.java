@@ -341,7 +341,6 @@ public class SandstormObject extends WeatherObject
 	public void tickClient()
 	{
 		Minecraft mc = Minecraft.getMinecraft();
-		mc.profiler.startSection("sandstormTick");
 		World world = manager.getWorld();
 		WindManager windMan = manager.windManager;
 		
@@ -591,7 +590,6 @@ public class SandstormObject extends WeatherObject
     		//windMan.applyWindForceNew(particle);
     		
 	    }
-	    mc.profiler.endSection();
 	    //System.out.println("spawn particles at: " + pos);
 	}
 	

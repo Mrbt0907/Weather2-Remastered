@@ -95,8 +95,6 @@ public class ClientTickHandler
 		
         Minecraft mc = FMLClientHandler.instance().getClient();
         World world = mc.world;
-        mc.profiler.startSection("weather2Client");
-        mc.profiler.startSection("renderOverride");
         if (ConfigMisc.proxy_render_override)
         {
         	if (!(mc.entityRenderer instanceof EntityRendererEX))
@@ -117,7 +115,6 @@ public class ClientTickHandler
     		}
     	}
 
-        mc.profiler.endStartSection("tick");
 		if (world != null)
 		{
 			checkClientWeather();
@@ -136,7 +133,6 @@ public class ClientTickHandler
 				weatherManager.reset(false);
 			}
 			
-			mc.profiler.endStartSection("tickWind");
 			//TODO: evaluate if best here
 			
 			Vec3 pos = mc.player == null ? null : new Vec3(mc.player.getPosition());
@@ -182,7 +178,6 @@ public class ClientTickHandler
 					smoothAngleRotationalVelAccel *= 0.80F;
 				}
 			}
-			mc.profiler.endStartSection("tickFoliage");
 			if (!Minecraft.getMinecraft().isGamePaused()) {
 
 				ExtendedRenderer.foliageRenderer.windDir = smoothAngle;
@@ -210,13 +205,9 @@ public class ClientTickHandler
 
 				FoliageRenderer.windTime += 0 + (baseTimeChangeRate * ExtendedRenderer.foliageRenderer.windSpeedSmooth);
 			}
-
-			mc.profiler.endSection();
 		}
 		else
 			resetClientWeather();
-
-        mc.profiler.endSection();
     }
 
     public static void resetClientWeather() {

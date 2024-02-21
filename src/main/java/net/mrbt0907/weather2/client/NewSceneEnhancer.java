@@ -335,7 +335,6 @@ public class NewSceneEnhancer implements Runnable
 		
 		if (inGame)
 		{
-			MC.profiler.startSection("tickSceneEnhancer");
 			if (!MC.isGamePaused())
 			{
 				if (ConfigParticle.camera_shake_mult > 0.0D)
@@ -357,17 +356,11 @@ public class NewSceneEnhancer implements Runnable
 					if (strength > 0.0F)
 						shakeCamera(strength * (float) ConfigParticle.camera_shake_mult);
 				}
-				MC.profiler.startSection("tickFog");
 				tickFog();
-				MC.profiler.endStartSection("tickPrecipitation");
 				tickPrecipitation();
-				MC.profiler.endStartSection("tickAmbiantParticles");
 				tickAmbiance();
-				MC.profiler.endStartSection("tickParticles");
 				tickParticles();
-				MC.profiler.endStartSection("tickAmbiantSounds");
 				tickSounds();
-				MC.profiler.endStartSection("tickFoliageShaders");
 				if (ConfigCoroUtil.foliageShaders && EventHandler.queryUseOfShaders())
 				{
 					if (!FoliageEnhancerShader.useThread)
@@ -377,9 +370,7 @@ public class NewSceneEnhancer implements Runnable
 					if (MC.world.getTotalWorldTime() % 5 == 0)
 						FoliageEnhancerShader.tickClientCloseToPlayer();
 				}
-				MC.profiler.endSection();
 			}
-			MC.profiler.endSection();
 		}
 		
 	}
@@ -660,7 +651,6 @@ public class NewSceneEnhancer implements Runnable
 			if (windMan == null) return;
 
 		Random rand = MC.world.rand;
-		MC.profiler.startSection("effectWeather");
 		//Weather Effects
 		for (int i = 0; i < ClientTickHandler.weatherManager.effectedParticles.size(); i++)
 		{
@@ -703,7 +693,6 @@ public class NewSceneEnhancer implements Runnable
 				}
 			}
 		}
-		MC.profiler.endStartSection("effectParticle");
 		if (WeatherUtilParticle.fxLayers == null)
 			WeatherUtilParticle.getFXLayers();
 		
@@ -744,7 +733,6 @@ public class NewSceneEnhancer implements Runnable
 				}
 			}
 		}
-		MC.profiler.endSection();
 	}
 	
 	/**Processes the cached block positions to spawn ambiance sounds*/
