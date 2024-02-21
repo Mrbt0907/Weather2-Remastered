@@ -81,6 +81,7 @@ jar {
             "Specification-Title": "Weather 2 - Remastered",
             "Specification-Vendor": "Mrbt0907",
             "Specification-Version": "2.8.15", // We are version 1 of ourselves
+
             "Implementation-Title": project.name,
             "Implementation-Version": "${version}",
             "Implementation-Vendor" :"Mrbt0907",

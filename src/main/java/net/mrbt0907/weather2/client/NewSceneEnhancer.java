@@ -28,6 +28,7 @@ import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
@@ -36,6 +37,7 @@ import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WindReader;
 import net.mrbt0907.weather2.api.weather.IWeatherRain;
 import net.mrbt0907.weather2.api.weather.WeatherEnum;
+import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Type;
 import net.mrbt0907.weather2.client.entity.particle.EntityWaterfallFX;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
@@ -91,7 +93,7 @@ public class NewSceneEnhancer implements Runnable
 	/**Unknown*/
 	public final ParticleBehaviors behavior;
 	public float rain, rainTarget;
-	public float overcast, overcastTarget;
+	public float overcast, overcastTarget, overcastMult, overcastTargetMult;
 	/**Used to smoothen fog transitions*/
 	public float fogMult;
 	/**Determines close the fog will be to the player*/
@@ -197,8 +199,25 @@ public class NewSceneEnhancer implements Runnable
 		if (cachedSystem != null && cachedSystem instanceof IWeatherRain)
 		{
 			IWeatherRain system = (IWeatherRain) cachedSystem;
-			float size = cachedSystem.size * 0.45F;
-			overcastTarget = 1.0F - (float) Maths.clamp((cachedSystemDistance - size) / cachedSystem.size, 0.0F, 1.0F);
+			float size = cachedSystem.size * 0.875F;
+			int stage = cachedSystem.getStage();
+			Vec3d playerPos = (Minecraft.getMinecraft().player.getPositionVector());
+			if (cachedSystem.getPos().distanceSq(playerPos) > size * 1.25D) {
+				overcastTarget = 0.0F;
+				rainTarget = 0.0F;
+				MC.world.getWorldInfo().setRaining(false);
+				MC.world.getWorldInfo().setThundering(false);
+				return;
+			}
+
+			overcastTarget = ((stage == 0 ? 0.0F :stage == 1 ? 0.35F : stage == 2 ? 0.6F : 1.0F) - (float) Maths.clamp((cachedSystemDistance - size) / cachedSystem.size, 0.0F, 1.0F));
+			
+			if (cachedSystem != null && cachedSystem instanceof StormObject)
+			{
+				StormObject storm = (StormObject) cachedSystem;
+				overcastTargetMult = (storm.isViolent ? 1.0F : stage >= 2 ? 0.4F : 0.0F);
+			}
+
 			if (system.hasDownfall())
 			{
 				rainTarget = Math.min((system.getDownfall() - IWeatherRain.MINIMUM_DRIZZLE) * overcast * 0.0034F, 1.0F);
@@ -215,6 +234,7 @@ public class NewSceneEnhancer implements Runnable
 		if (ConfigMisc.overcast_mode && ClientTickHandler.weatherManager != null && ClientTickHandler.weatherManager.weatherID >= 1)
 		{
 			overcastTarget = (float) ConfigStorm.min_overcast_rain;
+			overcastTargetMult = (float) ConfigStorm.min_overcast_rain;
 			rainTarget = (float) ConfigStorm.min_overcast_rain;
 			MC.world.getWorldInfo().setRaining(true);
 			MC.world.getWorldInfo().setThundering(true);
@@ -294,8 +314,8 @@ public class NewSceneEnhancer implements Runnable
 	{
 		if (event.phase.equals(Phase.START) && MC.world != null)
 		{
-			MC.world.setRainStrength(Math.abs(rain));
-			MC.world.setThunderStrength(overcast);
+			MC.world.setRainStrength(Math.abs(overcast));
+			MC.world.setThunderStrength(overcastMult);
 		}
 	}
 	
@@ -378,6 +398,9 @@ public class NewSceneEnhancer implements Runnable
 		if (overcast != overcastTarget)
 			overcast = Maths.adjust(overcast, overcastTarget, rate);
 		
+		if (overcastMult != overcastTargetMult)
+			overcastMult = Maths.adjust(overcastMult, overcastTargetMult, rate);
+	
 		if (!ConfigParticle.enable_vanilla_rain && ConfigParticle.precipitation_particle_rate > 0.0D && rain != 0.0F)
 		{
 			ParticleTexFX particle;
@@ -917,7 +940,7 @@ public class NewSceneEnhancer implements Runnable
 		cachedSystem = null;
 		errors = 0;
 		errorsThreaded = 0;
-		rain = rainTarget = overcast = overcastTarget = fogDensity = fogMult = 0.0F;
+		rain = rainTarget = overcast = overcastTarget = overcastMult = overcastTargetMult = fogDensity = fogMult = 0.0F;
 		fogRed = fogRedTarget = fogGreen = fogGreenTarget = fogBlue = fogBlueTarget = -1.0F;
 		if (WeatherUtilParticle.fxLayers == null)
 			WeatherUtilParticle.getFXLayers();
