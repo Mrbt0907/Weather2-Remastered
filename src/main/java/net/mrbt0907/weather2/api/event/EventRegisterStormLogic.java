@@ -7,7 +7,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.eventhandler.Cancelable;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.mrbt0907.weather2.Weather2;
-import net.mrbt0907.weather2.api.weather.AbstractStormRenderer;
+import net.mrbt0907.weather2.api.weather.AbstractWeatherRenderer;
 
 @Cancelable
 public class EventRegisterStormLogic extends Event
@@ -32,7 +32,7 @@ public class EventRegisterStormLogic extends Event
 			Weather2.debug("Failed to register a storm logic module as the id is already taken. Skipping...");
 		else if (particleRenderer == null)
 			Weather2.debug("Failed to register storm logic module " + id.toString() + " as the logic module was null. Skipping...");
-		else if (!AbstractStormRenderer.class.isAssignableFrom(particleRenderer))
+		else if (!AbstractWeatherRenderer.class.isAssignableFrom(particleRenderer))
 			Weather2.debug("Failed to register storm logic module " + id.toString() + " as the logic module does not extend from AbstractStormLogic. Skipping...");
 		else
 		{

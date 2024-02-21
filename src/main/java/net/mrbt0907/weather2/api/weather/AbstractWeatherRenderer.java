@@ -16,20 +16,19 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WeatherAPI;
-import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.client.entity.particle.ExtendedEntityRotFX;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
 import net.mrbt0907.weather2.config.ConfigParticle;
-import net.mrbt0907.weather2.weather.storm.StormObject;
+import net.mrbt0907.weather2.weather.storm.WeatherObject;
 
 @SideOnly(Side.CLIENT)
 
-public abstract class AbstractStormRenderer extends AbstractDebugging
+public abstract class AbstractWeatherRenderer extends AbstractDebugging
 {
 	protected ParticleBehaviorFog particleBehaviorFog;
 	/**The storm that the renderer is attached to*/
-	public StormObject storm;
+	public WeatherObject system;
 	/**The amount of particles that can spawn*/
 	public int particlesLeft;
 	
@@ -39,10 +38,10 @@ public abstract class AbstractStormRenderer extends AbstractDebugging
 	public static final List<String> renderDebugInfo = new ArrayList<String>();
 	
 	/**Used to spawn particles based on various variables in a storm. Examples are found in net.mrbt0907.weather2.client.weather.tornado*/
-	public AbstractStormRenderer(StormObject storm)
+	public AbstractWeatherRenderer(WeatherObject system)
 	{
 		refreshParticleLimit();
-		this.storm = storm;
+		this.system = system;
 	}
 	
 	public final void tick()
@@ -50,7 +49,7 @@ public abstract class AbstractStormRenderer extends AbstractDebugging
 		int attempts = 0;
 		
 		if (particleBehaviorFog == null)
-			particleBehaviorFog = new ParticleBehaviorFog(storm.pos.toVec3Coro());
+			particleBehaviorFog = new ParticleBehaviorFog(system.pos.toVec3Coro());
 		else if (!Minecraft.getMinecraft().isSingleplayer() || !(Minecraft.getMinecraft().currentScreen instanceof GuiIngameMenu))
 				particleBehaviorFog.tickUpdateList();
 		
@@ -67,7 +66,7 @@ public abstract class AbstractStormRenderer extends AbstractDebugging
 		
 		particlesLeft = particleLimit - this.particles.size();
 		
-		if (storm != null)
+		if (system != null)
 		{
 			delta = System.nanoTime();
 			while (attempts > -1)
@@ -192,18 +191,7 @@ public abstract class AbstractStormRenderer extends AbstractDebugging
 		
 		entityfx.setCanCollide(false);
 		entityfx.callUpdatePB = false;
-		
-		if (storm.stage == Stage.NORMAL.getStage())
-			entityfx.setMaxAge(300 + rand.nextInt(100));
-		else
-			entityfx.setMaxAge((storm.size/2) + rand.nextInt(100));
-		
-		//pieces that move down with funnel need render order shift, also only for relevant storm formations
-		if (entityfx.getEntityId() % 20 < 5 && storm.isSevere())
-		{
-			entityfx.renderOrder = 1;
-			entityfx.setMaxAge((storm.size) + rand.nextInt(100));
-		}
+		entityfx.setMaxAge((system.size/2) + rand.nextInt(100));
 
 		//temp?
 		if (ConfigCoroUtil.optimizedCloudRendering)

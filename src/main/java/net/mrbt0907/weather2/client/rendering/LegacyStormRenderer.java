@@ -11,15 +11,16 @@ import net.minecraft.init.Blocks;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
-import net.mrbt0907.weather2.api.weather.AbstractStormRenderer;
+import net.mrbt0907.weather2.api.weather.AbstractWeatherRenderer;
 import net.mrbt0907.weather2.client.entity.particle.ExtendedEntityRotFX;
 import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
 import net.mrbt0907.weather2.config.ConfigParticle;
 import net.mrbt0907.weather2.registry.ParticleRegistry;
 import net.mrbt0907.weather2.util.Maths;
 import net.mrbt0907.weather2.weather.storm.StormObject;
+import net.mrbt0907.weather2.weather.storm.WeatherObject;
 
-public class LegacyStormRenderer extends AbstractStormRenderer
+public class LegacyStormRenderer extends AbstractWeatherRenderer
 {
 	//List of cloud particles that the storm makes
 	@SideOnly(Side.CLIENT)
@@ -28,9 +29,9 @@ public class LegacyStormRenderer extends AbstractStormRenderer
 	@SideOnly(Side.CLIENT)
 	public List<EntityRotFX> listParticlesFunnel;
 	
-	public LegacyStormRenderer(StormObject storm)
+	public LegacyStormRenderer(WeatherObject system)
 	{
-		super(storm);
+		super(system);
 		listParticlesFunnel = new ArrayList<EntityRotFX>();
 		listParticlesCloud = new ArrayList<EntityRotFX>();
 	}
@@ -38,6 +39,8 @@ public class LegacyStormRenderer extends AbstractStormRenderer
 	@Override
 	public void onTick(WeatherManagerClient manager)
 	{
+		if (!(system instanceof StormObject)) return;
+		StormObject storm = (StormObject) this.system;
 		if (manager.getWorld().getTotalWorldTime() % (ConfigParticle.cloud_particle_delay + 1L) == 0L)
 			for (int i = 0; i < 1; i++)
 			{

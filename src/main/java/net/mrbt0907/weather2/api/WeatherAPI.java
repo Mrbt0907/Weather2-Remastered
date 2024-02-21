@@ -19,7 +19,7 @@ import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.event.EventRegisterGrabLists;
 import net.mrbt0907.weather2.api.event.EventRegisterParticleRenderer;
 import net.mrbt0907.weather2.api.event.EventRegisterStages;
-import net.mrbt0907.weather2.api.weather.AbstractStormRenderer;
+import net.mrbt0907.weather2.api.weather.AbstractWeatherRenderer;
 import net.mrbt0907.weather2.api.weather.WeatherEnum;
 import net.mrbt0907.weather2.client.rendering.NormalStormRenderer;
 import net.mrbt0907.weather2.config.ConfigGrab;
@@ -149,7 +149,7 @@ public class WeatherAPI
 	
 	@SideOnly(Side.CLIENT)
 	/**Gets the current particle renderer for use with storms. Can return null*/
-	public static net.mrbt0907.weather2.api.weather.AbstractStormRenderer getParticleRenderer(StormObject storm)
+	public static net.mrbt0907.weather2.api.weather.AbstractWeatherRenderer getParticleRenderer(StormObject storm)
 	{
 		if (currentParticleRenderer == null || storm == null)
 		{
@@ -160,7 +160,7 @@ public class WeatherAPI
 		
 		try
 		{
-			return renderer == null ? null : (AbstractStormRenderer) renderer.getConstructor(StormObject.class).newInstance(storm);
+			return renderer == null ? null : (AbstractWeatherRenderer) renderer.getConstructor(StormObject.class).newInstance(storm);
 		}
 		catch (Exception e)
 		{

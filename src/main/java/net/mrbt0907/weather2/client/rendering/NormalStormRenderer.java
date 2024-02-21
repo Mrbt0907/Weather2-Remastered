@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
-import net.mrbt0907.weather2.api.weather.AbstractStormRenderer;
+import net.mrbt0907.weather2.api.weather.AbstractWeatherRenderer;
 import net.mrbt0907.weather2.api.weather.WeatherEnum.Stage;
 import net.mrbt0907.weather2.client.NewSceneEnhancer;
 import net.mrbt0907.weather2.client.entity.particle.ExtendedEntityRotFX;
@@ -31,7 +31,7 @@ import net.mrbt0907.weather2.util.Maths.Vec3;
 import net.mrbt0907.weather2.weather.storm.StormObject;
 import net.mrbt0907.weather2.weather.storm.StormObject.StormType;
 
-public class NormalStormRenderer extends AbstractStormRenderer
+public class NormalStormRenderer extends AbstractWeatherRenderer
 {
 	/**List of particles that make up the clouds above*/
 	@SideOnly(Side.CLIENT)
@@ -47,9 +47,9 @@ public class NormalStormRenderer extends AbstractStormRenderer
 	
 	public int particleLimitCloud, particleLimitFunnel, particleLimitGround, particleLimitRain, particleLimitMeso;
 	
-	public NormalStormRenderer(StormObject storm)
+	public NormalStormRenderer(StormObject system)
 	{
-		super(storm);
+		super(system);
 		listParticlesCloud = new ArrayList<EntityRotFX>();
 		listParticlesGround = new ArrayList<EntityRotFX>();
 		listParticlesRain = new ArrayList<EntityRotFX>();
@@ -60,6 +60,8 @@ public class NormalStormRenderer extends AbstractStormRenderer
 	@Override
 	public void onTick(WeatherManagerClient manager)
 	{
+		if (!(system instanceof StormObject)) return;
+		StormObject storm = (StormObject) this.system;
 		EntityPlayer entP = Minecraft.getMinecraft().player;
 		IBlockState state = ConfigCoroUtil.optimizedCloudRendering ? Blocks.AIR.getDefaultState() : Weather2.clientChunkUtil.getBlockState(manager.getWorld(), (int) storm.pos_funnel_base.posX, (int) storm.pos_funnel_base.posY - 1, (int) storm.pos_funnel_base.posZ);
 		Material material = state.getMaterial();

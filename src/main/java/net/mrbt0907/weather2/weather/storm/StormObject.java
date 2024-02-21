@@ -29,7 +29,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.mrbt0907.weather2.Weather2;
 import net.mrbt0907.weather2.api.WeatherAPI;
-import net.mrbt0907.weather2.api.weather.AbstractStormRenderer;
+import net.mrbt0907.weather2.api.weather.AbstractWeatherRenderer;
 import net.mrbt0907.weather2.api.weather.IWeatherLayered;
 import net.mrbt0907.weather2.api.weather.IWeatherRain;
 import net.mrbt0907.weather2.api.weather.WeatherEnum;
@@ -48,7 +48,7 @@ import net.mrbt0907.weather2.weather.WindManager;
 public class StormObject extends WeatherObject implements IWeatherRain, IWeatherLayered
 {
 	//-----Rendering-----\\
-	public AbstractStormRenderer particleRenderer;
+	public AbstractWeatherRenderer particleRenderer;
 	public ResourceLocation particleRendererId;
 	public float angle = 0.0F;
 	

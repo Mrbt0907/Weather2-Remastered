@@ -12,7 +12,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.mrbt0907.weather2.api.WindReader;
-import net.mrbt0907.weather2.api.weather.AbstractStormRenderer;
+import net.mrbt0907.weather2.api.weather.AbstractWeatherRenderer;
 import net.mrbt0907.weather2.client.event.ClientTickHandler;
 import net.mrbt0907.weather2.client.weather.WeatherManagerClient;
 import net.mrbt0907.weather2.config.ConfigParticle;
@@ -39,8 +39,8 @@ public class GuiWeather extends WeatherUtilGui
 			{
 				ItemStack stack = mc.player.getHeldItem(EnumHand.MAIN_HAND);
 				if (ConfigParticle.enable_debug_renderer)
-					for (int i = 0; i < AbstractStormRenderer.renderDebugInfo.size(); i++)
-						drawString(mc.fontRenderer, AbstractStormRenderer.renderDebugInfo.get(i), 0, 2 + 10 * i, 0xFFFFFF00);
+					for (int i = 0; i < AbstractWeatherRenderer.renderDebugInfo.size(); i++)
+						drawString(mc.fontRenderer, AbstractWeatherRenderer.renderDebugInfo.get(i), 0, 2 + 10 * i, 0xFFFFFF00);
 				
 				if (stack.getItem() instanceof ItemSensor)
 				{
