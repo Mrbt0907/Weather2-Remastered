@@ -918,7 +918,15 @@ public class WeatherUtilBlock
 	public static boolean checkResistance(StormObject storm, String blockID)
 	{
 		ConfigList list = WeatherAPI.getWRList();		
-		float resistance = list.exists(blockID) ? (float) list.get(blockID) / 9.657718F : -1.0F;
+		float resistance = -1.0F;
+		if (list.exists(blockID)) {
+		    try {
+		        resistance = Float.parseFloat(list.get(blockID).toString()) / 9.657718F;
+		    } catch (NumberFormatException e) {
+		        System.out.println(list.get(blockID));
+		        resistance = -1.0F;
+		    }
+		}
 		return resistance > -1.0F && storm.windSpeed >= resistance;
 	}
 	
