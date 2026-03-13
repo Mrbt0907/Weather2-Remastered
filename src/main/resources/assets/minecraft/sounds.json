@@ -1,35 +1,14 @@
 {
-<<<<<<< Updated upstream
-	"entity.lightning_bolt.impact":
-	{
-			"subtitle": "subtitle.entity.lightning.thunder.dangerous",
-			"replace": true,
-			"sounds":
-			[
-				{"name": "weather2remastered:weather/thunder_dangerously_close1"}
-			]
-	},
-	"entity.lightning_bolt.thunder":
-=======
 	"entity.lightning.thunder":
->>>>>>> Stashed changes
 	{
 		"replace": true,
 		"sounds":
 		[
-<<<<<<< Updated upstream
-			{"name": "weather2remastered:weather/thunder_clear_near1"},
-			{"name": "weather2remastered:weather/thunder_clear_near2"},
-			{"name": "weather2remastered:weather/thunder_clear_near3"},
-			{"name": "weather2remastered:weather/thunder_clear_near4"},
-			{"name": "weather2remastered:weather/thunder_clear_near5"}
-=======
 			{"name": "weather2:weather/thunder_clear_near1"},
 			{"name": "weather2:weather/thunder_clear_near2"},
 			{"name": "weather2:weather/thunder_clear_near3"},
 			{"name": "weather2:weather/thunder_clear_near4"},
 			{"name": "weather2:weather/thunder_clear_near5"}
->>>>>>> Stashed changes
 		]
 	}
 }

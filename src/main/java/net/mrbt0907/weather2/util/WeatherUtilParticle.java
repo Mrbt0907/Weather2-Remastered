@@ -12,7 +12,6 @@ import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.mrbt0907.weather2.mixins.accessor.ParticleAccessor;
 
 public class WeatherUtilParticle {
@@ -58,7 +57,7 @@ public class WeatherUtilParticle {
             try
             {
 
-                field = ObfuscationReflectionHelper.findField(ParticleManager.class, "particles");
+                field = (ParticleManager.class).getDeclaredField("particles");
                 field.setAccessible(true);
                 WeatherUtilParticle.particles = (Map<IParticleRenderType, Queue<Particle>>)field.get(Minecraft.getInstance().particleEngine);
             }
