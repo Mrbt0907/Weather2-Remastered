@@ -1,6 +1,10 @@
 {
   "parent": "block/cube_all",
   "textures": {
+<<<<<<< Updated upstream:src/main/resources/assets/weather2remastered/models/block/weather_forecast_3.json
     "all": "weather2remastered:blocks/weather_forecast_3"
+=======
+    "all": "weather2:blocks/weather_forecast_3"
+>>>>>>> Stashed changes:src/main/resources/assets/weather2/models/block/weather_forecast_3.json
   }
 }

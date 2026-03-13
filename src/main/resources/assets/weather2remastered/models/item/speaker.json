@@ -1,6 +1,10 @@
 {
 	"parent": "item/handheld",
 	"textures": {
+<<<<<<< Updated upstream:src/main/resources/assets/weather2remastered/models/item/speaker.json
 		"layer0": "weather2remastered:items/speaker"
+=======
+		"layer0": "weather2:items/speaker"
+>>>>>>> Stashed changes:src/main/resources/assets/weather2/models/item/speaker.json
 	}
 }

@@ -1,6 +1,10 @@
 {
 	"parent": "item/handheld",
 	"textures": {
+<<<<<<< Updated upstream:src/main/resources/assets/weather2remastered/models/item/handheld_hygrometer.json
 		"layer0": "weather2remastered:items/handheld_hygrometer"
+=======
+		"layer0": "weather2:items/handheld_hygrometer"
+>>>>>>> Stashed changes:src/main/resources/assets/weather2/models/item/handheld_hygrometer.json
 	}
 }

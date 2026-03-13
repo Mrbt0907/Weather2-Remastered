@@ -1,6 +1,10 @@
 {
 	"parent": "item/handheld",
 	"textures": {
+<<<<<<< Updated upstream:src/main/resources/assets/weather2remastered/models/item/antenna_0.json
 		"layer0": "weather2remastered:items/antenna_0"
+=======
+		"layer0": "weather2:items/antenna_0"
+>>>>>>> Stashed changes:src/main/resources/assets/weather2/models/item/antenna_0.json
 	}
 }

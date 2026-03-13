@@ -1,6 +1,12 @@
 {
+<<<<<<< Updated upstream:src/main/resources/assets/weather2remastered/models/item/humidity_sensor.json
   "parent": "weather2remastered:block/humidity_sensor",
   "textures": {
     "all": "weather2remastered:blocks/humidity_sensor"
+=======
+  "parent": "weather2:block/humidity_sensor",
+  "textures": {
+    "all": "weather2:blocks/humidity_sensor"
+>>>>>>> Stashed changes:src/main/resources/assets/weather2/models/item/humidity_sensor.json
   }
 }

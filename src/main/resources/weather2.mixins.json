@@ -1,0 +1,31 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.mrbt0907.weather2.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "weather2.refmap.json",
+  "mixins": [
+    "accessor.ChunkManagerAccessor",
+    "accessor.DimensionTypeAccessor",
+    "accessor.GoalSelectorAccessor",
+    "accessor.LightningBoltEntityAccessor",
+    "accessor.Matrix4fAccessor",
+    "accessor.QuaternionAccessor",
+    "accessor.Vector3fAccessor",
+    "injection.MixinWorld"
+  ],
+  "client": [
+    "accessor.ActiveRenderInfoAccessor",
+    "accessor.ClientPlayerEntityAccessor",
+    "accessor.ClientWorldAccessor",
+    "accessor.LightTextureAccessor",
+    "accessor.ParticleAccessor",
+    "accessor.ParticleManagerAccessor",
+    "accessor.SpriteTexturedParticleAccessor",
+    "accessor.TextureAtlasSpriteAccessor",
+    "injection.MixinEntityRenderer",
+    "injection.MixinLevelRenderer",
+    "injection.MixinSoundManager",
+    "injection.MixinSoundSystem"
+  ]
+}

@@ -1,12 +1,22 @@
+<<<<<<< Updated upstream:src/main/java/net/mrbt0907/weather2remastered/registry/StormNames.java
 package net.mrbt0907.weather2remastered.registry;
+=======
+package net.mrbt0907.weather2.registry;
+>>>>>>> Stashed changes:src/main/java/net/mrbt0907/weather2/registry/StormNames.java
 
 import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraftforge.common.MinecraftForge;
+<<<<<<< Updated upstream:src/main/java/net/mrbt0907/weather2remastered/registry/StormNames.java
 import net.mrbt0907.weather2remastered.event.EventRegisterStormNames;
 import net.mrbt0907.weather2remastered.util.MapEX;
 import net.mrbt0907.weather2remastered.util.Maths;
+=======
+import net.mrbt0907.weather2.api.event.EventRegisterStormNames;
+import net.mrbt0907.weather2.util.MapEX;
+import net.mrbt0907.weather2.util.Maths;
+>>>>>>> Stashed changes:src/main/java/net/mrbt0907/weather2/registry/StormNames.java
 
 public class StormNames
 {
@@ -450,7 +460,13 @@ public class StormNames
 		names.add("Vergil");
 		names.add("Killer Storm");
 		names.add("Fart");
+<<<<<<< Updated upstream:src/main/java/net/mrbt0907/weather2remastered/registry/StormNames.java
 		EventRegisterStormNames event = new EventRegisterStormNames(names);
+=======
+        names.add("Shit");
+        names.add("Chicken Jockey"); //:trol:
+        EventRegisterStormNames event = new EventRegisterStormNames(names);
+>>>>>>> Stashed changes:src/main/java/net/mrbt0907/weather2/registry/StormNames.java
 		MinecraftForge.EVENT_BUS.post(event);
 	}
 	

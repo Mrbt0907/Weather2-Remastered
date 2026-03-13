@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream:src/main/java/net/mrbt0907/weather2remastered/util/MapEX.java
 package net.mrbt0907.weather2remastered.util;
+=======
+package net.mrbt0907.weather2.util;
+>>>>>>> Stashed changes:src/main/java/net/mrbt0907/weather2/util/MapEX.java
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -123,4 +127,8 @@ public class MapEX<A, B>
 	{
 		map.forEach(action);
 	}
+<<<<<<< Updated upstream:src/main/java/net/mrbt0907/weather2remastered/util/MapEX.java
 }
+=======
+}
+>>>>>>> Stashed changes:src/main/java/net/mrbt0907/weather2/util/MapEX.java

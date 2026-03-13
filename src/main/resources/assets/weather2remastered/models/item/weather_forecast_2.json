@@ -1,6 +1,12 @@
 {
+<<<<<<< Updated upstream:src/main/resources/assets/weather2remastered/models/item/weather_forecast_2.json
   "parent": "weather2remastered:block/weather_forecast_2",
   "textures": {
     "all": "weather2remastered:blocks/weather_forecast_2"
+=======
+  "parent": "weather2:block/weather_forecast_2",
+  "textures": {
+    "all": "weather2:blocks/weather_forecast_2"
+>>>>>>> Stashed changes:src/main/resources/assets/weather2/models/item/weather_forecast_2.json
   }
 }

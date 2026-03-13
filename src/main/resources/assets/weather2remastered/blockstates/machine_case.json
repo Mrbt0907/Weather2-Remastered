@@ -1,6 +1,10 @@
 {
   "variants":
   {
+<<<<<<< Updated upstream:src/main/resources/assets/weather2remastered/blockstates/machine_case.json
     "normal": {"model": "weather2remastered:machine_case"}
+=======
+    "normal": {"model": "weather2:machine_case"}
+>>>>>>> Stashed changes:src/main/resources/assets/weather2/blockstates/machine_case.json
   }
 }

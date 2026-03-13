@@ -1,6 +1,12 @@
 {
+<<<<<<< Updated upstream:src/main/resources/assets/weather2remastered/models/item/rain_sensor.json
   "parent": "weather2remastered:block/rain_sensor",
   "textures": {
     "all": "weather2remastered:blocks/rain_sensor"
+=======
+  "parent": "weather2:block/rain_sensor",
+  "textures": {
+    "all": "weather2:blocks/rain_sensor"
+>>>>>>> Stashed changes:src/main/resources/assets/weather2/models/item/rain_sensor.json
   }
 }

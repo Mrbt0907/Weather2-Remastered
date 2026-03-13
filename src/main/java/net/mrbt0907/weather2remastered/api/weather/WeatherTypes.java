@@ -15,13 +15,13 @@ public class WeatherTypes
 	{
 		weatherEntTypes = new ArrayList<WeatherEntityConfig>();
 		WeatherEntityConfig sConf = new WeatherEntityConfig();
-		//0 = spout
-		//1 = F1
-		//2 = F3
-		//3 = F5
-		//4 = F6
-		//5 = Hurricane C1
-		//water spout
+
+
+
+
+
+
+
 		sConf.tornadoInitialSpeed = 0.2F;
 		sConf.tornadoPullRate = 0.05F;
 		sConf.tornadoLiftRate = 0.175F;
@@ -34,7 +34,7 @@ public class WeatherTypes
 		sConf.grabsBlocks = false;
 		weatherEntTypes.add(sConf);
 		
-		//F1 tornado
+
 		sConf = new WeatherEntityConfig();
 		sConf.tornadoInitialSpeed = 0.2F;
 		sConf.tornadoPullRate = 0.04F;
@@ -43,7 +43,7 @@ public class WeatherTypes
 		sConf.tornadoWidthScale = 1.5F;
 		weatherEntTypes.add(sConf);
 		
-		//F2 tornado
+
 		sConf = new WeatherEntityConfig();
 		sConf.tornadoInitialSpeed = 0.2F;
 		sConf.tornadoPullRate = 0.04F;
@@ -52,7 +52,7 @@ public class WeatherTypes
 		sConf.tornadoWidthScale = 1.5F;
 		weatherEntTypes.add(sConf);
 		
-		//F3 tornado
+
 		sConf = new WeatherEntityConfig();
 		sConf.tornadoPullRate = 0.04F;
 		sConf.tornadoLiftRate = 0.07F;
@@ -60,7 +60,7 @@ public class WeatherTypes
 		sConf.tornadoWidthScale = 1.9F;
 		weatherEntTypes.add(sConf);
 		
-		//F4 tornado
+
 		sConf = new WeatherEntityConfig();
 		sConf.tornadoPullRate = 0.04F;
 		sConf.tornadoLiftRate = 0.08F;
@@ -68,7 +68,7 @@ public class WeatherTypes
 		sConf.tornadoWidthScale = 1.9F;
 		weatherEntTypes.add(sConf);
 		
-		//F5 tornado
+
 		sConf = new WeatherEntityConfig();
 		sConf.tornadoPullRate = 0.04F;
 		sConf.tornadoLiftRate = 0.09F;
@@ -76,7 +76,7 @@ public class WeatherTypes
 		sConf.tornadoWidthScale = 2.5F;
 		weatherEntTypes.add(sConf);
 		
-		//F6
+
 		sConf = new WeatherEntityConfig();
 		sConf.tornadoPullRate = 0.06F;
 		sConf.tornadoLiftRate = 0.10F;

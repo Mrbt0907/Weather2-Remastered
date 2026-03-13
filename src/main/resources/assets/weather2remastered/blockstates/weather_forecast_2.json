@@ -1,5 +1,9 @@
 {
   "variants": {
+<<<<<<< Updated upstream:src/main/resources/assets/weather2remastered/blockstates/weather_forecast_2.json
 	"normal": { "model": "weather2remastered:weather_forecast_2" }
+=======
+	"normal": { "model": "weather2:weather_forecast_2" }
+>>>>>>> Stashed changes:src/main/resources/assets/weather2/blockstates/weather_forecast_2.json
   }
 }
