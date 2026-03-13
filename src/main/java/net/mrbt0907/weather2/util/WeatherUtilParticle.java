@@ -48,7 +48,7 @@ public class WeatherUtilParticle {
         try
         {
 
-            field = (ParticleManager.class).getDeclaredField("f_107294_");
+            field = (ParticleManager.class).getDeclaredField("field_78876_b");
             field.setAccessible(true);
             WeatherUtilParticle.particles = (Map<IParticleRenderType, Queue<Particle>>)field.get(Minecraft.getInstance().particleEngine);
         }
