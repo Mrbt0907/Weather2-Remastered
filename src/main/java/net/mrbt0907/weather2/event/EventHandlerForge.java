@@ -593,7 +593,7 @@ public class EventHandlerForge
 	@SideOnly(Side.CLIENT)
 	public void onFogRender(RenderFogEvent event)
 	{
-		if (ConfigMisc.toaster_pc_mode || ConfigClient.enable_vanilla_fog != true) return;
+		if (ConfigMisc.toaster_pc_mode || ConfigClient.enable_custom_fog != true) return;
 		NewSceneEnhancer scene = NewSceneEnhancer.instance();
 		GlStateManager.setFog(GlStateManager.FogMode.EXP);
 		GlStateManager.setFogStart(0.0F);

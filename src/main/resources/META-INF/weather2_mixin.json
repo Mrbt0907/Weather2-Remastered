@@ -9,7 +9,8 @@
 	],
 	"client": [
 		"MixinEntityRenderer",
-		"MixinSoundManager"
+		"MixinSoundManager",
+		"MixinRenderGlobal"
 	],
 	"injectors": {
 		"defaultRequire": 1

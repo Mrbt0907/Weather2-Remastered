@@ -177,7 +177,7 @@ public class NewSceneEnhancer implements Runnable
 	{
 		if (cachedSystem != null)
 		{
-			float max = 0.29F * (ConfigClient.enable_vanilla_fog ? (float) ConfigClient.fog_mult : 0.0F);
+			float max = 0.29F * (ConfigClient.enable_custom_fog ? (float) ConfigClient.fog_mult : 0.0F);
 			//Weather2.info("fogdensity " + fogDensity + " Was calculated from Maths.clap (Math.max((Math.abs(" + rain + " 0.125F)) /" + " 0.69F, 0.0F) * " + max + " * " + (float) ConfigClient.fog_mult + "0.0F, " + max);
 			if (cachedSystem instanceof SandstormObject)
 			{
