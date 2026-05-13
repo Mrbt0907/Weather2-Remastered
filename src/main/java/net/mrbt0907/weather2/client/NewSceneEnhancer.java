@@ -189,11 +189,11 @@ public class NewSceneEnhancer implements Runnable
 			}
 			else if (rainTarget != 0.0F)
 			{
-				fogDensity = Maths.clamp(Math.max((Math.abs(rain + 0.125F)) / 0.69F, 0.0F) * max * (float) ConfigClient.fog_mult, 0.0F, max);
+				fogDensity = Maths.clamp(Math.max((Math.abs(rain + 0.125F)) / 0.69F, 0.001F) * max * (float) ConfigClient.fog_mult, 0.001F, max);
 				return;
 			}
 		}
-		fogDensity = 0.0F;
+		fogDensity = 0.001F;
 	}
 	
 	/**Finds if precipitation needs to be rendered and sets the target rain if needed*/

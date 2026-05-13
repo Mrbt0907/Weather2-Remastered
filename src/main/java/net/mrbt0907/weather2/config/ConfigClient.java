@@ -170,8 +170,8 @@ public class ConfigClient implements IConfigEX
 	@Comment("Fog change rate that adjusts how fast fog changes states")
 	public static double fog_change_rate = 1.0D;
 	@Permission(0)
-	@Comment("Enable or Disable Custom Fog. Also affects optifine compatibility.")
-	public static boolean enable_custom_fog = false;
+	@Comment("Enable or Disable Storm Fog. Also affects optifine compatibility.")
+	public static boolean enable_custom_fog = true;
 
     @Override
     public String getName() {
