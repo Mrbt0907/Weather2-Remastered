@@ -52,13 +52,18 @@ repositories
 		name = 'SpongePowered'
 		url = 'https://repo.spongepowered.org/repository/maven-public/'
    	}
+	maven
+	{
+		name = 'CurseMaven'
+		url = 'https://cursemaven.com'
+	}
 }
 
 dependencies
 {
 	minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
  	runtimeOnly fg.deobf("mezz.jei:jei_${minecraft_version}:${jei_version}")
- 	implementation files("libs/${coroutil_jar}")
+ 	implementation "curse.maven:coroutil-237749:${coroutil_version}"
 	implementation "org.spongepowered:mixin:0.8.5"
 	annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 	testAnnotationProcessor "org.spongepowered:mixin:0.8.5:processor"
