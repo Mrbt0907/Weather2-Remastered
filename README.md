@@ -1,7 +1,10 @@
 # Weather2-Remastered
-The decent update of the Weather2 mod by Corosus!
-(Totally did not accidentally overwrite all of my files, sorry for the badly written readme)
 
+## WHEN 1.20+???
+**We are supporting 1.12.2 and 1.16.5. Nothing newer at this point in time.**
+Please remember, we are developers with life committments and do not have time to work on this passion project 24/7/365.
+
+## Original mod: Weather2 by Corosus
 Please visit https://github.com/Corosauce/weather2 as he is the original creator of this mod.
 
 ## Dependencies
