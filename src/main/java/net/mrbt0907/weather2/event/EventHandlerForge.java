@@ -1,6 +1,7 @@
 package net.mrbt0907.weather2.event;
 
 import extendedrenderer.render.FoliageRenderer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
@@ -595,9 +596,16 @@ public class EventHandlerForge
 	{
 		if (ConfigMisc.toaster_pc_mode || ConfigClient.enable_custom_fog != true) return;
 		NewSceneEnhancer scene = NewSceneEnhancer.instance();
+		// Vanilla ends its fog where the terrain ends. A young storm's density has not caught up with
+		// that yet, since fogMult climbs from zero, and taking the fog over that early leaves the
+		// horizon bare, which is the look this fix exists to remove. exp(-4) leaves 2% of the colour
+		// behind, near enough to opaque, so that is the strength the storm fog needs before it may
+		// replace vanilla's.
+		float terrainDistance = Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 16.0F;
+		if (scene.fogMult <= 4.0F / terrainDistance) return;
 		GlStateManager.setFog(GlStateManager.FogMode.EXP);
 		GlStateManager.setFogStart(0.0F);
-		GlStateManager.setFogEnd(scene.renderDistance);
+		GlStateManager.setFogEnd(terrainDistance);
 		GlStateManager.setFogDensity(scene.fogMult);
 	}
 

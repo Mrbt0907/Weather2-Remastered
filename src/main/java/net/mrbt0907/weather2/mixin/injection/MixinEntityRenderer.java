@@ -1,10 +1,11 @@
 package net.mrbt0907.weather2.mixin.injection;
 
+import org.lwjgl.util.glu.Project;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.Minecraft;
@@ -24,19 +25,27 @@ import net.mrbt0907.weather2.weather.storm.StormObject;
 public abstract class MixinEntityRenderer
 {
 	private static final Minecraft MC = Minecraft.getMinecraft();
-	/** Overriding this pushes the skybox further back when Extended Render Distance is enabled */
-	@Shadow
-    private float farPlaneDistance;
 	/** Overriding this pushes the skybox further back when Extended Render Distance is enabled with Optifine installed */
     private float clipDistance;
-    /** Injecting into setupCameraTransform gives us the perfect spot to override farPlaneDistance and clipDistance */
+    /** Injecting into setupCameraTransform gives us the perfect spot to override clipDistance */
 	@Inject(method = "setupCameraTransform(FI)V", at = @At("RETURN"), cancellable=true)
 	private void setupCameraTransform(float partialTicks, int pass, CallbackInfo callback)
 	{
 		NewSceneEnhancer scene = NewSceneEnhancer.instance();
-		/**farPlaneDistance = Where fog begins / technically out of render distance. clipDistance = Hard cutoff for anything rendering**/
-		farPlaneDistance = scene.renderDistance * 1.25F;
+		/**clipDistance = Hard cutoff for anything rendering**/
 		clipDistance = scene.renderDistance * 1.5F;
+	}
+	
+	/** Extending the view happens here instead of on farPlaneDistance, because vanilla ends its fog
+	 *  at that field and moving it left the last chunk unfogged against the sky. Scaling the far plane
+	 *  the call already computed keeps the sky pass (x2) and the terrain pass (x sqrt 2) at the ratio
+	 *  vanilla chose. */
+	@Redirect(method = "renderWorldPass(IFJ)V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V"), remap = true)
+	private void extendFarPlane(float fov, float aspect, float near, float far)
+	{
+		float vanillaFar = MC.gameSettings.renderDistanceChunks * 16.0F;
+		float scale = vanillaFar > 0.0F ? NewSceneEnhancer.instance().renderDistance * 1.25F / vanillaFar : 1.0F;
+		Project.gluPerspective(fov, aspect, near, Math.max(far, far * scale));
 	}
 	
 	/** Injecting into orientCamera gives us the perfect spot to shake the perspective */
