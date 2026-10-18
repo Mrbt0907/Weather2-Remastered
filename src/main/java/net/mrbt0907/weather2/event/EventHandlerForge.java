@@ -1,6 +1,7 @@
 package net.mrbt0907.weather2.event;
 
 import extendedrenderer.render.FoliageRenderer;
+import org.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
@@ -559,10 +560,19 @@ public class EventHandlerForge
         	{
         		if (scene.fogRed < 0.0F)
             		scene.fogRed = red;
+        		// Keep following the sky while the storm runs. Holding the colour still here left the fog
+        		// paler than the sky the rain kept darkening, and vanilla draws the sky with fog, so the
+        		// difference showed up as a band across it. A sandstorm sets its own target and keeps it.
+        		else if (scene.fogRedTarget < 0.0F)
+        			scene.fogRed += (red - scene.fogRed) * 0.01F;
             	if (scene.fogGreen < 0.0F)
             		scene.fogGreen = green;
+        		else if (scene.fogGreenTarget < 0.0F)
+        			scene.fogGreen += (green - scene.fogGreen) * 0.01F;
             	if (scene.fogBlue < 0.0F)
             		scene.fogBlue = blue;
+        		else if (scene.fogBlueTarget < 0.0F)
+        			scene.fogBlue += (blue - scene.fogBlue) * 0.01F;
         	}
         	else
         	{
@@ -595,18 +605,29 @@ public class EventHandlerForge
 	public void onFogRender(RenderFogEvent event)
 	{
 		if (ConfigMisc.toaster_pc_mode || ConfigClient.enable_custom_fog != true) return;
+		// The sky pass is left to vanilla. It already hazes the sky into the horizon, and fogging it with
+		// the storm's fog flattens the whole sky to one colour.
+		if (event.getFogMode() == -1) return;
+		// Water, lava and blindness bring their own fog shape, and they keep it. The event's mode is
+		// vanilla's fog type, 0 for the terrain pass and -1 for the sky, not the GL fog mode, so ask GL
+		// what vanilla actually chose: this fires after vanilla has chosen it.
+		if (GL11.glGetInteger(GL11.GL_FOG_MODE) != GL11.GL_LINEAR) return;
 		NewSceneEnhancer scene = NewSceneEnhancer.instance();
-		// Vanilla ends its fog where the terrain ends. A young storm's density has not caught up with
-		// that yet, since fogMult climbs from zero, and taking the fog over that early leaves the
-		// horizon bare, which is the look this fix exists to remove. exp(-4) leaves 2% of the colour
-		// behind, near enough to opaque, so that is the strength the storm fog needs before it may
-		// replace vanilla's.
-		float terrainDistance = Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 16.0F;
-		if (scene.fogMult <= 4.0F / terrainDistance) return;
-		GlStateManager.setFog(GlStateManager.FogMode.EXP);
-		GlStateManager.setFogStart(0.0F);
-		GlStateManager.setFogEnd(terrainDistance);
-		GlStateManager.setFogDensity(scene.fogMult);
+		// Vanilla fades from 75% of the view to its end, and the storm fog keeps that shape, sliding
+		// only its end inward as the storm builds. Replacing vanilla's linear fog with an exponential
+		// one popped instead: at the same reach the two disagree badly in the middle distance, where
+		// vanilla has not started fading and an exponential fog is already thick. exp(-1) leaves 37% of
+		// the colour, which is the reach a storm's density can fill; until that reach is shorter than
+		// the terrain, the fog stays exactly where vanilla put it.
+		float terrainDistance = event.getFarPlaneDistance();
+		float fogDistance = scene.fogMult > 0.0F ? Math.min(terrainDistance, 1.0F / scene.fogMult) : terrainDistance;
+		fogDistance = Math.max(fogDistance, 8.0F);
+		// The start follows the end inward, so the fog closes in on the player as the storm builds
+		// rather than only eating the far distance. At vanilla's reach it stays at vanilla's 75%.
+		float fogStart = fogDistance * 0.75F * (fogDistance / terrainDistance);
+		GlStateManager.setFog(GlStateManager.FogMode.LINEAR);
+		GlStateManager.setFogStart(fogStart);
+		GlStateManager.setFogEnd(fogDistance);
 	}
 
 	@SubscribeEvent
