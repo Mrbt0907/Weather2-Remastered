@@ -528,11 +528,14 @@ public class NewSceneEnhancer implements Runnable
 	{
 		float mult = (float) ConfigClient.fog_change_rate;
 		fogMult = Maths.adjust(fogMult, fogDensity, (fogMult < 0.1F ? 0.00005F : 0.001F) * mult);
-			if (fogRed >= 0.0F && fogRed != fogRedTarget)
+			// The targets stay at -1 unless a sandstorm sets one, and adjust() toward -1 walked the
+			// colour down by 0.001 a tick until it went negative and the override dropped out, which
+			// darkened the fog against the sky and then jumped back. Only chase a real target.
+			if (fogRed >= 0.0F && fogRedTarget >= 0.0F && fogRed != fogRedTarget)
 				fogRed = Maths.adjust(fogRed, fogRedTarget, 0.001F * mult);
-			if (fogGreen >= 0.0F && fogGreen != fogGreenTarget)
+			if (fogGreen >= 0.0F && fogGreenTarget >= 0.0F && fogGreen != fogGreenTarget)
 				fogGreen = Maths.adjust(fogGreen, fogGreenTarget, 0.001F * mult);
-			if (fogBlue >= 0.0F && fogBlue != fogBlueTarget)
+			if (fogBlue >= 0.0F && fogBlueTarget >= 0.0F && fogBlue != fogBlueTarget)
 				fogBlue = Maths.adjust(fogBlue, fogBlueTarget, 0.001F * mult);
 	}
 	
